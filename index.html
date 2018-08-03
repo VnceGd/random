@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title> RNG </title>
+    <script>
+      function rollDice() {
+        var count = document.getElementById("diceCount").value;
+        var sides = document.getElementById("diceSides").value;
+        var output = document.getElementById("output");
+        if(count < 1)
+          return
+        if(sides < 4)
+          return
+        
+        var stack = [];
+        output.innerHTML = "Rolled a ";
+        for(var i = 0; i < count; i++) {
+          stack[i] = Math.floor(Math.random() * sides) + 1;
+          // console.log(stack[i]);
+          output.innerHTML += stack[i];
+          if(i < count - 1)
+            output.innerHTML += ", ";
+        }
+        if(count > 1) {
+          var sum = 0
+          for(var j = 0; j < count; j++) {
+            sum += stack[j];
+          }
+          output.innerHTML += "\n Total: " + sum;
+        }
+      }
+      
+      function convertFace(n) {
+        switch(n) {
+          case 1 :
+            return "Ace";
+          case 11:
+            return "Jack";
+          case 12:
+            return "Queen";
+          case 13:
+            return "King";
+          default:
+            return n
+        }
+      }
+      function convertSuit(n) {
+        switch(n) {
+          case 0:
+            return "Clubs";
+          case 1:
+            return "Spades";
+          case 2:
+            return "Diamonds";
+          case 3:
+            return "Hearts";
+        }
+      }
+      function drawCards() {
+        var count = document.getElementById("cardCount").value;
+        var output = document.getElementById("output");
+        if(count < 1)
+          return
+
+        var number = [];
+        var suit = [];
+        output.innerHTML = "Drew a ";
+        for(var j = 0; j < count; j++) {
+          number[j] = Math.floor(Math.random() * 13) + 1;
+          suit[j] = Math.floor(Math.random() * 4);
+          output.innerHTML += convertFace(number[j]) + " of " + convertSuit(suit[j]);
+          if (j < count - 1)
+            output.innerHTML += ", ";
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <h1> Dice Roll </h1>
+    <p># of Dice:</p>
+    <input type="text" id="diceCount" value="1">
+    <p># of Sides:</p>
+    <input type="text" id="diceSides" value="6">
+    <button onclick="rollDice()">Roll</button>
+    <h1> Card Picker </h1>
+    <p># of Cards:</p>
+    <input type="text" id="cardCount" value="1">
+    <button onclick="drawCards()">Draw</button>
+    <h2> Results </h2>
+    <p id="output">
+
+    </p>
+  </body>
+</html>

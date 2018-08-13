@@ -65,11 +65,11 @@
         var number = [];
         var suit = [];
         output.innerHTML = "Drew a ";
-        for(var j = 0; j < count; j++) {
-          number[j] = Math.floor(Math.random() * 13) + 1;
-          suit[j] = Math.floor(Math.random() * 4);
-          output.innerHTML += convertFace(number[j]) + " of " + convertSuit(suit[j]);
-          if (j < count - 1)
+        for(var i = 0; i < count; i++) {
+          number[i] = Math.floor(Math.random() * 13) + 1;
+          suit[i] = Math.floor(Math.random() * 4);
+          output.innerHTML += convertFace(number[i]) + " of " + convertSuit(suit[i]);
+          if (i < count - 1)
             output.innerHTML += ", ";
         }
       }
@@ -87,8 +87,6 @@
     <input type="text" id="cardCount" value="1">
     <button onclick="drawCards()">Draw</button>
     <h2> Results </h2>
-    <p id="output">
-
-    </p>
+    <p id="output"></p>
   </body>
 </html>

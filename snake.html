@@ -5,6 +5,13 @@
   <head>
     <title> Snake Game </title>
     <style>
+      p, h3, h4 {
+        margin: 0;
+        padding: 2px;
+      }
+      button {
+        margin-bottom: 5px;
+      }
       #board {
         margin-left: 10vmin;
         width: 80vmin;
@@ -12,7 +19,6 @@
       }
       table, tr, td {
         border-collapse: collapse;
-        border: 1px solid grey;
         padding: 0;
       }
       .snake, .apple, .empty {
@@ -20,14 +26,8 @@
         width: 100%;
         height: 100%;
       }
-      .snake {
-        background-color: green;
-      }
-      .apple {
-        background-color: red;
-      }
       .empty {
-        background-color: black;
+        background-color: lightgray;
       }
     </style>
     <script>
@@ -35,6 +35,7 @@
       // Global variables for handling game state
       let inGame = false;
       let inSettings = false;
+      let inHelp = false;
       let paused = true;
       let updating;
       let keys = {};
@@ -54,22 +55,65 @@
         boardSize: 20
       };
 
+      // Open help menu
+      function openHelp() {
+        if(!inHelp) {
+          inHelp = true;
+          document.getElementById("helpMenu").style.display = 'inline'
+          document.getElementById("settingsButton").disabled = true;
+          document.getElementById("playButton").disabled = true;
+          document.getElementById("helpButton").innerHTML = 'Close Help';
+        }
+        else {
+          inHelp = false;
+          document.getElementById("helpMenu").style.display = 'none';
+          document.getElementById("playButton").disabled = false;
+          document.getElementById("settingsButton").disabled = false;
+          document.getElementById("helpButton").innerHTML = 'How to play';
+        }
+      }
       // Open settings menu
       function openSettings() {
         if(!inSettings) {
           inSettings = true;
           document.getElementById("settingsMenu").style.display = 'inline';
           document.getElementById("playButton").disabled = true;
+          document.getElementById("helpButton").disabled = true;
           document.getElementById("settingsButton").innerHTML = 'Close Settings';
         }
         else {
           inSettings = false;
           document.getElementById("settingsMenu").style.display = 'none';
           document.getElementById("playButton").disabled = false;
+          document.getElementById("helpButton").disabled = false;
           document.getElementById("settingsButton").innerHTML = 'Settings';
         }
       }
-      
+      function updateSettings() {
+        // Sets table cell borders according to setting
+        let cells = document.getElementsByTagName("td");
+        
+        for(let c = 0; c < cells.length; c++) {
+          if(document.getElementById("cellBorders").checked)
+            cells[c].style.border = '1px solid grey';
+          else
+            cells[c].style.border = 'none';
+        }
+        updateBoard();
+      }
+      // Update the colors of the board tiles
+      function updateBoard() {
+        let snakeCells = document.getElementsByClassName("snake");
+        let appleCell = document.getElementsByClassName("apple");
+        let emptyCells = document.getElementsByClassName("empty");
+        for(let d = 0; d < snakeCells.length; d++)   
+          snakeCells[d].style.backgroundColor = document.querySelector('input[name = "snakeColor"]:checked').value;
+        for(let e = 0; e < appleCell.length; e++)
+          appleCell[e].style.backgroundColor = document.querySelector('input[name = "appleColor"]:checked').value;
+        for(let f = 0; f < emptyCells.length; f++)
+          emptyCells[f].style.backgroundColor = document.querySelector('input[name = "bgColor"]:checked').value;
+      }
+
       // Spawn an apple on an empty tile
       function spawnApple() {
         let appleX = appleY = 0;
@@ -79,6 +123,7 @@
           appleY = Math.floor(Math.random() * grid.boardSize);
           pos = [appleX, appleY];
         } while(inSnakeBody(pos));
+        
         return pos;
       }
       // Generates an html table of specified board size
@@ -89,17 +134,19 @@
           board += '<tr>';
           for(let x = 0; x < grid.boardSize; x++) {
             if(x === 1 && y === 1) {
-              board += '<td id="' + x + ',' + y + '"><div class="snake"></div></td>';
+              board += '<td class="cell" id="' + x + ',' + y + '"><div class="snake"></div></td>';
               snake.body.push([x, y]);
             }
-            else {
-              board += '<td id="' + x + ',' + y + '"><div class="empty"></div></td>';
-            }
+            else
+              board += '<td class="cell" id="' + x + ',' + y + '"><div class="empty"></div></td>';
           }
           board += '</tr>';
         }
         apple.pos = spawnApple();
         document.getElementById("board").innerHTML = board;
+        appleCoord = apple.pos[0].toString() + ',' + apple.pos[1].toString();
+        document.getElementById(appleCoord).innerHTML = '<div class="apple"></div>';
+        updateSettings();
       }
 
       // Undraw and redraw snake and apple
@@ -127,6 +174,7 @@
             document.getElementById(coord).innerHTML = '<div class="snake"></div>';
           }
         }
+        updateBoard();
       }
 
       // Resets all values to default (except settings)
@@ -170,10 +218,8 @@
           undraw();
           turn();
           move();
-          if(snake.x_pos < 0 || 
-             snake.y_pos < 0 || 
-             snake.x_pos > grid.boardSize - 1 || 
-             snake.y_pos > grid.boardSize - 1)
+          if(snake.x_pos < 0 || snake.y_pos < 0 || 
+             snake.x_pos > grid.boardSize - 1 || snake.y_pos > grid.boardSize - 1)
             deth();
           if(snake.x_pos === apple.pos[0] && snake.y_pos === apple.pos[1])
             eat();
@@ -187,6 +233,7 @@
         document.getElementById("pauseButton").style.display = 'inline';
         document.getElementById("playButton").style.display = 'none';
         document.getElementById("settingsButton").disabled = true;
+        document.getElementById("helpButton").disabled = true;
         document.getElementById("score").innerHTML = score;
         updating = setInterval(update, 1000/document.getElementById("updatesPerSecond").value);
         makeBoard();
@@ -228,7 +275,7 @@
           snake.y_pos--;
         else if(snake.vel[1] === -1)
           snake.y_pos++;
-        // Snake dies if it runs into itself
+        // Snake dies if it moves into itself
         let snakePos = [snake.x_pos, snake.y_pos];
         if(inSnakeBody(snakePos))
             deth();
@@ -272,14 +319,40 @@
       <button id="resumeButton" onclick="resume()" style="display:none">Resume</button>
       <button id="pauseButton" onclick="pause()" style="display:none">Pause</button>
       <button id="settingsButton" onclick="openSettings()">Settings</button>
+      <button id="helpButton" onclick="openHelp()">How to play</button>
       <b>Score: <span id="score"></span></b>
+      <!-- HELP MENU -->
+      <div id="helpMenu" style="display:none">
+        <h4> Game Instructions </h4>
+          <p>Press the arrow keys or W,A,S,D to move.</p>
+          <p>Eat apples to grow longer and increase your score.</p>
+          <p>You lose when you move into the wall or your own body.</p>
+          <p>Change the look and feel of the game in the 'Settings' menu.</p>
+      </div>
       <!-- SETTINGS MENU -->
       <div id="settingsMenu" style="display:none">
+        <h4>Gameplay</h4>
           <p>Board Size</p>
-          <input id="boardSize" type="text" value="20"> <i>Recommended: 20-40</i>
+            <input id="boardSize" type="text" value="20"> <i>Recommended: 20-40</i>
+            <p>Cell Borders? <input id="cellBorders" type="checkbox">
+              <i>Recommended: Off</i>
+            </p>
           <p>Updates Per Second</p>
-          <input id="updatesPerSecond" type="text" value="10"> <i>Recommended: 10-20</i>
-      </div>
+            <input id="updatesPerSecond" type="text" value="10"> <i>Recommended: 10-20</i>
+        <h4>Cosmetic</h4>
+          <p>Snake Color</p>
+            <input type="radio" name="snakeColor" value="green" checked>Green  
+            <input type="radio" name="snakeColor" value="yellow">Yellow  
+            <input type="radio" name="snakeColor" value="white">White  
+          <p>Apple Color</p>
+            <input type="radio" name="appleColor" value="red" checked>Red  
+            <input type="radio" name="appleColor" value="orange">Orange  
+            <input type="radio" name="appleColor" value="purple">Purple  
+          <p>Background Color</p>
+            <input type="radio" name="bgColor" value="black" checked>Black  
+            <input type="radio" name="bgColor" value="brown">Brown  
+            <input type="radio" name="bgColor" value="blue">Blue  
+        </div>
     </div>
     <!-- GAME AREA -->
     <div id="grid">

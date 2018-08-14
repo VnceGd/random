@@ -33,230 +33,225 @@
     <script>
       
       // Global variables for handling game state
-      let inGame = false
-      let inSettings = false
-      let paused = true
-      let updating
-      let keys = {}
-      let score = 0
+      let inGame = false;
+      let inSettings = false;
+      let paused = true;
+      let updating;
+      let keys = {};
+      let score = 0;
 
       // Objects
       let snake = {
-        length: 1,
         x_pos: 1,
         y_pos: 1,
         body: [],
         vel: [0, 0]
-      }
+      };
       let apple = {
         pos: [0, 0]
-      }
+      };
       let grid = {
-        board: [0, 0],
         boardSize: 20
-      }
+      };
 
+      // Open settings menu
       function openSettings() {
         if(!inSettings) {
-          inSettings = true
-          document.getElementById("settingsMenu").style.display = 'inline'
-          document.getElementById("playButton").disabled = true
-          document.getElementById("settingsButton").innerHTML = 'Close Settings'
+          inSettings = true;
+          document.getElementById("settingsMenu").style.display = 'inline';
+          document.getElementById("playButton").disabled = true;
+          document.getElementById("settingsButton").innerHTML = 'Close Settings';
         }
         else {
-          inSettings = false
-          document.getElementById("settingsMenu").style.display = 'none'
-          document.getElementById("playButton").disabled = false
-          document.getElementById("settingsButton").innerHTML = 'Settings'
+          inSettings = false;
+          document.getElementById("settingsMenu").style.display = 'none';
+          document.getElementById("playButton").disabled = false;
+          document.getElementById("settingsButton").innerHTML = 'Settings';
         }
       }
       
-      // Generates an html table of specified board size
+      // Spawn an apple on an empty tile
       function spawnApple() {
-        let appleX = appleY = 0
-        let pos = []
+        let appleX = appleY = 0;
+        let pos = [];
         do {
-          appleX = Math.floor(Math.random() * grid.boardSize)
-          appleY = Math.floor(Math.random() * grid.boardSize)
-          pos = [appleX, appleY]
-        } while(inSnakeBody(pos))
-        return pos
+          appleX = Math.floor(Math.random() * grid.boardSize);
+          appleY = Math.floor(Math.random() * grid.boardSize);
+          pos = [appleX, appleY];
+        } while(inSnakeBody(pos));
+        return pos;
       }
+      // Generates an html table of specified board size
       function makeBoard() {
-        grid.boardSize = document.getElementById("boardSize").value
-        let board = ''
+        grid.boardSize = document.getElementById("boardSize").value;
+        let board = '';
         for(let y = 0; y < grid.boardSize; y++) {
-          board += '<tr>'
+          board += '<tr>';
           for(let x = 0; x < grid.boardSize; x++) {
             if(x === 1 && y === 1) {
-              board += '<td id="' + x + ',' + y + '"><div class="snake"></div></td>'
-              snake.body.push([x, y])
+              board += '<td id="' + x + ',' + y + '"><div class="snake"></div></td>';
+              snake.body.push([x, y]);
             }
             else {
-              board += '<td id="' + x + ',' + y + '"><div class="empty"></div></td>'
+              board += '<td id="' + x + ',' + y + '"><div class="empty"></div></td>';
             }
           }
-          board += '</tr>'
+          board += '</tr>';
         }
-        apple.pos = spawnApple()
-        document.getElementById("board").innerHTML = board
+        apple.pos = spawnApple();
+        document.getElementById("board").innerHTML = board;
       }
 
-      // Probably a bad idea: undraw and redraw the entire board state
+      // Undraw and redraw snake and apple
       function undraw() {
-        let coord = ''
-        appleCoord = apple.pos[0].toString() + ',' + apple.pos[1].toString()
-        document.getElementById(appleCoord).innerHTML = '<div class="empty"></div>'
+        // Undraw sets coordinate tile to class 'empty'
+        let coord = '';
+        appleCoord = apple.pos[0].toString() + ',' + apple.pos[1].toString();
+        document.getElementById(appleCoord).innerHTML = '<div class="empty"></div>';
         for(let x = 0; x < snake.body.length; x++) {
           if(snake.body[x] !== null) {
-            coord = snake.body[x][0].toString() + ',' + snake.body[x][1].toString()
-            document.getElementById(coord).innerHTML = '<div class="empty"></div>'
+            coord = snake.body[x][0].toString() + ',' + snake.body[x][1].toString();
+            document.getElementById(coord).innerHTML = '<div class="empty"></div>';
           }
         }
       }
       function draw() {
-        let appleCoord = ''
-        let coord = ''
-        appleCoord = apple.pos[0].toString() + ',' + apple.pos[1].toString()
-        document.getElementById(appleCoord).innerHTML = '<div class="apple"></div>'
+        // Draw sets coordinate tile to class 'snake' or 'apple'
+        let appleCoord = '';
+        let coord = '';
+        appleCoord = apple.pos[0].toString() + ',' + apple.pos[1].toString();
+        document.getElementById(appleCoord).innerHTML = '<div class="apple"></div>';
         for(let x = 0; x < snake.body.length; x++) {
           if(snake.body[x] !== null) {
-            coord = snake.body[x][0].toString() + ',' + snake.body[x][1].toString()
-            document.getElementById(coord).innerHTML = '<div class="snake"></div>'
+            coord = snake.body[x][0].toString() + ',' + snake.body[x][1].toString();
+            document.getElementById(coord).innerHTML = '<div class="snake"></div>';
           }
         }
       }
 
+      // Resets all values to default (except settings)
       function reset() {
-        keys = {}
-        score = 0
+        keys = {};
+        score = 0;
         // Reset snake
-        snake.length = 1
-        snake.x_pos = snake.y_pos = 1
-        snake.body = []
-        snake.vel = [0, 0]
+        snake.x_pos = snake.y_pos = 1;
+        snake.body = [];
+        snake.vel = [0, 0];
         // Reset apple
-        apple.pos = []
+        apple.pos = [];
         // Reset buttons
-        document.getElementById("settingsButton").disabled = false
-        document.getElementById("playButton").style.display = 'inline'
-        document.getElementById("pauseButton").style.display = 'none'
-        document.getElementById("resumeButton").style.display = 'none'
+        document.getElementById("settingsButton").disabled = false;
+        document.getElementById("playButton").style.display = 'inline';
+        document.getElementById("pauseButton").style.display = 'none';
+        document.getElementById("resumeButton").style.display = 'none';
       }
+      // You died. Reset game.
       function deth() {
-        clearInterval(updating)
-        reset()
-        alert("You Died")
+        clearInterval(updating);
+        reset();
+        alert("You Died");
       }
+      // Check if position is in snake body
       function inSnakeBody(pos) {
-        let i, j, current
-        for(i = 0; i < snake.body.length; ++i) {
-          if(pos.length === snake.body[i].length) {
-            current = snake.body[i]
-            for(j = 0; j < pos.length && pos[j] === current[j]; ++j) {
-              if(j === pos.length - 1)
-                return true
-            }
+        let i, j, current;
+        for(i = 0; i < snake.body.length; i++) {
+          current = snake.body[i];
+          for(j = 0; j < pos.length && pos[j] === current[j]; j++) {
+            if(j === pos.length - 1)
+              return true;
           }
         }
-        return false
+        return false;
       }
+
       // Called by play() to constantly update the game board
       function update() {
         if(inGame && !paused) {
-          undraw()
-          turn()
-          move()
+          undraw();
+          turn();
+          move();
           if(snake.x_pos < 0 || 
              snake.y_pos < 0 || 
              snake.x_pos > grid.boardSize - 1 || 
              snake.y_pos > grid.boardSize - 1)
-            deth()
+            deth();
           if(snake.x_pos === apple.pos[0] && snake.y_pos === apple.pos[1])
-            eat()
-          draw()
-          // console.log("Updated.")
+            eat();
+          draw();
         }
       }
-
       // Starts the game and sets updating to repeatedly call update()
       function play() {
-        inGame = true
-        paused = false
-        document.getElementById("pauseButton").style.display = 'inline'
-        document.getElementById("playButton").style.display = 'none'
-        document.getElementById("settingsButton").disabled = true
-        document.getElementById("score").innerHTML = score
-        updating = setInterval(update, 1000/document.getElementById("updatesPerSecond").value)
-        makeBoard()
+        inGame = true;
+        paused = false;
+        document.getElementById("pauseButton").style.display = 'inline';
+        document.getElementById("playButton").style.display = 'none';
+        document.getElementById("settingsButton").disabled = true;
+        document.getElementById("score").innerHTML = score;
+        updating = setInterval(update, 1000/document.getElementById("updatesPerSecond").value);
+        makeBoard();
       }
       // Pauses the game
       function pause() {
-        clearInterval(updating)
-        paused = true
-        document.getElementById("pauseButton").style.display = 'none'
-        document.getElementById("resumeButton").style.display = 'inline'
-        console.log("Game paused.")
+        clearInterval(updating);
+        paused = true;
+        document.getElementById("pauseButton").style.display = 'none';
+        document.getElementById("resumeButton").style.display = 'inline';
+        console.log("Game paused.");
       }
+      // Resumes the game
       function resume() {
-        clearInterval(updating)
-        paused = false
-        document.getElementById("pauseButton").style.display = 'inline'
-        document.getElementById("resumeButton").style.display = 'none'
-        updating = setInterval(update, 1000/document.getElementById("updatesPerSecond").value)
-        console.log("Game resumed.")
+        clearInterval(updating);
+        paused = false;
+        document.getElementById("pauseButton").style.display = 'inline';
+        document.getElementById("resumeButton").style.display = 'none';
+        updating = setInterval(update, 1000/document.getElementById("updatesPerSecond").value);
+        console.log("Game resumed.");
       }
       
+      // Increase score, spawn another apple, increase snake length
       function eat() {
-        snake.body.push(apple.pos)
-        apple.pos = spawnApple()
-        score++
-        document.getElementById("score").innerHTML = score
+        snake.body.push(apple.pos);
+        apple.pos = spawnApple();
+        score++;
+        document.getElementById("score").innerHTML = score;
       }
+      // Increase x or y position of snake head and push into body array
       function move() {
-        if(snake.vel[0] === 0 && snake.vel[1] === 0) {
-          return
-        }
-        else if(snake.vel[0] === 1) {
-          snake.x_pos++
-        }
-        else if(snake.vel[0] === -1) {
-          snake.x_pos--
-        }
-        else if(snake.vel[1] === 1) {
-          snake.y_pos--
-        }
-        else if(snake.vel[1] === -1) {
-          snake.y_pos++
-        }
-        let snakePos = [snake.x_pos, snake.y_pos]
+        if(snake.vel[0] === 0 && snake.vel[1] === 0)
+          return;
+        else if(snake.vel[0] === 1)
+          snake.x_pos++;
+        else if(snake.vel[0] === -1)
+          snake.x_pos--;
+        else if(snake.vel[1] === 1)
+          snake.y_pos--;
+        else if(snake.vel[1] === -1)
+          snake.y_pos++;
+        // Snake dies if it runs into itself
+        let snakePos = [snake.x_pos, snake.y_pos];
         if(inSnakeBody(snakePos))
-            deth()
-        snake.body.push([snake.x_pos, snake.y_pos])
-        snake.body.shift()
+            deth();
+        snake.body.push([snake.x_pos, snake.y_pos]);
+        snake.body.shift();
       }
-      // Changes snake velocity
+      // Changes snake velocity on key down
       function turn() {
-        let up = (38 in keys || 87 in keys)
-        let down = (40 in keys || 83 in keys)
-        let left = (37 in keys || 65 in keys)
-        let right = (39 in keys || 68 in keys)
+        let up = (38 in keys || 87 in keys);
+        let down = (40 in keys || 83 in keys);
+        let left = (37 in keys || 65 in keys);
+        let right = (39 in keys || 68 in keys);
         
-        if(!inGame) {
-          inGame = true
-        }
-        if(up && snake.vel[1] !== -1) {
-          snake.vel = [0, 1]
-        }
-        else if(down && snake.vel[1] !== 1) {
-          snake.vel = [0, -1]
-        }
-        else if(left && snake.vel[0] !== 1) {
-          snake.vel = [-1, 0]
-        }
-        else if(right && snake.vel[0] !== -1) {
-          snake.vel = [1, 0]
-        }
+        if(!inGame)
+          inGame = true;
+        if(up && snake.vel[1] !== -1)
+          snake.vel = [0, 1];
+        else if(down && snake.vel[1] !== 1)
+          snake.vel = [0, -1];
+        else if(left && snake.vel[0] !== 1)
+          snake.vel = [-1, 0];
+        else if(right && snake.vel[0] !== -1)
+          snake.vel = [1, 0];
       }
       
       // Listens for keypresses
@@ -267,10 +262,10 @@
         delete keys[e.keyCode]
       }, false)
 
-
     </script>
   </head>
   <body>
+    <!-- HEADER -->
     <div id="menu">
       <h3>Snake Game</h3>
       <button id="playButton" onclick="play()">Play</button>
@@ -278,6 +273,7 @@
       <button id="pauseButton" onclick="pause()" style="display:none">Pause</button>
       <button id="settingsButton" onclick="openSettings()">Settings</button>
       <b>Score: <span id="score"></span></b>
+      <!-- SETTINGS MENU -->
       <div id="settingsMenu" style="display:none">
           <p>Board Size</p>
           <input id="boardSize" type="text" value="20"> <i>Recommended: 20-40</i>
@@ -285,6 +281,7 @@
           <input id="updatesPerSecond" type="text" value="10"> <i>Recommended: 10-20</i>
       </div>
     </div>
+    <!-- GAME AREA -->
     <div id="grid">
       <table id="board">
 

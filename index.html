@@ -3,6 +3,7 @@
   <head>
     <title> RNG </title>
     <script>
+      // Rolls sets of dice, returning values and total
       function rollDice() {
         var count = document.getElementById("diceCount").value;
         var sides = document.getElementById("diceSides").value;
@@ -16,7 +17,6 @@
         output.innerHTML = "Rolled a ";
         for(var i = 0; i < count; i++) {
           stack[i] = Math.floor(Math.random() * sides) + 1;
-          // console.log(stack[i]);
           output.innerHTML += stack[i];
           if(i < count - 1)
             output.innerHTML += ", ";
@@ -30,6 +30,7 @@
         }
       }
       
+      // Converts face cards from numbers to text
       function convertFace(n) {
         switch(n) {
           case 1 :
@@ -44,6 +45,7 @@
             return n
         }
       }
+      // Converts suits from numbers to text
       function convertSuit(n) {
         switch(n) {
           case 0:
@@ -56,6 +58,7 @@
             return "Hearts";
         }
       }
+      // Draws cards randomly from a 52 card deck, with replacement
       function drawCards() {
         var count = document.getElementById("cardCount").value;
         var output = document.getElementById("output");
@@ -76,7 +79,9 @@
     </script>
   </head>
   <body>
+    <!-- LINK TO SNAKE GAME -->
     <h1><a href="snake.html" style="text-decoration: none">!</a></h1>
+    <!-- INPUT AREA -->
     <h1> Dice Roll </h1>
     <p># of Dice:</p>
     <input type="text" id="diceCount" value="1">
@@ -87,6 +92,7 @@
     <p># of Cards:</p>
     <input type="text" id="cardCount" value="1">
     <button onclick="drawCards()">Draw</button>
+    <!-- RESULTS AREA -->
     <h2> Results </h2>
     <p id="output"></p>
   </body>

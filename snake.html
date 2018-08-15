@@ -153,11 +153,11 @@
           board += '<tr>';
           for(let x = 0; x < grid.boardSize; x++) {
             if(x === 1 && y === 1) {
-              board += '<td class="cell" id="' + x + ',' + y + '" style="height:' + 100/grid.boardSize + '%"><div class="snake"></div></td>';
+              board += '<td class="cell" id="' + x + ',' + y + '"style="height:' + Math.floor(100/grid.boardSize) + '%"><div class="snake"></div></td>';
               snake.body.push([x, y]);
             }
             else
-              board += '<td class="cell" id="' + x + ',' + y + '" style="height:' + 100/grid.boardSize + '%"><div class="empty"></div></td>';
+              board += '<td class="cell" id="' + x + ',' + y + '"style="height:' + Math.floor(100/grid.boardSize) + '%"><div class="empty"></div></td>';
           }
           board += '</tr>';
         }

@@ -9,10 +9,8 @@
         margin: 0;
         padding: 2px;
       }
-      button {
-        margin-bottom: 5px;
-      }
       #board {
+        margin-top: 1vmin;
         margin-left: 10vmin;
         width: 80vmin;
         height: 80vmin;
@@ -23,7 +21,7 @@
       }
       .snake, .apple, .empty {
         margin: 0;
-        width: 100%;
+        width: 100%; 
         height: 100%;
       }
       .empty {
@@ -31,15 +29,18 @@
       }
     </style>
     <script>
-      
       // Global variables for handling game state
-      let inGame = false;
-      let inSettings = false;
-      let inHelp = false;
+      let inGame = inSettings = inHelp = false;
       let paused = true;
       let updating;
       let keys = {};
       let score = 0;
+
+      // Limit settings
+      const MINBOARDSIZE = 2;
+      const MAXBOARDSIZE = 100;
+      const MINUPDATESPEED = 1;
+      const MAXUPDATESPEED = 100;
 
       // Objects
       let snake = {
@@ -89,10 +90,28 @@
           document.getElementById("settingsButton").innerHTML = 'Settings';
         }
       }
+      // Checks if settings are valid and within limits
+      function checkSettings() {
+        let inputBoardSize = document.getElementById("boardSize")
+        let inputUpdates = document.getElementById("updatesPerSecond")
+        if(!Number.isInteger(parseInt(inputBoardSize.value)))
+          inputBoardSize.value = 20;
+        if(!Number.isInteger(parseInt(inputUpdates.value)))
+          inputUpdates.value = 10;
+        if(inputBoardSize.value > MAXBOARDSIZE)
+          inputBoardSize.value = MAXBOARDSIZE;
+        else if(inputBoardSize.value < MINBOARDSIZE)
+          inputBoardSize.value = MINBOARDSIZE;
+        if(inputUpdates.value > MAXUPDATESPEED)
+          inputUpdates.value = MAXUPDATESPEED;
+        else if(inputUpdates.value < MINUPDATESPEED)
+          inputUpdates.value = MINUPDATESPEED;
+      }
+      // Update game board according to settings
       function updateSettings() {
         // Sets table cell borders according to setting
         let cells = document.getElementsByTagName("td");
-        
+        let cellPadding = ''
         for(let c = 0; c < cells.length; c++) {
           if(document.getElementById("cellBorders").checked)
             cells[c].style.border = '1px solid grey';
@@ -134,11 +153,11 @@
           board += '<tr>';
           for(let x = 0; x < grid.boardSize; x++) {
             if(x === 1 && y === 1) {
-              board += '<td class="cell" id="' + x + ',' + y + '"><div class="snake"></div></td>';
+              board += '<td class="cell" id="' + x + ',' + y + '" style="height:' + 100/grid.boardSize + '%"><div class="snake"></div></td>';
               snake.body.push([x, y]);
             }
             else
-              board += '<td class="cell" id="' + x + ',' + y + '"><div class="empty"></div></td>';
+              board += '<td class="cell" id="' + x + ',' + y + '" style="height:' + 100/grid.boardSize + '%"><div class="empty"></div></td>';
           }
           board += '</tr>';
         }
@@ -334,12 +353,14 @@
       <div id="settingsMenu" style="display:none">
         <h4>Gameplay</h4>
           <p>Board Size</p>
-            <input id="boardSize" type="text" value="20"> <i>Recommended: 20-40</i>
+            <input id="boardSize" type="text" value="20" onchange="checkSettings()">
+            <i>Recommended: 20-40</i>
             <p>Cell Borders? <input id="cellBorders" type="checkbox">
               <i>Recommended: Off</i>
             </p>
           <p>Updates Per Second</p>
-            <input id="updatesPerSecond" type="text" value="10"> <i>Recommended: 10-20</i>
+            <input id="updatesPerSecond" type="text" value="10" onchange="checkSettings()"> 
+            <i>Recommended: 10-20</i>
         <h4>Cosmetic</h4>
           <p>Snake Color</p>
             <input type="radio" name="snakeColor" value="green" checked>Green  
@@ -357,9 +378,7 @@
     </div>
     <!-- GAME AREA -->
     <div id="grid">
-      <table id="board">
-
-      </table>
+      <table id="board"></table>
     </div>
   </body>
 </html>

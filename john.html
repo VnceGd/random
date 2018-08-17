@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<!-- Vincent Nguyen 2018 -->
+<!-- Mini-celebration of John Nguyen's 23rd birthday; practice with SVG -->
+<html>
+  <head>
+    <title> JN23 </title>
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      .box {
+        height: 50vmin;
+      }
+      .playArea {
+        height: 50vmin;
+      }
+      #boxJ, #boxN {
+        margin: 0;
+        padding: 1vmin;
+        width: 46vmin;
+        height: 100%;
+        float: left;
+      }
+      .bigJ, .bigN {
+        transition: .2s;
+      }
+      .polyFill {
+        fill: black;
+      }
+      .polyBlank {
+        fill: white;
+      }
+    </style>
+    <script>
+      let age = 0
+      let red = 100
+      let radius = 20
+      // Increase button size until 23, while getting redder
+      function grow() {
+        let bigButton = document.getElementById("bigButton")
+        if(age < 23) {
+          age++
+          radius++
+          red += 20
+        }
+        else // Display 'Congratulations!' on reaching 23
+          document.getElementById("congratText").innerHTML = "Congratulations!"
+        document.getElementById("age").innerHTML = age
+        bigButton.setAttribute("r", radius)
+        bigButton.setAttribute("fill", "rgba(" + red+ ", 100, 100, 100)")
+      }
+    </script>
+  </head>
+  <body>
+    <div class="box">
+      <div id="boxJ">
+        <!-- Letter J -->
+        <svg width="100%" height="100%" viewBox="0 0 100 100">
+          <g>
+            <circle class="bigJ" cx="50" cy="50" r="30" fill="white" stroke="black" stroke-width="30"></circle>
+            <polygon class="polyFill" points="65,7.5 95,0 95,50"></polygon>
+            <rect width="65" height="50" fill="white"></rect>
+          </g>
+        </svg>
+      </div>
+      <div id="boxN">
+        <!-- Letter N -->
+        <svg width="100%" height="100%" viewBox="0 0 100 100">
+          <g>
+            <circle class="bigN" cx="50" cy="50" r="30" fill="black" stroke="black" stroke-width="30"></circle>
+            <polygon class="polyFill" points="5,95 30,90.5 5,50"></polygon>
+            <polygon class="polyFill" points="95,5 70,9.5 95,50"></polygon>
+            <polygon class="polyBlank" points="30,9 50,0 70,9 70,50"></polygon>
+            <polygon class="polyBlank" points="30,91 50,100 70,91 30,50"></polygon>
+          </g>
+        </svg>
+      </div>
+    </div>
+    <div class="playArea">
+      <svg width="100%" height="100%" viewBox="0 0 100 100">
+        <g onclick="grow()" style="cursor: pointer;">
+            <circle id="bigButton" cx="50" cy="50" r="20" fill="grey"></circle>
+            <text id="age" fill="white" font-size="23" font-family="Verdana" x="50" y="52.5" text-anchor="middle" alignment-baseline="middle">0</text>
+        </g>
+        <text id="congratText" fill="black" font-size="23" font-weight="semi-bold" font-family="Verdana" x="50" y="90" text-anchor="middle"></text>
+      </svg>
+    </div>
+  </body>
+</html>

@@ -25,30 +25,54 @@
       .bigJ, .bigN {
         transition: .2s;
       }
-      .polyFill {
+      #bigButton {
+        transition: .2s;
+      }
+      .polyFillJ, .polyFillN {
+        transition: .2s;
         fill: black;
       }
       .polyBlank {
         fill: white;
+      }
+      #congratText {
+        transition: .2s;
       }
     </style>
     <script>
       let age = 0
       let red = 100
       let radius = 20
+      let randomizing
       // Increase button size until 23, while getting redder
       function grow() {
         let bigButton = document.getElementById("bigButton")
         if(age < 23) {
           age++
           radius++
-          red += 20
-        }
-        else // Display 'Congratulations!' on reaching 23
-          document.getElementById("congratText").innerHTML = "Congratulations!"
-        document.getElementById("age").innerHTML = age
+          red += 7
+          document.getElementById("age").innerHTML = age
         bigButton.setAttribute("r", radius)
-        bigButton.setAttribute("fill", "rgba(" + red+ ", 100, 100, 100)")
+        bigButton.setAttribute("fill", "rgb(" + red+ ", 100, 100)")
+        }
+        else { // Display 'Congratulations!' on reaching 23
+          document.getElementById("congratText").innerHTML = "Congratulations!"
+          clearInterval(randomizing)
+          randomizing = setInterval(randomize, 500)
+        }
+      }
+      // Randomizes the colors of 'JN' and 'Congratulations!' text
+      function randomize() {
+        let colorJ = "rgb(" + Math.random() * 200 + "," + Math.random() * 200 + "," + Math.random() * 200 + ")"
+        let colorN = "rgb(" + Math.random() * 200 + "," + Math.random() * 200 + "," + Math.random() * 200 + ")"
+        document.getElementsByClassName("bigJ")[0].setAttribute("stroke", colorJ)
+        document.getElementsByClassName("polyFillJ")[0].style.fill = colorJ
+        document.getElementsByClassName("bigN")[0].setAttribute("fill", colorN)
+        document.getElementsByClassName("bigN")[0].setAttribute("stroke", colorN)
+        document.getElementsByClassName("polyFillN")[0].style.fill = colorN
+        document.getElementsByClassName("polyFillN")[1].style.fill = colorN
+        document.getElementById("congratText").setAttribute("fill", "rgb(" + Math.random() * 200 + "," + Math.random() * 200 + "," + Math.random() * 200 + ")")
+        document.getElementById("bigButton").setAttribute("r", Math.random() * 5 + 40)
       }
     </script>
   </head>
@@ -59,7 +83,7 @@
         <svg width="100%" height="100%" viewBox="0 0 100 100">
           <g>
             <circle class="bigJ" cx="50" cy="50" r="30" fill="white" stroke="black" stroke-width="30"></circle>
-            <polygon class="polyFill" points="65,7.5 95,0 95,50"></polygon>
+            <polygon class="polyFillJ" points="65,7.5 95,0 95,50"></polygon>
             <rect width="65" height="50" fill="white"></rect>
           </g>
         </svg>
@@ -69,8 +93,8 @@
         <svg width="100%" height="100%" viewBox="0 0 100 100">
           <g>
             <circle class="bigN" cx="50" cy="50" r="30" fill="black" stroke="black" stroke-width="30"></circle>
-            <polygon class="polyFill" points="5,95 30,90.5 5,50"></polygon>
-            <polygon class="polyFill" points="95,5 70,9.5 95,50"></polygon>
+            <polygon class="polyFillN" points="5,95 30,90.5 5,50"></polygon>
+            <polygon class="polyFillN" points="95,5 70,9.5 95,50"></polygon>
             <polygon class="polyBlank" points="30,9 50,0 70,9 70,50"></polygon>
             <polygon class="polyBlank" points="30,91 50,100 70,91 30,50"></polygon>
           </g>

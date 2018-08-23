@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Yahtzee</title>
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+      }
+      a { 
+        text-decoration: none;
+      }
+      button {
+        font-weight: bold;
+        background-color: lightgrey;
+        cursor: pointer;
+      }
+      table, tr, th, td {
+        border: 1px solid black;
+        border-collapse: collapse;
+      }
+      table {
+        width: 80vmin;
+      }
+      .category {
+        margin: 0;
+        padding: 1vmin;
+        border: none;
+        width: 100%;
+        cursor: pointer;
+        background-color: floralwhite;
+      }
+      
+      .nav, .scoreboard, .playArea{
+        padding-left: 10vmin;
+        width: 80vmin;
+      }
+      .dice {
+        margin-bottom: 1vmin;
+        /* width: 80vmin; */
+        height: 15vmin;
+      }
+      .die {
+        margin: 0;
+        font-size: 10vmin;
+        margin: 1%;
+        width: 18%;
+        height: 100%;
+        float: left;
+      }
+      #rollButton {
+        font-size: 5vmin;
+        width: 80vmin;
+        height: 10vmin;
+      }
+      #yahtzeeText {
+        width: 80vmin;
+        text-align: center;
+        text-anchor: middle;
+        font-size: 12vmin;
+      }
+    </style>
+    <script>
+      const MAXROLLS = 3;
+      const MAXROUNDS = 13;
+
+      let rolling;
+      let selected = [1, 1, 1, 1, 1];
+      let roll = round = 1;
+      let upperTotal = lowerTotal = 0;
+      let upperBonus = false;
+
+      // Randomly generate numbers 1-6 for selected array
+      function animateDice() {
+        for(let n = 0; n < 5; n++) {
+          if(document.getElementById("die" + n).style.backgroundColor === "lightgrey") {
+            selected[n] = Math.floor(Math.random() * 6 + 1);
+            document.getElementById("die" + n).innerHTML = selected[n];
+          }
+        }
+      }
+      // Stops animateDice() and updates game
+      function clearAnimateDice() {
+        clearInterval(rolling);
+        for(let n = 0; n < 5; n++) {
+          document.getElementById("die" + n).style.backgroundColor = "lightgrey";
+        }
+        if(roll < 3)
+          document.getElementById("rollButton").disabled = false;
+        roll ++;
+        updateText();
+        updateBoard();
+      }
+      // Start animateDice() then call clearAnimateDice() after 1 second
+      function rollDice() {
+        document.getElementById("rollButton").disabled = true;
+        resetBoard();
+        rolling = setInterval(animateDice, 50);
+        setTimeout(clearAnimateDice, 1000);
+      }
+      
+      // Check if upper section categories playable
+      function checkUpper(n) {
+        for(let i = 0; i < 5; i++) {
+          if(selected[i] === n) {
+            return n
+          }
+        }
+      }
+      // Check for a small or large straight
+      function checkStraight() {
+        let sorted = selected.filter(function(item, pos) {
+          return selected.indexOf(item) == pos;
+        })
+        if(sorted.length < 4)
+          return
+
+        let largeStraights = [[1, 2, 3, 4, 5], [2, 3, 4, 5, 6]];
+        let smallStraights = [[1, 2, 3, 4], [2, 3, 4, 5], [3, 4, 5, 6]];
+
+        let matches;
+        for(let i = 0; i < largeStraights.length; i++) {
+          matches = 0;
+          for(let j = 0; j < sorted.length; j++) {
+            if(largeStraights[i].indexOf(sorted[j]) != -1)
+              matches++;
+          }
+          if(matches === 5)
+            return "lgStraight";
+        }
+        for(let i = 0; i < smallStraights.length; i++) {
+          matches = 0;
+          for(let j = 0; j < sorted.length; j++) {
+            if(smallStraights[i].indexOf(sorted[j]) != -1)
+              matches++;
+          }
+          if(matches === 4)
+            return "smStraight";
+        }
+      }
+      // Check for 3, 4, or 5 of a kind or a Full House
+      function checkOfKind() {
+        let sorted = selected.slice();
+        sorted.sort();
+        
+        let current = null;
+        let count = pair = 0;
+        for(let i = 0; i < 5; i++) {
+          if(sorted[i] !== current) {
+            if(count === 4) {
+              return "4kind";
+            }
+            else if(count === 3) {
+              if(pair === 2)
+                return "fullHouse";
+              else if(i === 4)
+                return "3kind";
+              else
+                pair = 3
+            }
+            else if(count === 2) {
+              if(pair === 3)
+                return "fullHouse";
+              else
+                pair = 2;
+            }
+            current = sorted[i];
+            count = 1;
+          }
+          else {
+            count++;
+          }
+        }
+        if(count === 5)
+          return "yahtzee";
+        else if(count === 4)
+          return "4kind";
+        else if(count === 3) {
+          if(pair === 2)
+            return "fullHouse";
+          else
+            return "3kind";
+        }
+        else if(count === 2) {
+          if(pair === 3)
+            return "fullHouse";
+        }
+      }
+      // Disables categories already scored
+      function updateBoard() {
+        if(document.getElementById("acesScore").innerHTML !== "")
+          document.getElementById("aces").disabled = true;
+        else 
+          document.getElementById("aces").disabled = false;
+        if(document.getElementById("twosScore").innerHTML !== "")
+          document.getElementById("twos").disabled = true;
+        else 
+          document.getElementById("twos").disabled = false;
+        if(document.getElementById("threesScore").innerHTML !== "")
+          document.getElementById("threes").disabled = true;
+        else 
+          document.getElementById("threes").disabled = false;
+        if(document.getElementById("foursScore").innerHTML !== "")
+          document.getElementById("fours").disabled = true;
+        else 
+          document.getElementById("fours").disabled = false;
+        if(document.getElementById("fivesScore").innerHTML !== "")
+          document.getElementById("fives").disabled = true;
+        else 
+          document.getElementById("fives").disabled = false;
+        if(document.getElementById("sixesScore").innerHTML !== "")
+          document.getElementById("sixes").disabled = true;
+        else 
+          document.getElementById("sixes").disabled = false;
+        if(document.getElementById("3kindScore").innerHTML !== "")
+          document.getElementById("3kind").disabled = true;
+        else 
+          document.getElementById("3kind").disabled = false;
+        if(document.getElementById("4kindScore").innerHTML !== "")
+          document.getElementById("4kind").disabled = true;
+        else 
+          document.getElementById("4kind").disabled = false;
+        if(document.getElementById("fullHouseScore").innerHTML !== "")
+          document.getElementById("fullHouse").disabled = true;
+        else 
+          document.getElementById("fullHouse").disabled = false;
+        if(document.getElementById("smStraightScore").innerHTML !== "")
+          document.getElementById("smStraight").disabled = true;
+        else 
+          document.getElementById("smStraight").disabled = false;
+        if(document.getElementById("lgStraightScore").innerHTML !== "")
+          document.getElementById("lgStraight").disabled = true;
+        else 
+          document.getElementById("lgStraight").disabled = false;
+        if(document.getElementById("yahtzeeScore").innerHTML !== "")
+          document.getElementById("yahtzee").disabled = true;
+        else 
+          document.getElementById("yahtzee").disabled = false;          
+        if(document.getElementById("chanceScore").innerHTML !== "")
+          document.getElementById("chance").disabled = true;
+        else 
+          document.getElementById("chance").disabled = false;
+      }
+      // Reset board buttons to disabled
+      function resetBoard() {
+        document.getElementById("aces").disabled       = 
+        document.getElementById("twos").disabled       = 
+        document.getElementById("threes").disabled     =
+        document.getElementById("fours").disabled      = 
+        document.getElementById("fives").disabled      = 
+        document.getElementById("sixes").disabled      = 
+        document.getElementById("3kind").disabled      = 
+        document.getElementById("4kind").disabled      = 
+        document.getElementById("fullHouse").disabled  = 
+        document.getElementById("smStraight").disabled = 
+        document.getElementById("lgStraight").disabled = 
+        document.getElementById("yahtzee").disabled    =
+        document.getElementById("chance").disabled     = true;
+      }
+      // Update roll, round, and totals
+      function updateText() {
+        if(roll > MAXROLLS)
+          document.getElementById("rollNum").innerHTML = MAXROLLS;
+        else
+          document.getElementById("rollNum").innerHTML = roll;
+        if(round > MAXROUNDS)
+          document.getElementById("roundNum").innerHTML = MAXROUNDS;
+        else
+          document.getElementById("roundNum").innerHTML = round;
+        
+        document.getElementById("upperTotal").innerHTML = upperTotal;
+        document.getElementById("lowerTotal").innerHTML = lowerTotal;
+        if(upperTotal > 62 && !upperBonus) {
+          upperBonus = true;
+          upperTotal += 35;
+          document.getElementById("upperBonus").innerHTML = 35;
+        }
+        document.getElementById("grandTotal").innerHTML = upperTotal + lowerTotal;
+      }
+
+      // Scores dice for the category chosen
+      function playCategory(id) {
+        let total = 0;
+        let straightCheck = checkStraight();
+        let kindCheck = checkOfKind();
+
+        switch(id) {
+          case "aces":
+            for(let i = 0; i < 5; i++) {
+              if(selected[i] === 1)
+                total += selected[i];
+            }
+            upperTotal += total;
+            document.getElementById("acesScore").innerHTML = total;
+            break;
+          case "twos":
+            for(let i = 0; i < 5; i++) {
+              if(selected[i] === 2)
+                total += selected[i];
+            }
+            upperTotal += total;
+            document.getElementById("twosScore").innerHTML = total;
+            break;
+          case "threes":
+            for(let i = 0; i < 5; i++) {
+              if(selected[i] === 3)
+                total += selected[i];
+            }
+            upperTotal += total;
+            document.getElementById("threesScore").innerHTML = total;
+            break;
+          case "fours":
+            for(let i = 0; i < 5; i++) {
+              if(selected[i] === 4)
+                total += selected[i];
+            }
+            upperTotal += total;
+            document.getElementById("foursScore").innerHTML = total;
+            break;
+          case "fives":
+            for(let i = 0; i < 5; i++) {
+              if(selected[i] === 5)
+                total += selected[i];
+            }
+            upperTotal += total;
+            document.getElementById("fivesScore").innerHTML = total;
+            break;
+          case "sixes":
+            for(let i = 0; i < 5; i++) {
+              if(selected[i] === 6)
+                total += selected[i];
+            }
+            upperTotal += total;
+            document.getElementById("sixesScore").innerHTML = total;
+            break;
+          case "3kind":
+            if(kindCheck !== "fullHouse" && kindCheck !== "3kind")
+              total = 0;
+            else {
+              for(let i = 0; i < 5; i++)
+                total += selected[i];
+            }
+            lowerTotal += total;
+            document.getElementById("3kindScore").innerHTML = total;
+            break;
+          case "4kind":
+            if(kindCheck !== "4kind")
+              total = 0;
+            else {
+              for(let i = 0; i < 5; i++)
+                total += selected[i];
+            }
+            lowerTotal += total;
+            document.getElementById("4kindScore").innerHTML = total;
+            break;
+          case "fullHouse":
+            if(kindCheck !== "fullHouse")
+              total = 0;
+            else
+              total = 25;
+            lowerTotal += total;
+            document.getElementById("fullHouseScore").innerHTML = total;
+            break;
+          case "smStraight":
+            if(straightCheck !== "smStraight" && straightCheck !== "lgStraight")
+              total = 0;
+            else
+              total = 30;
+            lowerTotal += total;
+            document.getElementById("smStraightScore").innerHTML = total;
+            break;
+          case "lgStraight":
+            if(straightCheck !== "lgStraight")
+              total = 0;
+            else
+              total = 40;
+            lowerTotal += total;
+            document.getElementById("lgStraightScore").innerHTML = total;
+            break;
+          case "yahtzee":
+            if(kindCheck !== "yahtzee")
+              total = 0;
+            else {
+              total = 50;
+              document.getElementById("yahtzeeText").innerHTML = "YAHTZEE!";
+              setTimeout(function clearYahtzee(){document.getElementById("yahtzeeText").innerHTML = "";}, 3000);
+            }
+            lowerTotal += total;
+            document.getElementById("yahtzeeScore").innerHTML = total;
+            
+            break;
+          case "chance":
+            for(let i = 0; i < 5; i++) {
+              total += selected[i];
+            }
+            lowerTotal += total;
+            document.getElementById("chanceScore").innerHTML = total;
+            break;
+          default:
+            break;
+        }
+        roll = 1;
+        round++;
+        if(round > MAXROUNDS)
+          alert("Game Finished");
+        document.getElementById("rollButton").disabled = false;
+        updateText();
+        resetBoard();
+      }
+      function lockIn(n) {
+        if(roll > 3 || roll === 1)
+          return
+        if(document.getElementById("die" + n).style.backgroundColor === "lightgrey") {
+          document.getElementById("die" + n).style.backgroundColor = "lightcoral";
+          // selected[n] = 0;
+        }
+        else {
+          document.getElementById("die" + n).style.backgroundColor = "lightgrey";
+          selected[n] = parseInt(document.getElementById("die" + n).innerHTML);
+        }
+      }
+      function setDice() {
+        for(let i = 0; i < 5; i++)
+          document.getElementById("die" + i).style.backgroundColor = "lightgrey";
+      }
+
+      function toggleHelp() {
+        let helpMenu = document.getElementById("helpMenu");
+        if(helpMenu.style.display === "none") {
+          helpMenu.style.display = "inline";
+        }
+        else
+          helpMenu.style.display = "none";
+      }
+    </script>
+  </head>
+  <body onload="setDice()">
+    <div class="nav">
+      <h3><a href="index.html">&#9668;</a> Yahtzee</h3>
+      <button id="helpButton" onclick="toggleHelp()">How to play</button>
+      <div id="helpMenu" style="display: none">
+        <p>
+          <a href="https://en.wikipedia.org/wiki/Yahtzee#Rules">Rules (Wikipedia)</a> <br>
+          After the first roll, click the die (numbered button) to lock it in. <br>
+          The grey dice will roll when you press 'Roll'. <br>
+          Click a category to score your dice against it.
+          <hr>
+        </p>
+      </div>
+      <p>
+        <b>Roll#</b> <span id="rollNum">1</span>
+        <b>Round#</b> <span id="roundNum">1</span>
+      </p>
+    </div>
+    <div class="scoreboard">
+      <table>
+        <tr>
+          <th>Upper Section</th>
+          <td class="points">Score</td>
+          <th>Lower Section</th>
+          <td class="points">Score</td>
+        </tr>
+        <tr>
+          <td> <button class="category" id="aces" onclick="playCategory('aces')" disabled>Aces</button></td>
+          <td class="points" id="acesScore"></td>
+          <td> <button class="category" id="3kind" onclick="playCategory('3kind')" disabled>3 of a Kind</button></td>
+          <td class="points" id="3kindScore"></td>
+        </tr>
+        <tr>
+          <td> <button class="category" id="twos" onclick="playCategory('twos')" disabled>Twos</button></td>
+          <td class="points" id="twosScore"></td>
+          <td> <button class="category" id="4kind" onclick="playCategory('4kind')" disabled>4 of a Kind</button></td>
+          <td class="points" id="4kindScore"></td>
+        </tr>
+        <tr>
+          <td> <button class="category" id="threes" onclick="playCategory('threes')" disabled>Threes</button></td>
+          <td class="points" id="threesScore"></td>
+          <td> <button class="category" id="fullHouse" onclick="playCategory('fullHouse')" disabled>Full House</button></td>
+          <td class="points" id="fullHouseScore"></td>
+        </tr>
+        <tr>
+            <td> <button class="category" id="fours" onclick="playCategory('fours')" disabled>Fours</button></td>
+          <td class="points" id="foursScore"></td>
+          <td> <button class="category" id="smStraight" onclick="playCategory('smStraight')" disabled>Small Straight</button></td>
+          <td class="points" id="smStraightScore"></td>
+        </tr>
+        <tr>
+          <td> <button class="category" id="fives" onclick="playCategory('fives')" disabled>Fives</button></td>
+          <td class="points" id="fivesScore"></td>
+          <td> <button class="category" id="lgStraight" onclick="playCategory('lgStraight')" disabled>Large Straight</button></td>
+          <td class="points" id="lgStraightScore"></td>
+        </tr>
+        <tr>
+          <td> <button class="category" id="sixes" onclick="playCategory('sixes')" disabled>Sixes</button></td>
+          <td class="points" id="sixesScore"></td>
+          <td> <button class="category" id="yahtzee" onclick="playCategory('yahtzee')" disabled>Yahtzee</button></td>
+          <td class="points" id="yahtzeeScore"></td>
+        </tr>
+        <tr>
+          <td>Bonus</td>
+          <td class="points" id="upperBonus"></td>
+          <td> <button class="category" id="chance" onclick="playCategory('chance')" disabled>Chance</button></td>
+          <td class="points" id="chanceScore"></td>
+        </tr>
+        <tr>
+          <td>Upper Total</td>
+          <td class="points" id="upperTotal"></td>
+          <td>Lower Total</td>
+          <td class="points" id="lowerTotal"></td>
+        </tr>
+      </table>
+      <p>Grand Total: <span id="grandTotal"></span></p>
+    </div>
+    <div class="playArea">
+      <div class="dice">
+        <button class="die" id="die0" onclick="lockIn(0)">1</button>
+        <button class="die" id="die1" onclick="lockIn(1)">1</button>
+        <button class="die" id="die2" onclick="lockIn(2)">1</button>
+        <button class="die" id="die3" onclick="lockIn(3)">1</button>
+        <button class="die" id="die4" onclick="lockIn(4)">1</button>
+      </div>
+      <button id="rollButton" onclick="rollDice()">Roll</button>
+      <p id="yahtzeeText"></p>
+    </div>
+  </body>
+</html>

@@ -9,11 +9,8 @@
         margin: 0;
         padding: 2px;
       }
-      #board {
-        margin-top: 1vmin;
-        margin-left: 10vmin;
-        width: 80vmin;
-        height: 80vmin;
+      a {
+        text-decoration: none;
       }
       table, tr, td {
         border-collapse: collapse;
@@ -26,6 +23,12 @@
       }
       .empty {
         background-color: lightgray;
+      }
+      #board {
+        margin-top: 1vmin;
+        margin-left: 10vmin;
+        width: 80vmin;
+        height: 80vmin;
       }
     </style>
     <script>
@@ -334,7 +337,7 @@
   <body>
     <!-- HEADER -->
     <div id="menu">
-      <h3>Snake Game</h3>
+      <h3><a href="index.html">&#9668;</a> Snake Game</h3>
       <button id="playButton" onclick="play()">Play</button>
       <button id="resumeButton" onclick="resume()" style="display:none">Resume</button>
       <button id="pauseButton" onclick="pause()" style="display:none">Pause</button>

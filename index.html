@@ -2,6 +2,11 @@
 <html>
   <head>
     <title> RNG </title>
+    <style>
+      a {
+        text-decoration: none;
+      }
+    </style>
     <script>
       // Rolls sets of dice, returning values and total
       function rollDice() {
@@ -79,16 +84,19 @@
     </script>
   </head>
   <body>
-    <!-- LINK TO SNAKE GAME -->
-    <h1><a href="snake.html" style="text-decoration: none">!</a></h1>
+    <!-- LINKS -->
+    <h1>Games</h1>
+    <a href="snake.html"><button>Snake</button></a>
+    <a href="yahtzee.html"><button>Yahtzee</button></a>
+    
     <!-- INPUT AREA -->
-    <h1> Dice Roll </h1>
+    <h1>Dice Roll</h1>
     <p># of Dice:</p>
     <input type="text" id="diceCount" value="1">
     <p># of Sides:</p>
     <input type="text" id="diceSides" value="6">
     <button onclick="rollDice()">Roll</button>
-    <h1> Card Picker </h1>
+    <h1>Card Picker</h1>
     <p># of Cards:</p>
     <input type="text" id="cardCount" value="1">
     <button onclick="drawCards()">Draw</button>

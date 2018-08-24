@@ -1,44 +1,77 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta charset="UTF-8">
     <title>Yahtzee</title>
     <style>
       html, body {
         margin: 0;
         padding: 0;
+        font-family: Arial, Helvetica, sans-serif;
       }
       a { 
         text-decoration: none;
       }
+      table, tr, th, td {
+        margin: 0;
+        border-spacing: 0;
+        text-align: center;
+      }
+      table {
+        border: 0.5vmin solid black;
+        width: 80vmin;
+        border-radius: 1vmin;
+      }
+      td, th {
+        border-left: 1px solid black;
+        border-top: 1px solid black;
+      }
+      th {
+        border-top: none;
+      }
+      td:first-child, th:first-child {
+        border-left: none;
+      }
+      
+      .nav, .scoreboard, .playArea{
+        margin-left: 10vmin;
+        width: 80vmin;
+        position: relative;
+      }
+      .dice {
+        margin-bottom: 1vmin;
+        height: 15vmin;
+      }
       button {
+        box-sizing: border-box;
         font-weight: bold;
         background-color: lightgrey;
         cursor: pointer;
+        border: 0.5vmin solid lightgrey;
+        border-radius: 1vmin;
+        outline: none;
+        transition: .2s;
       }
-      table, tr, th, td {
-        border: 1px solid black;
-        border-collapse: collapse;
+      button:hover {
+        background-color: gainsboro;
+        transition: .2s;
       }
-      table {
-        width: 80vmin;
+      button:active {
+        border-color: dimgrey;
+        transition: .2s;
       }
       .category {
         margin: 0;
         padding: 1vmin;
         border: none;
         width: 100%;
+        height: 4vmin;
+        font-size: 2vmin;
         cursor: pointer;
         background-color: floralwhite;
       }
-      
-      .nav, .scoreboard, .playArea{
-        padding-left: 10vmin;
-        width: 80vmin;
-      }
-      .dice {
-        margin-bottom: 1vmin;
-        /* width: 80vmin; */
-        height: 15vmin;
+      .category:hover {
+        background-color: rgb(255,255,250);
       }
       .die {
         margin: 0;
@@ -53,11 +86,33 @@
         width: 80vmin;
         height: 10vmin;
       }
-      #yahtzeeText {
-        width: 80vmin;
+      #clearHSButton {
+        float: right;
+        color: white;
+        background-color: darkred;
+        border-color: darkred;
+      }
+      #yahtzeeBanner {
+        position: absolute;
+        top: 10vmin;
+        width: 100%;
+        height: 14vmin;
         text-align: center;
         text-anchor: middle;
         font-size: 12vmin;
+        color: white;
+        background-color: rgba(220, 20, 60, .7);
+        display: none;
+        z-index: 55;
+      }
+      #yahtzeeText {
+        margin: 0;
+      }
+      @media only screen and (max-width: 700px) {
+        .category {
+          font-size: 1em;
+          height: auto;
+        }
       }
     </style>
     <script>
@@ -68,7 +123,7 @@
       let selected = [1, 1, 1, 1, 1];
       let roll = round = 1;
       let upperTotal = lowerTotal = 0;
-      let upperBonus = false;
+      let upperBonus = joker = false;
 
       // Randomly generate numbers 1-6 for selected array
       function animateDice() {
@@ -98,15 +153,7 @@
         rolling = setInterval(animateDice, 50);
         setTimeout(clearAnimateDice, 1000);
       }
-      
-      // Check if upper section categories playable
-      function checkUpper(n) {
-        for(let i = 0; i < 5; i++) {
-          if(selected[i] === n) {
-            return n
-          }
-        }
-      }
+
       // Check for a small or large straight
       function checkStraight() {
         let sorted = selected.filter(function(item, pos) {
@@ -232,8 +279,17 @@
           document.getElementById("lgStraight").disabled = true;
         else 
           document.getElementById("lgStraight").disabled = false;
-        if(document.getElementById("yahtzeeScore").innerHTML !== "")
+        let yahtzeeScore = document.getElementById("yahtzeeScore");
+        if(yahtzeeScore.innerHTML !== "") {
           document.getElementById("yahtzee").disabled = true;
+          if(checkOfKind() === "yahtzee") {
+            document.getElementById("rollButton").disabled = true;
+            showYahtzeeText();
+            if(yahtzeeScore.innerHTML > 0)
+              yahtzeeScore.innerHTML = parseInt(yahtzeeScore.innerHTML) + 100;
+            joker = true;
+          }
+        }
         else 
           document.getElementById("yahtzee").disabled = false;          
         if(document.getElementById("chanceScore").innerHTML !== "")
@@ -277,12 +333,50 @@
         }
         document.getElementById("grandTotal").innerHTML = upperTotal + lowerTotal;
       }
+      function showYahtzeeText() {
+        let banner = document.getElementById("yahtzeeBanner");
+        let text = document.getElementById("yahtzeeText");
+        let animating;
+        let opacity = 0;
+        
+        function reverseAnimation() {
+          animating = setInterval(function() {animateBanner(true);}, 10);
+        }
+        function animateBanner(reverse) {
+          if(reverse) {
+            if(opacity <= 0) {
+              clearInterval(animating);
+              banner.style.display = "none";
+            }
+            else {
+              opacity -= 0.05;
+              banner.style.opacity = opacity;
+            }
+          }
+          else {
+            if(opacity >= 1) {
+              clearInterval(animating);
+            }
+            else {
+              opacity += 0.05;
+              banner.style.opacity = opacity;
+            }
+          }
+        }
+        animating = setInterval(function() {animateBanner(false);}, 10);
+        banner.style.display = "inline";
+        setTimeout(reverseAnimation, 2000);
+      }
 
       // Scores dice for the category chosen
       function playCategory(id) {
         let total = 0;
         let straightCheck = checkStraight();
         let kindCheck = checkOfKind();
+        
+        for(let n = 0; n < 5; n++) {
+          document.getElementById("die" + n).style.backgroundColor = "lightgrey";
+        }
 
         switch(id) {
           case "aces":
@@ -334,7 +428,7 @@
             document.getElementById("sixesScore").innerHTML = total;
             break;
           case "3kind":
-            if(kindCheck !== "fullHouse" && kindCheck !== "3kind")
+            if(kindCheck !== "fullHouse" && kindCheck !== "3kind" && kindCheck !== "4kind")
               total = 0;
             else {
               for(let i = 0; i < 5; i++)
@@ -354,7 +448,7 @@
             document.getElementById("4kindScore").innerHTML = total;
             break;
           case "fullHouse":
-            if(kindCheck !== "fullHouse")
+            if(kindCheck !== "fullHouse" && !joker)
               total = 0;
             else
               total = 25;
@@ -362,7 +456,7 @@
             document.getElementById("fullHouseScore").innerHTML = total;
             break;
           case "smStraight":
-            if(straightCheck !== "smStraight" && straightCheck !== "lgStraight")
+            if(straightCheck !== "smStraight" && straightCheck !== "lgStraight" && !joker)
               total = 0;
             else
               total = 30;
@@ -370,7 +464,7 @@
             document.getElementById("smStraightScore").innerHTML = total;
             break;
           case "lgStraight":
-            if(straightCheck !== "lgStraight")
+            if(straightCheck !== "lgStraight" && !joker)
               total = 0;
             else
               total = 40;
@@ -382,8 +476,7 @@
               total = 0;
             else {
               total = 50;
-              document.getElementById("yahtzeeText").innerHTML = "YAHTZEE!";
-              setTimeout(function clearYahtzee(){document.getElementById("yahtzeeText").innerHTML = "";}, 3000);
+              showYahtzeeText();
             }
             lowerTotal += total;
             document.getElementById("yahtzeeScore").innerHTML = total;
@@ -399,14 +492,21 @@
           default:
             break;
         }
-        roll = 1;
+        joker = false;
         round++;
-        if(round > MAXROUNDS)
-          alert("Game Finished");
-        document.getElementById("rollButton").disabled = false;
         updateText();
+        if(round > MAXROUNDS) {
+          setHighScore();
+          getHighScore();
+          alert("Game Finished");
+        }
+        else {
+          roll = 1;
+          document.getElementById("rollButton").disabled = false;
+        }
         resetBoard();
       }
+      // Select a die to keep (not roll) on the next roll
       function lockIn(n) {
         if(roll > 3 || roll === 1)
           return
@@ -419,11 +519,12 @@
           selected[n] = parseInt(document.getElementById("die" + n).innerHTML);
         }
       }
+      // Set background color of dice (for initial selected check)
       function setDice() {
         for(let i = 0; i < 5; i++)
           document.getElementById("die" + i).style.backgroundColor = "lightgrey";
       }
-
+      // Toggle help menu
       function toggleHelp() {
         let helpMenu = document.getElementById("helpMenu");
         if(helpMenu.style.display === "none") {
@@ -432,15 +533,52 @@
         else
           helpMenu.style.display = "none";
       }
+      // Get high score from local storage
+      function getHighScore() {
+        if(typeof(Storage) === "undefined") {
+          document.getElementById("highScore").innerHTML = "(Not Supported)";
+          return;
+        }
+        try {
+          let highScore = localStorage.getItem("yahtzeeHighScore");
+          if(highScore > 0)
+            document.getElementById("highScore").innerHTML = highScore;
+          else
+            document.getElementById("highScore").innerHTML = 0;
+          return highScore;
+        }
+        catch(e) {
+          document.getElementById("highScore").innerHTML = "(<a href='https://www.chromium.org/for-testers/bug-reporting-guidelines/uncaught-securityerror-failed-to-read-the-localstorage-property-from-window-access-is-denied-for-this-document' target='_blank'>Access denied</a>)";
+        }
+      }
+      // Set high score in local storage
+      function setHighScore() {
+        if(typeof(Storage) === "undefined")
+          return;
+        let grandTotal = document.getElementById("grandTotal").innerHTML;
+        if(grandTotal > getHighScore())
+          localStorage.setItem("yahtzeeHighScore", grandTotal);
+      }
+      // Remove the high score from local storage
+      function clearHighScore() {
+        if(typeof(Storage) === "undefined")
+          return;
+        if(confirm("Delete your high score?")) {
+          localStorage.removeItem("yahtzeeHighScore");
+          document.getElementById("highScore").innerHTML = 0;
+        }
+      }
     </script>
   </head>
-  <body onload="setDice()">
+  <body onload="setDice(); getHighScore();">
+    <!-- NAVIGATION MENU ------------------------------------------->
     <div class="nav">
       <h3><a href="index.html">&#9668;</a> Yahtzee</h3>
       <button id="helpButton" onclick="toggleHelp()">How to play</button>
+      <button id="clearHSButton" onclick="clearHighScore()">Clear High Score</button>
       <div id="helpMenu" style="display: none">
         <p>
-          <a href="https://en.wikipedia.org/wiki/Yahtzee#Rules">Rules (Wikipedia)</a> <br>
+          <a href="https://en.wikipedia.org/wiki/Yahtzee#Rules" target="_blank">Rules (Wikipedia)</a> <br>
           After the first roll, click the die (numbered button) to lock it in. <br>
           The grey dice will roll when you press 'Roll'. <br>
           Click a category to score your dice against it.
@@ -450,67 +588,73 @@
       <p>
         <b>Roll#</b> <span id="rollNum">1</span>
         <b>Round#</b> <span id="roundNum">1</span>
+        <b>/ High Score:</b> <span id="highScore">0</span>
       </p>
     </div>
+    <!-- SCOREBOARD ------------------------------------------------>
     <div class="scoreboard">
       <table>
         <tr>
           <th>Upper Section</th>
-          <td class="points">Score</td>
+          <th>Score</th>
           <th>Lower Section</th>
-          <td class="points">Score</td>
+          <th>Score</th>
         </tr>
         <tr>
           <td> <button class="category" id="aces" onclick="playCategory('aces')" disabled>Aces</button></td>
-          <td class="points" id="acesScore"></td>
+          <td id="acesScore"></td>
           <td> <button class="category" id="3kind" onclick="playCategory('3kind')" disabled>3 of a Kind</button></td>
-          <td class="points" id="3kindScore"></td>
+          <td id="3kindScore"></td>
         </tr>
         <tr>
           <td> <button class="category" id="twos" onclick="playCategory('twos')" disabled>Twos</button></td>
-          <td class="points" id="twosScore"></td>
+          <td id="twosScore"></td>
           <td> <button class="category" id="4kind" onclick="playCategory('4kind')" disabled>4 of a Kind</button></td>
-          <td class="points" id="4kindScore"></td>
+          <td id="4kindScore"></td>
         </tr>
         <tr>
           <td> <button class="category" id="threes" onclick="playCategory('threes')" disabled>Threes</button></td>
-          <td class="points" id="threesScore"></td>
+          <td id="threesScore"></td>
           <td> <button class="category" id="fullHouse" onclick="playCategory('fullHouse')" disabled>Full House</button></td>
-          <td class="points" id="fullHouseScore"></td>
+          <td id="fullHouseScore"></td>
         </tr>
         <tr>
-            <td> <button class="category" id="fours" onclick="playCategory('fours')" disabled>Fours</button></td>
-          <td class="points" id="foursScore"></td>
+          <td> <button class="category" id="fours" onclick="playCategory('fours')" disabled>Fours</button></td>
+          <td id="foursScore"></td>
           <td> <button class="category" id="smStraight" onclick="playCategory('smStraight')" disabled>Small Straight</button></td>
-          <td class="points" id="smStraightScore"></td>
+          <td id="smStraightScore"></td>
         </tr>
         <tr>
           <td> <button class="category" id="fives" onclick="playCategory('fives')" disabled>Fives</button></td>
-          <td class="points" id="fivesScore"></td>
+          <td id="fivesScore"></td>
           <td> <button class="category" id="lgStraight" onclick="playCategory('lgStraight')" disabled>Large Straight</button></td>
-          <td class="points" id="lgStraightScore"></td>
+          <td id="lgStraightScore"></td>
         </tr>
         <tr>
           <td> <button class="category" id="sixes" onclick="playCategory('sixes')" disabled>Sixes</button></td>
-          <td class="points" id="sixesScore"></td>
+          <td id="sixesScore"></td>
           <td> <button class="category" id="yahtzee" onclick="playCategory('yahtzee')" disabled>Yahtzee</button></td>
-          <td class="points" id="yahtzeeScore"></td>
+          <td id="yahtzeeScore"></td>
         </tr>
         <tr>
           <td>Bonus</td>
-          <td class="points" id="upperBonus"></td>
+          <td id="upperBonus"></td>
           <td> <button class="category" id="chance" onclick="playCategory('chance')" disabled>Chance</button></td>
-          <td class="points" id="chanceScore"></td>
+          <td id="chanceScore"></td>
         </tr>
         <tr>
           <td>Upper Total</td>
-          <td class="points" id="upperTotal"></td>
+          <td id="upperTotal"></td>
           <td>Lower Total</td>
-          <td class="points" id="lowerTotal"></td>
+          <td id="lowerTotal"></td>
         </tr>
       </table>
-      <p>Grand Total: <span id="grandTotal"></span></p>
+      <p><b>Grand Total:</b> <span id="grandTotal"></span></p>
+      <div id="yahtzeeBanner">
+        <p id="yahtzeeText">YAHTZEE!</p>
+      </div>
     </div>
+    <!-- PLAY AREA ------------------------------------------------->
     <div class="playArea">
       <div class="dice">
         <button class="die" id="die0" onclick="lockIn(0)">1</button>
@@ -520,7 +664,6 @@
         <button class="die" id="die4" onclick="lockIn(4)">1</button>
       </div>
       <button id="rollButton" onclick="rollDice()">Roll</button>
-      <p id="yahtzeeText"></p>
     </div>
   </body>
 </html>

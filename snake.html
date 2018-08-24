@@ -3,16 +3,65 @@
 <!-- Snake game inspired by airicbear's prototype, mixed with elements from dungeon-proto -->
 <html>
   <head>
+    <meta charset="UTF-8">
     <title> Snake Game </title>
     <style>
-      p, h3, h4 {
+      body {
         margin: 0;
-        padding: 2px;
+        font-family: Arial, Helvetica, sans-serif;
       }
       a {
         text-decoration: none;
       }
-      table, tr, td {
+      p, h4 {
+        margin: 2px;
+      }
+      button {
+        margin-bottom: 1vmin;
+        box-sizing: border-box;
+        background-color: lightgrey;
+        border: 0.5vmin solid lightgrey;
+        border-radius: 0.5vmin;
+        outline: none;
+        transition: .2s;
+      }
+      button:hover {
+        background-color: gainsboro;
+        transition: .2s;
+      }
+      button:active {
+        border-color: dimgrey;
+        transition: .2s;
+      }
+      .scoreDisplay {
+        width: 50vmin;
+        padding: 0.5vmin;
+        background-color: rgb(32, 32, 32);
+        color: gainsboro;
+        border: 0.5vmin solid grey;
+        border-bottom: none;
+        border-radius: 0.5vmin 0.5vmin 0 0;
+      }
+      #menu {
+        margin-left: 10vmin;
+        width: 80vmin;
+      }
+      #grid {
+        margin-left: 8vmin;
+        width: 84vmin;
+        box-sizing: border-box;
+        background-color: rgb(32, 32, 32);
+        border: 2vmin solid grey;
+        border-radius: 2vmin;
+      }
+      table {
+        width: 80vmin;
+        height: 80vmin;
+        border-spacing: 0;
+      }
+      tr, td {
+        border: none;
+        border-spacing: 0;
         border-collapse: collapse;
         padding: 0;
       }
@@ -24,12 +73,7 @@
       .empty {
         background-color: lightgray;
       }
-      #board {
-        margin-top: 1vmin;
-        margin-left: 10vmin;
-        width: 80vmin;
-        height: 80vmin;
-      }
+      
     </style>
     <script>
       // Global variables for handling game state
@@ -219,6 +263,10 @@
       // You died. Reset game.
       function deth() {
         clearInterval(updating);
+        if(typeof(Storage) !== undefined) {
+          setHighScore();
+          getHighScore();
+        }
         reset();
         alert("You Died");
       }
@@ -324,6 +372,43 @@
           snake.vel = [1, 0];
       }
       
+      // Get the high score from local storage
+      function getHighScore() {
+        if(typeof(Storage) !== "undefined") {
+          try {
+            let highScore = localStorage.getItem("snakeHighScore");
+            if(highScore > 0)
+              document.getElementById("highScore").innerHTML = highScore;
+            else
+              document.getElementById("highScore").innerHTML = 0;
+            return highScore;
+          }
+          catch(e) {
+            document.getElementById("highScore").innerHTML = "(<a href='https://www.chromium.org/for-testers/bug-reporting-guidelines/uncaught-securityerror-failed-to-read-the-localstorage-property-from-window-access-is-denied-for-this-document' target='_blank'>Access denied</a>)";
+          }
+        }
+        else {
+          document.getElementById("highScore").innerHTML = "(Not Supported)";
+        }
+      }
+      // Set the high score in local storage
+      function setHighScore() {
+        if(score > getHighScore())
+          localStorage.setItem("snakeHighScore", score);
+      }
+      function clearHighScore() {
+        if(confirm("Delete your high score?")) {
+          if(typeof(Storage) !== "undefined") {
+            try {
+              localStorage.removeItem("snakeHighScore");
+            }
+            catch(e) {
+              console.log("Failed to remove high score.");
+            }
+          }
+        }
+      }
+
       // Listens for keypresses
       addEventListener("keydown", function(e) {
         keys[e.keyCode] = true
@@ -334,16 +419,16 @@
 
     </script>
   </head>
-  <body>
+  <body onload="getHighScore()">
     <!-- HEADER -->
     <div id="menu">
       <h3><a href="index.html">&#9668;</a> Snake Game</h3>
-      <button id="playButton" onclick="play()">Play</button>
+      <button id="playButton" onclick="play()"><b>Play</b></button>
       <button id="resumeButton" onclick="resume()" style="display:none">Resume</button>
       <button id="pauseButton" onclick="pause()" style="display:none">Pause</button>
       <button id="settingsButton" onclick="openSettings()">Settings</button>
       <button id="helpButton" onclick="openHelp()">How to play</button>
-      <b>Score: <span id="score"></span></b>
+      <br>
       <!-- HELP MENU -->
       <div id="helpMenu" style="display:none">
         <h4> Game Instructions </h4>
@@ -355,6 +440,7 @@
       <!-- SETTINGS MENU -->
       <div id="settingsMenu" style="display:none">
         <h4>Gameplay</h4>
+        <button onclick="clearHighScore()" style="background-color: lightcoral;">Clear High Score</button>
           <p>Board Size</p>
             <input id="boardSize" type="text" value="20" onchange="checkSettings()">
             <i>Recommended: 20-40</i>
@@ -377,6 +463,11 @@
             <input type="radio" name="bgColor" value="black" checked>Black  
             <input type="radio" name="bgColor" value="brown">Brown  
             <input type="radio" name="bgColor" value="blue">Blue  
+        </div>
+        <!-- SCORE DISPLAY -->
+        <div class="scoreDisplay">
+          <b>High Score: <span id="highScore">0</span></b>
+          <b>Score: <span id="score"></span></b>
         </div>
     </div>
     <!-- GAME AREA -->

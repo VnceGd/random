@@ -1,11 +1,22 @@
 # random
-Playing around with random number generation in Javascript
+Playing around with random number generation in Javascript.
 
-index.html
-- Basic dice roll and card drawing. Also links to 'snake.html'.
+## Homepage
+
+`index.html`
+- Basic dice roll and card drawing (with replacement). Also links to games.
   
-snake.html
-- Responsive snake game with html tables. Bigger board = more lag.
+## Games
+
+`snake.html`
+- Responsive snake game on an html table. Bigger board = more lag.
+
+`yahtzee.html`
+- Responsive yahtzee game. Numbers instead of dots for dice.
+
+*Note: Games track high score in local browser storage/cache.*
   
-john.html
+## Other
+
+`john.html`
 - Celebration of tehjawn's 23rd birthday. Responsive SVG and randomized colors.

@@ -11,6 +11,7 @@
       }
       a { 
         text-decoration: none;
+        color: rgb(200, 0, 0);
       }
       table, tr, th, td {
         margin: 0;
@@ -61,7 +62,6 @@
         transition: .2s;
       }
       .category {
-        margin: 0;
         padding: 1vmin;
         border: none;
         width: 100%;
@@ -74,7 +74,6 @@
         background-color: rgb(255,255,250);
       }
       .die {
-        margin: 0;
         font-size: 10vmin;
         margin: 1%;
         width: 18%;
@@ -116,21 +115,52 @@
       }
     </style>
     <script>
+      // CONSTANTS AND VARIABLES
       const MAXROLLS = 3;
       const MAXROUNDS = 13;
+      const ONE = '<svg width="100%" height="100%" viewbox="0 0 100 100"><circle cx="50" cy="50" r="15"/></svg>';
+      const TWO = '<svg width="100%" height="100%" viewbox="0 0 100 100"><circle cx="15" cy="15" r="15"/><circle cx="85" cy="85" r="15"/></svg>';
+      const THREE = '<svg width="100%" height="100%" viewbox="0 0 100 100"><circle cx="15" cy="15" r="15"/><circle cx="50" cy="50" r="15"/><circle cx="85" cy="85" r="15"/></svg>';
+      const FOUR = '<svg width="100%" height="100%" viewbox="0 0 100 100"><circle cx="15" cy="15" r="15"/><circle cx="85" cy="15" r="15"/><circle cx="15" cy="85" r="15"/><circle cx="85" cy="85" r="15"/></svg>';
+      const FIVE = '<svg width="100%" height="100%" viewbox="0 0 100 100"><circle cx="15" cy="15" r="15"/><circle cx="85" cy="15" r="15"/><circle cx="50" cy="50" r="15"/><circle cx="15" cy="85" r="15"/><circle cx="85" cy="85" r="15"/></svg>';
+      const SIX = '<svg width="100%" height="100%" viewbox="0 0 100 100"><circle cx="15" cy="15" r="15"/><circle cx="85" cy="15" r="15"/><circle cx="15" cy="50" r="15"/><circle cx="85" cy="50" r="15"/><circle cx="15" cy="85" r="15"/><circle cx="85" cy="85" r="15"/></svg>';
 
-      let rolling;
+      let rolling; // Holds interval for animateDice()
       let selected = [1, 1, 1, 1, 1];
       let roll = round = 1;
       let upperTotal = lowerTotal = 0;
       let upperBonus = joker = false;
+      let preferDots = true;
 
       // Randomly generate numbers 1-6 for selected array
       function animateDice() {
         for(let n = 0; n < 5; n++) {
-          if(document.getElementById("die" + n).style.backgroundColor === "lightgrey") {
+          if(document.getElementById("die" + n).style.backgroundColor == "lightgrey") {
             selected[n] = Math.floor(Math.random() * 6 + 1);
-            document.getElementById("die" + n).innerHTML = selected[n];
+            if(preferDots) {
+              switch(selected[n]) {
+                case 1:
+                  document.getElementById("die" + n).innerHTML = ONE;
+                  break;
+                case 2:
+                  document.getElementById("die" + n).innerHTML = TWO;
+                  break;
+                case 3:
+                  document.getElementById("die" + n).innerHTML = THREE;
+                  break;
+                case 4:
+                  document.getElementById("die" + n).innerHTML = FOUR;
+                  break;
+                case 5:
+                  document.getElementById("die" + n).innerHTML = FIVE;
+                  break;
+                case 6:
+                  document.getElementById("die" + n).innerHTML = SIX;
+                  break;
+              }
+            }
+            else
+              document.getElementById("die" + n).innerHTML = selected[n];
           }
         }
       }
@@ -172,7 +202,7 @@
             if(largeStraights[i].indexOf(sorted[j]) != -1)
               matches++;
           }
-          if(matches === 5)
+          if(matches == 5)
             return "lgStraight";
         }
         for(let i = 0; i < smallStraights.length; i++) {
@@ -181,7 +211,7 @@
             if(smallStraights[i].indexOf(sorted[j]) != -1)
               matches++;
           }
-          if(matches === 4)
+          if(matches == 4)
             return "smStraight";
         }
       }
@@ -194,19 +224,17 @@
         let count = pair = 0;
         for(let i = 0; i < 5; i++) {
           if(sorted[i] !== current) {
-            if(count === 4) {
+            if(count == 4) {
               return "4kind";
             }
-            else if(count === 3) {
-              if(pair === 2)
+            else if(count == 3) {
+              if(pair == 2)
                 return "fullHouse";
-              else if(i === 4)
-                return "3kind";
               else
                 pair = 3
             }
-            else if(count === 2) {
-              if(pair === 3)
+            else if(count == 2) {
+              if(pair == 3)
                 return "fullHouse";
               else
                 pair = 2;
@@ -218,19 +246,22 @@
             count++;
           }
         }
-        if(count === 5)
+        if(count == 5)
           return "yahtzee";
-        else if(count === 4)
+        else if(count == 4)
           return "4kind";
-        else if(count === 3) {
-          if(pair === 2)
+        else if(count == 3) {
+          if(pair == 2)
             return "fullHouse";
           else
             return "3kind";
         }
-        else if(count === 2) {
-          if(pair === 3)
+        else if(count == 2) {
+          if(pair == 3)
             return "fullHouse";
+        }
+        else if(pair == 3) {
+          return "3kind";
         }
       }
       // Disables categories already scored
@@ -282,7 +313,7 @@
         let yahtzeeScore = document.getElementById("yahtzeeScore");
         if(yahtzeeScore.innerHTML !== "") {
           document.getElementById("yahtzee").disabled = true;
-          if(checkOfKind() === "yahtzee") {
+          if(checkOfKind() == "yahtzee") {
             document.getElementById("rollButton").disabled = true;
             showYahtzeeText();
             if(yahtzeeScore.innerHTML > 0)
@@ -381,7 +412,7 @@
         switch(id) {
           case "aces":
             for(let i = 0; i < 5; i++) {
-              if(selected[i] === 1)
+              if(selected[i] == 1)
                 total += selected[i];
             }
             upperTotal += total;
@@ -389,7 +420,7 @@
             break;
           case "twos":
             for(let i = 0; i < 5; i++) {
-              if(selected[i] === 2)
+              if(selected[i] == 2)
                 total += selected[i];
             }
             upperTotal += total;
@@ -397,7 +428,7 @@
             break;
           case "threes":
             for(let i = 0; i < 5; i++) {
-              if(selected[i] === 3)
+              if(selected[i] == 3)
                 total += selected[i];
             }
             upperTotal += total;
@@ -405,7 +436,7 @@
             break;
           case "fours":
             for(let i = 0; i < 5; i++) {
-              if(selected[i] === 4)
+              if(selected[i] == 4)
                 total += selected[i];
             }
             upperTotal += total;
@@ -413,7 +444,7 @@
             break;
           case "fives":
             for(let i = 0; i < 5; i++) {
-              if(selected[i] === 5)
+              if(selected[i] == 5)
                 total += selected[i];
             }
             upperTotal += total;
@@ -421,7 +452,7 @@
             break;
           case "sixes":
             for(let i = 0; i < 5; i++) {
-              if(selected[i] === 6)
+              if(selected[i] == 6)
                 total += selected[i];
             }
             upperTotal += total;
@@ -494,7 +525,6 @@
         }
         joker = false;
         round++;
-        updateText();
         if(round > MAXROUNDS) {
           setHighScore();
           getHighScore();
@@ -504,13 +534,14 @@
           roll = 1;
           document.getElementById("rollButton").disabled = false;
         }
+        updateText();
         resetBoard();
       }
       // Select a die to keep (not roll) on the next roll
       function lockIn(n) {
-        if(roll > 3 || roll === 1)
+        if(roll > 3 || roll == 1)
           return
-        if(document.getElementById("die" + n).style.backgroundColor === "lightgrey") {
+        if(document.getElementById("die" + n).style.backgroundColor == "lightgrey") {
           document.getElementById("die" + n).style.backgroundColor = "lightcoral";
           // selected[n] = 0;
         }
@@ -524,18 +555,60 @@
         for(let i = 0; i < 5; i++)
           document.getElementById("die" + i).style.backgroundColor = "lightgrey";
       }
+      // Set preference for dots on dice or numbers
+      function setPreference() {
+        let pref = document.querySelector('input[name = "facePref"]:checked');
+
+        if(pref.value == "dots")
+          preferDots = true;
+        else
+          preferDots = false;
+        for(let n = 0; n < 5; n++) {
+          if(preferDots) {
+            switch(selected[n]) {
+              case 1:
+                document.getElementById("die" + n).innerHTML = ONE;
+                break;
+              case 2:
+                document.getElementById("die" + n).innerHTML = TWO;
+                break;
+              case 3:
+                document.getElementById("die" + n).innerHTML = THREE;
+                break;
+              case 4:
+                document.getElementById("die" + n).innerHTML = FOUR;
+                break;
+              case 5:
+                document.getElementById("die" + n).innerHTML = FIVE;
+                break;
+              case 6:
+                document.getElementById("die" + n).innerHTML = SIX;
+                break;
+            }
+          }
+          else
+            document.getElementById("die" + n).innerHTML = selected[n];
+        }
+      }
       // Toggle help menu
       function toggleHelp() {
         let helpMenu = document.getElementById("helpMenu");
-        if(helpMenu.style.display === "none") {
+        if(helpMenu.style.display == "none")
           helpMenu.style.display = "inline";
-        }
         else
           helpMenu.style.display = "none";
       }
+      // Toggle settings menu
+      function toggleSettings() {
+        let settingsMenu = document.getElementById("settingsMenu");
+        if(settingsMenu.style.display == "none")
+          settingsMenu.style.display = "inline";
+        else
+          settingsMenu.style.display = "none";
+      }
       // Get high score from local storage
       function getHighScore() {
-        if(typeof(Storage) === "undefined") {
+        if(typeof(Storage) == "undefined") {
           document.getElementById("highScore").innerHTML = "(Not Supported)";
           return;
         }
@@ -548,12 +621,12 @@
           return highScore;
         }
         catch(e) {
-          document.getElementById("highScore").innerHTML = "(<a href='https://www.chromium.org/for-testers/bug-reporting-guidelines/uncaught-securityerror-failed-to-read-the-localstorage-property-from-window-access-is-denied-for-this-document' target='_blank'>Access denied</a>)";
+          document.getElementById("highScore").innerHTML = "(<a href='cookies.html' target='_blank'>Access denied</a>)";
         }
       }
       // Set high score in local storage
       function setHighScore() {
-        if(typeof(Storage) === "undefined")
+        if(typeof(Storage) == "undefined")
           return;
         let grandTotal = document.getElementById("grandTotal").innerHTML;
         if(grandTotal > getHighScore())
@@ -561,7 +634,7 @@
       }
       // Remove the high score from local storage
       function clearHighScore() {
-        if(typeof(Storage) === "undefined")
+        if(typeof(Storage) == "undefined")
           return;
         if(confirm("Delete your high score?")) {
           localStorage.removeItem("yahtzeeHighScore");
@@ -575,14 +648,22 @@
     <div class="nav">
       <h3><a href="index.html">&#9668;</a> Yahtzee</h3>
       <button id="helpButton" onclick="toggleHelp()">How to play</button>
+      <button id="settingsButton" onclick="toggleSettings()">Settings</button>
       <button id="clearHSButton" onclick="clearHighScore()">Clear High Score</button>
       <div id="helpMenu" style="display: none">
         <p>
           <a href="https://en.wikipedia.org/wiki/Yahtzee#Rules" target="_blank">Rules (Wikipedia)</a> <br>
-          After the first roll, click the die (numbered button) to lock it in. <br>
+          After the first roll, click on dice to lock them in. <br>
           The grey dice will roll when you press 'Roll'. <br>
           Click a category to score your dice against it.
           <hr>
+        </p>
+      </div>
+      <div id="settingsMenu" style="display: none">
+        <p>
+          Dice faces:
+          <input type="radio" name="facePref" value="dots" onchange="setPreference()" checked/> Dots 
+          <input type="radio" name="facePref" value="numbers" onchange="setPreference()"/> Numbers 
         </p>
       </div>
       <p>
@@ -657,11 +738,31 @@
     <!-- PLAY AREA ------------------------------------------------->
     <div class="playArea">
       <div class="dice">
-        <button class="die" id="die0" onclick="lockIn(0)">1</button>
-        <button class="die" id="die1" onclick="lockIn(1)">1</button>
-        <button class="die" id="die2" onclick="lockIn(2)">1</button>
-        <button class="die" id="die3" onclick="lockIn(3)">1</button>
-        <button class="die" id="die4" onclick="lockIn(4)">1</button>
+        <button class="die" id="die0" onclick="lockIn(0)">
+            <svg width="100%" height="100%" viewbox="0 0 100 100">
+                <circle cx="50" cy="50" r="15"/>
+              </svg>
+        </button>
+        <button class="die" id="die1" onclick="lockIn(1)">
+          <svg width="100%" height="100%" viewbox="0 0 100 100">
+            <circle cx="50" cy="50" r="15"/>
+          </svg>
+        </button>
+        <button class="die" id="die2" onclick="lockIn(2)">
+            <svg width="100%" height="100%" viewbox="0 0 100 100">
+              <circle cx="50" cy="50" r="15"/>
+            </svg>
+        </button>
+        <button class="die" id="die3" onclick="lockIn(3)">
+            <svg width="100%" height="100%" viewbox="0 0 100 100">
+              <circle cx="50" cy="50" r="15"/>
+            </svg>
+        </button>
+        <button class="die" id="die4" onclick="lockIn(4)">
+          <svg width="100%" height="100%" viewbox="0 0 100 100">
+            <circle cx="50" cy="50" r="15"/>
+          </svg>
+        </button>
       </div>
       <button id="rollButton" onclick="rollDice()">Roll</button>
     </div>

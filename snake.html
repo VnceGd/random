@@ -12,6 +12,7 @@
       }
       a {
         text-decoration: none;
+        color: rgb(200, 0, 0);
       }
       p, h4 {
         margin: 2px;
@@ -199,7 +200,7 @@
         for(let y = 0; y < grid.boardSize; y++) {
           board += '<tr>';
           for(let x = 0; x < grid.boardSize; x++) {
-            if(x === 1 && y === 1) {
+            if(x == 1 && y == 1) {
               board += '<td class="cell" id="' + x + ',' + y + '"style="height:' + Math.floor(100/grid.boardSize) + '%"><div class="snake"></div></td>';
               snake.body.push([x, y]);
             }
@@ -275,8 +276,8 @@
         let i, j, current;
         for(i = 0; i < snake.body.length; i++) {
           current = snake.body[i];
-          for(j = 0; j < pos.length && pos[j] === current[j]; j++) {
-            if(j === pos.length - 1)
+          for(j = 0; j < pos.length && pos[j] == current[j]; j++) {
+            if(j == pos.length - 1)
               return true;
           }
         }
@@ -292,7 +293,7 @@
           if(snake.x_pos < 0 || snake.y_pos < 0 || 
              snake.x_pos > grid.boardSize - 1 || snake.y_pos > grid.boardSize - 1)
             deth();
-          if(snake.x_pos === apple.pos[0] && snake.y_pos === apple.pos[1])
+          if(snake.x_pos == apple.pos[0] && snake.y_pos == apple.pos[1])
             eat();
           draw();
         }
@@ -336,15 +337,15 @@
       }
       // Increase x or y position of snake head and push into body array
       function move() {
-        if(snake.vel[0] === 0 && snake.vel[1] === 0)
+        if(snake.vel[0] == 0 && snake.vel[1] == 0)
           return;
-        else if(snake.vel[0] === 1)
+        else if(snake.vel[0] == 1)
           snake.x_pos++;
-        else if(snake.vel[0] === -1)
+        else if(snake.vel[0] == -1)
           snake.x_pos--;
-        else if(snake.vel[1] === 1)
+        else if(snake.vel[1] == 1)
           snake.y_pos--;
-        else if(snake.vel[1] === -1)
+        else if(snake.vel[1] == -1)
           snake.y_pos++;
         // Snake dies if it moves into itself
         let snakePos = [snake.x_pos, snake.y_pos];
@@ -384,7 +385,7 @@
             return highScore;
           }
           catch(e) {
-            document.getElementById("highScore").innerHTML = "(<a href='https://www.chromium.org/for-testers/bug-reporting-guidelines/uncaught-securityerror-failed-to-read-the-localstorage-property-from-window-access-is-denied-for-this-document' target='_blank'>Access denied</a>)";
+            document.getElementById("highScore").innerHTML = "(<a href='cookies.html' target='_blank'>Access denied</a>)";
           }
         }
         else {
@@ -439,30 +440,36 @@
       </div>
       <!-- SETTINGS MENU -->
       <div id="settingsMenu" style="display:none">
-        <h4>Gameplay</h4>
-        <button onclick="clearHighScore()" style="background-color: lightcoral;">Clear High Score</button>
-          <p>Board Size</p>
-            <input id="boardSize" type="text" value="20" onchange="checkSettings()">
-            <i>Recommended: 20-40</i>
-            <p>Cell Borders? <input id="cellBorders" type="checkbox">
-              <i>Recommended: Off</i>
-            </p>
-          <p>Updates Per Second</p>
-            <input id="updatesPerSecond" type="text" value="10" onchange="checkSettings()"> 
-            <i>Recommended: 10-20</i>
-        <h4>Cosmetic</h4>
-          <p>Snake Color</p>
+        <button onclick="clearHighScore()" style="color: white; background-color: darkred; border-color: darkred;">Clear High Score</button>
+          <p>
+            <b>Board Size: </b>
+            <input id="boardSize" type="text" value="20" onchange="checkSettings()"> <i>Recommended: 20-40</i>
+          </p>
+          <p>
+            <b>Updates Per Second: </b>
+            <input id="updatesPerSecond" type="text" value="10" onchange="checkSettings()"> <i>Recommended: 10-20</i>
+          </p>
+          <p>
+            <b>Cell Borders: </b><input id="cellBorders" type="checkbox"><i>Recommended: Off</i>
+          </p>
+          <p>
+            <b>Snake Color: </b>
             <input type="radio" name="snakeColor" value="green" checked>Green  
             <input type="radio" name="snakeColor" value="yellow">Yellow  
             <input type="radio" name="snakeColor" value="white">White  
-          <p>Apple Color</p>
+          </p>
+          <p>
+            <b>Apple Color: </b>
             <input type="radio" name="appleColor" value="red" checked>Red  
             <input type="radio" name="appleColor" value="orange">Orange  
             <input type="radio" name="appleColor" value="purple">Purple  
-          <p>Background Color</p>
+          </p>
+          <p>
+            <b>Background Color: </b>
             <input type="radio" name="bgColor" value="black" checked>Black  
             <input type="radio" name="bgColor" value="brown">Brown  
             <input type="radio" name="bgColor" value="blue">Blue  
+          </p>
         </div>
         <!-- SCORE DISPLAY -->
         <div class="scoreDisplay">

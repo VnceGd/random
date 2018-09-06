@@ -26,102 +26,246 @@
         border-color: dimgrey;
         transition: .2s;
       }
+      #output {
+        font-size: 2em;
+      }
     </style>
     <script>
+      // Check if input for dice roll is valid
+      function checkDice() {
+        let count = document.getElementById("diceCount");
+        let sides = document.getElementById("diceSides");
+        if(!Number.isInteger(parseInt(count.value)) || count.value < 1)
+          count.value = 1;
+        if(!Number.isInteger(parseInt(sides.value)) || sides.value < 2)
+          sides.value = 6;
+      }
       // Rolls sets of dice, returning values and total
       function rollDice() {
-        var count = document.getElementById("diceCount").value;
-        var sides = document.getElementById("diceSides").value;
-        var output = document.getElementById("output");
-        if(count < 1)
-          return
-        if(sides < 4)
-          return
-        
-        var stack = [];
-        output.innerHTML = "Rolled a ";
-        for(var i = 0; i < count; i++) {
-          stack[i] = Math.floor(Math.random() * sides) + 1;
-          output.innerHTML += stack[i];
-          if(i < count - 1)
-            output.innerHTML += ", ";
+        let count = document.getElementById("diceCount");
+        let sides = document.getElementById("diceSides");
+        let output = document.getElementById("output");   
+        let stack = [];
+        let sum = 0;
+
+        output.innerHTML = "Rolled: ";
+        for(let i = 0; i < count.value; i++) {
+          stack[i] = Math.floor(Math.random() * sides.value) + 1;
+          if(preferIcons() && sides.value == 6) {
+            switch(stack[i]) {
+              case 1:
+                output.innerHTML += "&#9856; ";
+                break;
+              case 2:
+                output.innerHTML += "&#9857; ";
+                break;
+              case 3:
+                output.innerHTML += "&#9858; ";
+                break;
+              case 4:
+                output.innerHTML += "&#9859; ";
+                break;
+              case 5:
+                output.innerHTML += "&#9860; ";
+                break;
+              case 6:
+                output.innerHTML += "&#9861; ";
+                break;
+            }
+          }
+          else {        
+            output.innerHTML += stack[i];
+            if(i < count.value - 1)
+              output.innerHTML += ", ";
+          }
         }
-        if(count > 1) {
-          var sum = 0
-          for(var j = 0; j < count; j++) {
+        if(count.value > 1) {
+          for(let j = 0; j < count.value; j++) {
             sum += stack[j];
           }
-          output.innerHTML += "\n Total: " + sum;
+          output.innerHTML += "<br> Total: " + sum;
         }
       }
       
       // Converts face cards from numbers to text
       function convertFace(n) {
-        switch(n) {
-          case 1 :
-            return "Ace";
-          case 11:
-            return "Jack";
-          case 12:
-            return "Queen";
-          case 13:
-            return "King";
-          default:
-            return n
+        if(preferIcons()) {
+          switch(n) {
+            case 1 :
+              return "A";
+            case 11:
+              return "J";
+            case 12:
+              return "Q";
+            case 13:
+              return "K";
+            default:
+              return n;
+          }
+        }
+        else { 
+          switch(n) {
+            case 1 :
+              return "Ace";
+            case 11:
+              return "Jack";
+            case 12:
+              return "Queen";
+            case 13:
+              return "King";
+            default:
+              return n;
+          }
         }
       }
       // Converts suits from numbers to text
       function convertSuit(n) {
-        switch(n) {
-          case 0:
-            return "Clubs";
-          case 1:
-            return "Spades";
-          case 2:
-            return "Diamonds";
-          case 3:
-            return "Hearts";
+        if(preferIcons()) {
+          switch(n) {
+            case 0:
+              return "&spades;";
+            case 1:
+              return "&clubs;";
+            case 2:
+              return "&diams;";
+            case 3:
+              return "&hearts;";
+          }
         }
+        else {
+          switch(n) {
+            case 0:
+              return " of Clubs";
+            case 1:
+              return " of Spades";
+            case 2:
+              return " of Diamonds";
+            case 3:
+              return " of Hearts";
+          }
+        }
+      }
+      // Checks if number of cards exceeds maximum available in decks
+      function checkCards() {
+        let numCards = document.getElementById("cardCount");
+        let numDecks = document.getElementById("deckCount");
+        
+        if(!Number.isInteger(parseInt(numCards.value)) || numCards.value < 1) {
+          numCards.value = 1;
+        }
+        if(!Number.isInteger(parseInt(numDecks.value)) || numDecks.value < 1) {
+          numDecks.value = 1;
+        }
+        if(numCards.value > numDecks.value * 52)
+          numCards.value = numDecks.value * 52;
       }
       // Draws cards randomly from a 52 card deck, with replacement
       function drawCards() {
-        var count = document.getElementById("cardCount").value;
-        var output = document.getElementById("output");
-        if(count < 1)
-          return
+        let numCards = document.getElementById("cardCount");
+        let numDecks = document.getElementById("deckCount");
+        let output = document.getElementById("output");
+        let deckCollection = [];
+        let card = [];
+        let number = 1;
 
-        var number = [];
-        var suit = [];
-        output.innerHTML = "Drew a ";
-        for(var i = 0; i < count; i++) {
-          number[i] = Math.floor(Math.random() * 13) + 1;
-          suit[i] = Math.floor(Math.random() * 4);
-          output.innerHTML += convertFace(number[i]) + " of " + convertSuit(suit[i]);
-          if (i < count - 1)
+        // Shuffle a deck using Fisher-Yates (Knuth) Shuffle
+        function shuffle(array) {
+          let currentIndex = array.length, temporaryValue, randomIndex;
+
+          // While there remain elements to shuffle...
+          while (0 !== currentIndex) {
+
+            // Pick a remaining element...
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex -= 1;
+
+            // And swap it with the current element.
+            temporaryValue = array[currentIndex];
+            array[currentIndex] = array[randomIndex];
+            array[randomIndex] = temporaryValue;
+          }
+          
+          // console.log(array);
+          return array;
+        }
+
+        // Generate deck(s)
+        function generateDecks() {
+          let deck = [];
+          for(let n = 1; n < 14; n++) {
+            for(let s = 0; s < 4; s++) {
+              let newCard = [n, s];
+              deck.push(newCard);
+            }
+          }
+          // console.log(deck)
+          for(let i = 0; i < numDecks.value; i++) {
+            let shuffledDeck = [];
+            shuffledDeck = shuffle(deck).slice();
+            deckCollection.push(shuffledDeck);
+          }
+        }
+        
+        generateDecks();
+        output.innerHTML = "Cards drawn: ";
+        if(deckCollection.length == 0) {
+          console.log("Err");
+          return;
+        }
+        for(let i = 0; i < numCards.value; i++) {
+          do {
+            number = Math.floor(Math.random() * numDecks.value);
+          } while(deckCollection[number].length == 0);
+          card = deckCollection[number].pop();
+          output.innerHTML += convertFace(card[0]) + convertSuit(card[1]);
+          if (i < numCards.value - 1)
             output.innerHTML += ", ";
         }
+      }
+      // Determine whether to display icons or text
+      function preferIcons() {
+        let pref = document.querySelector('input[name = "pref"]:checked');
+
+        if(pref.value == "icon")
+          return true;
+        else
+          return false;
       }
     </script>
   </head>
   <body>
+    <h1>Kill Time With Random Number Generation (RNG)</h1>
+    <p> Vincent Nguyen 2018</p>
+    <hr>
     <!-- LINKS -->
-    <h1>Games</h1>
+    <h2>Games</h2>
     <a href="snake.html"><button>Snake</button></a>
     <a href="yahtzee.html"><button>Yahtzee</button></a>
-    
+    <hr>
     <!-- INPUT AREA -->
-    <h1>Dice Roll</h1>
-    <p># of Dice:</p>
-    <input type="text" id="diceCount" value="1">
-    <p># of Sides:</p>
-    <input type="text" id="diceSides" value="6">
-    <button onclick="rollDice()">Roll</button>
-    <h1>Card Picker</h1>
-    <p># of Cards:</p>
-    <input type="text" id="cardCount" value="1">
-    <button onclick="drawCards()">Draw</button>
+    <h2>Dice Roll</h2>
+    <p>
+      # of Dice: 
+      <input type="text" id="diceCount" value="1" onchange="checkDice()">
+      # of Sides: 
+      <input type="text" id="diceSides" value="6" onchange="checkDice()">
+      <button onclick="rollDice()">Roll</button>
+    </p>
+    <h2>Card Picker (Standard 52-card deck)</h2>
+    <p>
+      # of Cards:
+      <input type="text" id="cardCount" value="1" onchange="checkCards()">
+      # of Decks:
+      <input type="text" id="deckCount" value="1">
+      <button onclick="drawCards()">Draw</button>
+    </p>
     <!-- RESULTS AREA -->
-    <h2> Results </h2>
+    <h3>Results</h3>
+    <p>
+      Preference: 
+      <input type="radio" name="pref" value="icon" checked> Symbols
+      <input type="radio" name="pref" value="text"> Text
+    </p>
     <p id="output"></p>
   </body>
 </html>

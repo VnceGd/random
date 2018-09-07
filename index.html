@@ -1,4 +1,6 @@
 <!DOCTYPE html>
+<!-- Vincent Nguyen 2018 -->
+<!-- Experimentation with random number generation -->
 <html>
   <head>
     <meta charset="UTF-8">
@@ -159,7 +161,7 @@
         if(numCards.value > numDecks.value * 52)
           numCards.value = numDecks.value * 52;
       }
-      // Draws cards randomly from a 52 card deck, with replacement
+      // Draws cards randomly from 52-card deck(s)
       function drawCards() {
         let numCards = document.getElementById("cardCount");
         let numDecks = document.getElementById("deckCount");
@@ -185,7 +187,6 @@
             array[randomIndex] = temporaryValue;
           }
           
-          // console.log(array);
           return array;
         }
 
@@ -198,7 +199,6 @@
               deck.push(newCard);
             }
           }
-          // console.log(deck)
           for(let i = 0; i < numDecks.value; i++) {
             let shuffledDeck = [];
             shuffledDeck = shuffle(deck).slice();
@@ -206,8 +206,12 @@
           }
         }
         
+        // Main of drawCards()
         generateDecks();
-        output.innerHTML = "Cards drawn: ";
+        if(numCards.value == 1)
+          output.innerHTML = "Card drawn: ";
+        else
+          output.innerHTML = "Cards drawn: ";
         if(deckCollection.length == 0) {
           console.log("Err");
           return;
@@ -241,6 +245,7 @@
     <h2>Games</h2>
     <a href="snake.html"><button>Snake</button></a>
     <a href="yahtzee.html"><button>Yahtzee</button></a>
+    <a href="blackjack.html"><button>Blackjack</button></a>
     <hr>
     <!-- INPUT AREA -->
     <h2>Dice Roll</h2>

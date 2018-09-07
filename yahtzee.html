@@ -1,4 +1,6 @@
 <!DOCTYPE html>
+<!-- Vincent Nguyen 2018 -->
+<!-- A game of Yahtzee! with a responsive layout -->
 <html>
   <head>
     <meta charset="UTF-8">
@@ -8,6 +10,7 @@
         margin: 0;
         padding: 0;
         font-family: Arial, Helvetica, sans-serif;
+        transition: .2s;
       }
       a { 
         text-decoration: none;
@@ -33,8 +36,7 @@
       td:first-child, th:first-child {
         border-left: none;
       }
-      
-      .nav, .scoreboard, .playArea{
+      .nav, .scoreboard, .playArea {
         margin-left: 10vmin;
         width: 80vmin;
         position: relative;
@@ -64,6 +66,8 @@
       .category {
         padding: 1vmin;
         border: none;
+        border-radius: 0;
+        border-spacing: 0;
         width: 100%;
         height: 4vmin;
         font-size: 2vmin;
@@ -100,7 +104,8 @@
         text-anchor: middle;
         font-size: 12vmin;
         color: white;
-        background-color: rgba(220, 20, 60, .7);
+        background-color: rgba(220, 20, 60, .8);
+        opacity: 0;
         display: none;
         z-index: 55;
       }
@@ -172,7 +177,7 @@
         }
         if(roll < 3)
           document.getElementById("rollButton").disabled = false;
-        roll ++;
+        roll++;
         updateText();
         updateBoard();
       }
@@ -186,16 +191,17 @@
 
       // Check for a small or large straight
       function checkStraight() {
-        let sorted = selected.filter(function(item, pos) {
-          return selected.indexOf(item) == pos;
-        })
-        if(sorted.length < 4)
-          return
-
         let largeStraights = [[1, 2, 3, 4, 5], [2, 3, 4, 5, 6]];
         let smallStraights = [[1, 2, 3, 4], [2, 3, 4, 5], [3, 4, 5, 6]];
+        let matches = 0;
+        let sorted = selected.slice();
+        sorted = sorted.filter(function(item, pos) {
+          return sorted.indexOf(item) == pos;
+        })
+        if(sorted.length < 4)
+          return;
 
-        let matches;
+        sorted.sort();
         for(let i = 0; i < largeStraights.length; i++) {
           matches = 0;
           for(let j = 0; j < sorted.length; j++) {
@@ -355,15 +361,16 @@
         else
           document.getElementById("roundNum").innerHTML = round;
         
-        document.getElementById("upperTotal").innerHTML = upperTotal;
-        document.getElementById("lowerTotal").innerHTML = lowerTotal;
         if(upperTotal > 62 && !upperBonus) {
           upperBonus = true;
           upperTotal += 35;
           document.getElementById("upperBonus").innerHTML = 35;
         }
+        document.getElementById("upperTotal").innerHTML = upperTotal;
+        document.getElementById("lowerTotal").innerHTML = lowerTotal;
         document.getElementById("grandTotal").innerHTML = upperTotal + lowerTotal;
       }
+      // Flash the 'YAHTZEE!' banner
       function showYahtzeeText() {
         let banner = document.getElementById("yahtzeeBanner");
         let text = document.getElementById("yahtzeeText");
@@ -408,7 +415,6 @@
         for(let n = 0; n < 5; n++) {
           document.getElementById("die" + n).style.backgroundColor = "lightgrey";
         }
-
         switch(id) {
           case "aces":
             for(let i = 0; i < 5; i++) {
@@ -540,15 +546,12 @@
       // Select a die to keep (not roll) on the next roll
       function lockIn(n) {
         if(roll > 3 || roll == 1)
-          return
+          return;
         if(document.getElementById("die" + n).style.backgroundColor == "lightgrey") {
           document.getElementById("die" + n).style.backgroundColor = "lightcoral";
-          // selected[n] = 0;
         }
-        else {
+        else
           document.getElementById("die" + n).style.backgroundColor = "lightgrey";
-          selected[n] = parseInt(document.getElementById("die" + n).innerHTML);
-        }
       }
       // Set background color of dice (for initial selected check)
       function setDice() {
@@ -557,9 +560,9 @@
       }
       // Set preference for dots on dice or numbers
       function setPreference() {
-        let pref = document.querySelector('input[name = "facePref"]:checked');
+        let facePref = document.querySelector('input[name = "facePref"]:checked');
 
-        if(pref.value == "dots")
+        if(facePref.value == "dots")
           preferDots = true;
         else
           preferDots = false;
@@ -588,6 +591,26 @@
           }
           else
             document.getElementById("die" + n).innerHTML = selected[n];
+        }
+      }
+      function setTheme() {
+        let themePref = document.querySelector('input[name = "themePref"]:checked');
+        let categories = document.getElementsByClassName("category");
+
+        if(themePref.value == "light") {
+          document.body.style.backgroundColor = "white";
+          document.body.style.color = "black";
+          for(let i = 0; i < categories.length; i++) {
+            categories.item(i).style.backgroundColor = "floralwhite";
+            categories.item
+          }
+        }
+        else {
+          document.body.style.backgroundColor = "#212121";
+          document.body.style.color = "white";
+          for(let i = 0; i < categories.length; i++) {
+            categories.item(i).style.backgroundColor = "#9E9E9E";
+          }
         }
       }
       // Toggle help menu
@@ -655,16 +678,22 @@
           <a href="https://en.wikipedia.org/wiki/Yahtzee#Rules" target="_blank">Rules (Wikipedia)</a> <br>
           After the first roll, click on dice to lock them in. <br>
           The grey dice will roll when you press 'Roll'. <br>
-          Click a category to score your dice against it.
+          Click a category to score your dice against it. <br>
+          Refresh the page to start a new game (Game in progress is not saved).
           <hr>
         </p>
       </div>
       <div id="settingsMenu" style="display: none">
         <p>
-          Dice faces:
+          <b>Dice faces: </b>
           <input type="radio" name="facePref" value="dots" onchange="setPreference()" checked/> Dots 
           <input type="radio" name="facePref" value="numbers" onchange="setPreference()"/> Numbers 
+        <br>
+          <b>Theme: </b>
+          <input type="radio" name="themePref" value="light" onchange="setTheme()" checked/> Light 
+          <input type="radio" name="themePref" value="dark" onchange="setTheme()"/> Dark 
         </p>
+        <hr>
       </div>
       <p>
         <b>Roll#</b> <span id="rollNum">1</span>

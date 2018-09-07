@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<!-- Vincent Nguyen 2018 -->
+<!-- Attempt at creating an in-browser blackjack -->
+<html>
+  <head>
+    <title>Blackjack</title>
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, Helvetica, sans-serif;
+        transition: .2s;
+      }
+      a { 
+        text-decoration: none;
+        color: rgb(200, 0, 0);
+      }
+      button {
+        box-sizing: border-box;
+        font-weight: bold;
+        background-color: lightgrey;
+        cursor: pointer;
+        border: 0.5vmin solid lightgrey;
+        border-radius: 1vmin;
+        outline: none;
+        transition: .2s;
+      }
+      button:hover {
+        background-color: gainsboro;
+        transition: .2s;
+      }
+      button:active {
+        border-color: dimgrey;
+        transition: .2s;
+      }
+      .menu, .playArea {
+        margin-left: 10vmin;
+        width: 80vmin;
+        position: relative;
+      }
+      .dealerTable {
+        margin: 0;
+        width: 38vmin;
+        padding: 1vmin;
+        float: left;
+      }
+      .cardArea {
+        background-color: seagreen;
+        margin-top: 1vmin;
+        width: 36vmin;
+        height: 20vmin;
+        border: 1vmin solid darkslategray;
+        border-radius: 1vmin;
+        text-align: center;
+        font-weight: bold;
+      }
+      .hand {
+        margin: 0 0 0 1vmin;
+      }
+      .card {
+        margin: 1vmin 0 0 1vmin;
+        width: 4.5vmin;
+        padding: 1.5vmin 0 1.5vmin 0;
+        border-radius: 0.5vmin;
+        background-color: white;
+        font-size: 2.5vmin;
+        text-align: center;
+        float: left;
+      }
+      #title {
+        color: white;
+        margin: 0.5vmin;
+        font-size: 2vmin;
+      }
+      .winBanner, .bustBanner {
+        display: none;
+        padding: 0 1vmin 0 1vmin;
+      }
+      .winBanner {
+        background-color: limegreen;
+      }
+      .bustBanner {
+        background-color: maroon;
+      }
+      .actionArea {
+        margin-top: 2vmin;
+        padding: 1vmin;
+        width: 38vmin;
+        height: 66vmin;
+        float: left;
+        text-align: center;
+        font-size: 2vmin;
+        background-color: slateblue;
+        border-radius: 1vmin;
+      }
+      .actionArea h4 {
+        margin: 1vmin;
+        color: white;
+      }
+      .actionArea button {
+        width: 36vmin;
+        height: 6vmin;
+        margin-bottom: 1vmin;
+        font-size: 3vmin;
+      }
+      #surrender {
+        color: white;
+        background-color: maroon;
+      }
+      #surrender:disabled {
+        color: gray;
+        background-color: lightcoral;
+      }
+    </style>
+    <script>
+      const MAXCARDSHELD = 11;
+
+      let inSettings = inHelp = false;
+      let deckCollection = deck = [];
+      let playerHand = [];
+      let splitHand = [];
+      let dealerHand = [];
+      let balance = 2500;
+      let playerBet = splitBet = 0;
+      let playerTurn = true;
+      let playerStand = splitStand = false;
+      
+      // Determine whose turn it is
+      function whichTurn() {
+        if(playerTurn)
+          return playerHand;
+        else if(splitHand.length > 0)
+          return splitHand;
+        else
+          return dealerHand;
+      }
+      // Check which actions are available
+      function actionCheck() {
+        if(playerHand.length == 2 && splitHand.length == 0) {
+          document.getElementById("surrender").disabled = false;
+          if(playerHand[0][0] == playerHand[1][0])
+            document.getElementById("split").disabled = false;
+        }
+        if(handTotal(playerHand) == 21)
+          actionStand(playerHand);
+        if(!playerStand || !splitStand)
+          document.getElementById("hit").disabled = false;
+        if((playerTurn && playerBet <= balance) || (!playerTurn && splitBet <= balance))
+          document.getElementById("doubleDown").disabled = false;
+        document.getElementById("stand").disabled = false;
+      }
+      // Checks for a winner
+      function resolveWinner() {
+        if(handTotal(dealerHand) > handTotal(playerHand)) {
+          document.getElementById("dealerWin").style.display = "inline";
+        }
+        else if(handTotal(dealerHand) < handTotal(playerHand)) {
+          document.getElementById("playerWin").style.display = "inline";
+          balance += playerBet * 1.5;
+        }
+        else {
+          if(playerHand.length == 2 && dealerHand.length > 2) {
+            document.getElementById("playerWin").style.display = "inline";
+            balance += playerBet * 1.5;
+          }
+          else {
+            balance += playerBet;
+          }
+        }
+        playerBet = 0;
+        if(splitHand.length > 0) {
+          if(handTotal(dealerHand) > handTotal(splitHand)) {
+            document.getElementById("dealerWin").style.display = "inline";
+          }
+          else if(handTotal(dealerHand) < handTotal(splitHand)) {
+            document.getElementById("splitWin").style.display = "inline";
+            balance += splitBet * 1.5;
+          }
+          else {
+            if(splitHand.length == 2 && dealerHand.length > 2) {
+              document.getElementById("splitWin").style.display = "inline";
+              balance += splitBet * 1.5;
+            }
+            else {
+              balance += splitBet;
+            }
+          }
+          splitBet = 0;
+        }
+        document.getElementById("playButton").disabled = false;
+        updateDisplay();
+        disableActions();
+      }
+      // Hit by drawing a card
+      function actionHit() {
+        let player = whichTurn();
+        let deckCount = document.getElementById("deckCount");
+        let r = Math.floor(Math.random() * deckCount.value);
+
+        disableActions();
+        if(player == playerHand) {
+          playerHand.push(deckCollection[r].pop());
+          actionCheck();
+        }
+        else if(player == splitHand) {
+          splitHand.push(deckCollection[r].pop());
+          actionCheck();
+        }
+        else
+          dealerHand.push(deckCollection[r].pop());
+        
+        if(handTotal(player) == -1) {
+          if(player == playerHand) {
+            document.getElementById("playerBust").style.display = "inline";
+            if(splitHand.length > 0)
+              playerTurn = false;
+            else {
+              resolveWinner();
+              return;
+            }
+          }
+          else if(player == splitHand) {
+            document.getElementById("splitBust").style.display = "inline";
+            if(playerStand)
+              resolveWinner();
+            else
+              playerTurn = true;
+          }
+          else {
+            document.getElementById("dealerBust").style.display = "inline";
+            resolveWinner();
+            return;
+          }
+        }
+        updateDisplay();
+      }
+      // Stand on current cards
+      function actionStand() {
+        let player = whichTurn();
+
+        if(player == playerHand) {
+          playerTurn = false;
+          if(splitHand.length == 0 || splitStand) {
+            playerStand = true;
+            let dealerTotal = handTotal(dealerHand);
+            while(dealerTotal > 0 && dealerTotal < 17) {
+              actionHit();
+              dealerTotal = handTotal(dealerHand);
+            }
+            resolveWinner();
+            return;
+          }
+          else 
+            playerStand = true;
+        }
+        else {
+          if(playerStand) {
+            splitStand = true;
+            while(handTotal(dealerHand) < 17) {
+              actionHit(dealerHand);
+            }
+          }
+          else {
+            splitStand = true;
+            playerTurn = true;
+          } 
+        }
+        updateDisplay();
+      }
+      // Double bet and draw a card
+      function actionDoubleDown() {
+        let player = whichTurn();
+        
+        balance -= playerBet;
+        playerBet *= 2;
+        actionHit();
+      }
+      // Split initial hand if values are the same
+      function actionSplit() {
+        let deckCount = document.getElementById("deckCount");
+        let r = Math.floor(Math.random() * deckCount.value);
+        splitHand.push(playerHand.pop());
+        playerHand.push(deckCollection[r].pop());
+        splitHand.push(deckCollection[r].pop());
+        updateDisplay();
+      }
+      // Surrender half the bet to end the game (initial hand)
+      function actionSurrender() {
+        balance += playerBet/2;
+        playerBet = 0;
+        disableActions();
+      }
+
+      // Create and shuffle decks
+      function generateDecks () {
+        let deckCount = document.getElementById("deckCount");
+        // Shuffle a deck using Fisher-Yates (Knuth) Shuffle
+        function shuffle(array) {
+          let currentIndex = array.length, temporaryValue, randomIndex;
+
+          // While there remain elements to shuffle...
+          while (0 !== currentIndex) {
+
+            // Pick a remaining element...
+            randomIndex = Math.floor(Math.random() * currentIndex);
+            currentIndex -= 1;
+
+            // And swap it with the current element.
+            temporaryValue = array[currentIndex];
+            array[currentIndex] = array[randomIndex];
+            array[randomIndex] = temporaryValue;
+          }
+          
+          return array;
+        }
+        
+        // Create a standard deck
+        deck = [];
+        for(let num = 1; num < 14; num++) {
+          for(let suit = 0; suit < 4; suit++) {
+            let card = [num, suit];
+            deck.push(card);
+          }
+        }
+        deckCollection = [];
+        // Shuffle decks and add to collection
+        for(let i = 0; i < deckCount.value; i++) {
+          let shuffledDeck = shuffle(deck.slice());
+          deckCollection.push(shuffledDeck);
+        }
+      }
+      // Deal two cards to the player and one to the dealer
+      function dealCards() {
+        let deckCount = document.getElementById("deckCount");
+        let r = 0; // Random index of deck in collection
+        for(let i = 0; i < 2; i++) {
+          r = Math.floor(Math.random() * deckCount.value);
+          playerHand.push(deckCollection[r].pop());
+        }
+        r = Math.floor(Math.random() * deckCount.value);
+        dealerHand.push(deckCollection[r].pop());
+        updateDisplay();
+        actionCheck();
+      }
+      // Add the value of the cards in a hand
+      function handTotal(hand) {
+        let sum = 0;
+        // Send aces to back to be added last
+        for(let i = 0; i < hand.length; i++) {
+          if(hand[i] == 1)
+            hand.push(hand.splice(i,1)[0]);
+        }
+        for(let c = 0; c < hand.length; c++) {
+          let card = hand[c];
+          switch(card[0]) {
+            case 1:
+              if(sum + 11 > 21)
+                sum++;
+              else
+                sum += 11;
+              break;
+            case 11:
+            case 12:
+            case 13:
+              sum += 10;
+              break;
+            default:
+              sum += card[0];
+          }
+        }
+        if(sum > 21)
+          return -1;
+        return sum;
+      }
+      // Converts a card array to a string
+      function convertCard(card) {
+        let num = card[0];
+        let suit = card[1];
+        let str = "";
+
+        switch(num) {
+          case 1:
+            str += "A";
+            break;
+          case 11:
+            str += "J";
+            break;
+          case 12:
+            str += "Q";
+            break;
+          case 13:
+            str += "K";
+            break;
+          default:
+            str += num;
+            break;
+        }
+        switch(suit) {
+          case 0:
+            str += "&clubs; ";
+            break;
+          case 1:
+            str += "&spades; ";
+            break;
+          case 2:
+            str += "<span style='color:rgb(200, 0, 0);'>&diams;</span> ";
+            break;
+          case 3:
+            str += "<span style='color:rgb(200, 0, 0);'>&hearts;</span> ";
+            break;
+        }
+        return str;
+      }
+      // Update card and cash displays
+      function updateDisplay() {
+        let dealerCards = document.getElementById("dealerHand");
+        let playerCards = document.getElementById("playerHand");
+        let splitCards = document.getElementById("splitHand");
+        dealerCards.innerHTML = playerCards.innerHTML = splitCards.innerHTML = "";
+        for(let i = 0; i < dealerHand.length; i++)
+          dealerCards.innerHTML += "<div class='card'>" + convertCard(dealerHand[i]) + "</div>";
+        for(let j = 0; j < playerHand.length; j++)
+          playerCards.innerHTML += "<div class='card'>" + convertCard(playerHand[j]) + "</div>";
+        for(let k = 0; k < splitHand.length; k++)
+          splitCards.innerHTML += "<div class='card'>" + convertCard(splitHand[k]) + "</div>";
+        document.getElementById("bankBalance").innerHTML = balance;
+        document.getElementById("playerBet").innerHTML = playerBet;
+        document.getElementById("splitBet").innerHTML = splitBet;
+      }
+      // Disable all actions
+      function disableActions() {
+        document.getElementById("hit").disabled =
+        document.getElementById("stand").disabled =
+        document.getElementById("doubleDown").disabled = 
+        document.getElementById("split").disabled = 
+        document.getElementById("surrender").disabled = true;
+      }
+      // Reset hands
+      function resetHands() {
+        playerHand = [];
+        splitHand = [];
+        dealerHand = [];
+      }
+      
+      // Menu Functionality
+      // Toggle settings menu
+      function toggleSettings() {
+        if(!inSettings) {
+          inSettings = true;
+          document.getElementById("settingsMenu").style.display = 'inline';
+        }
+        else {
+          inSettings = false;
+          document.getElementById("settingsMenu").style.display = 'none';
+        }
+      }
+      // Toggle help menu
+      function toggleHelp() {
+        if(!inHelp) {
+          inHelp = true;
+          document.getElementById("helpMenu").style.display = 'inline';
+        }
+        else {
+          inHelp = false;
+          document.getElementById("helpMenu").style.display = 'none';
+        }
+      }
+      // Check if deck count is valid
+      function checkDeckCount() {
+        let count = document.getElementById("deckCount");
+        let deckCount = parseInt(count.value);
+
+        if(!Number.isInteger(deckCount) || deckCount < 1 || deckCount > 8)
+          count.value = 1;
+      }
+      // Updates game rules
+      function updateSettings() {
+        // Not Implemented
+      }
+      // Set player balance in local storage
+      function setBalance() {
+        // Not Implemented
+      }
+      // Get player balance from local storage
+      function getBalance() {
+        // Not Implemented
+      }
+      // Reset and start a new game
+      function startGame() {
+        let input = prompt("Place a starting bet", balance);
+        let initialBet = parseInt(input);
+
+        if(initialBet < 0 || initialBet > balance) {
+          return;
+        }
+        if(!Number.isInteger(initialBet)) {
+          return;
+        }
+        
+        balance -= initialBet;
+        playerBet = initialBet;
+        splitBet = 0;
+        playerTurn = true;
+        playerStand = splitStand = false;
+        document.getElementById("dealerWin").style.display =
+        document.getElementById("playerWin").style.display =
+        document.getElementById("splitWin").style.display =
+        document.getElementById("dealerBust").style.display =
+        document.getElementById("playerBust").style.display =
+        document.getElementById("splitBust").style.display = "none";
+        document.getElementById("playButton").disabled = true;
+        resetHands();
+        generateDecks();
+        dealCards();
+      }
+    </script>
+  </head>
+  <body>
+    <div class="menu">
+      <!-- HEADER -->
+      <h3><a href="index.html">&#9668;</a> Blackjack</h3>
+      <button id="playButton" onclick="startGame()">Play</button>
+      <button id="settingsButton" onclick="toggleSettings()">Settings</button>
+      <button id="helpButton" onclick="toggleHelp()">How to play</button>
+      <!-- SETTINGS -->
+      <div id="settingsMenu" style="display:none">
+        <p>
+          <b>Decks:</b> <input id="deckCount" type="text" value="1" onchange="checkDeckCount()"> <i>1-8</i> <br>
+          <!-- <b>Dealer Hole Card:</b> <input name="holeCard" type="checkbox"/> <br> -->
+          <!-- <b>Dealer hits soft 17:</b> <input name="H17" type="checkbox"/> -->
+        </p>
+        <hr>
+      </div>
+      <!-- HOW TO PLAY -->
+      <div id="helpMenu" style="display:none">
+        <p>
+          <a href="https://en.wikipedia.org/wiki/Blackjack#Rules_of_play_at_casinos">Rules on Wikipedia</a> <br>
+          Place an initial bet to start the game. <br>
+          House Rules:
+          <ul>
+            <li>Only one split allowed.</li>
+            <li>Start with a balance of $2500.</li>
+          </ul>
+          
+        </p>
+        <hr>
+      </div>
+      <p><b>Balance: $<span id="bankBalance">2500</span> </b></p>
+    </div>
+    <div class="playArea">
+      <div class="dealerTable">
+        <div class="cardArea">
+          <p id="title">
+            Dealer Hand 
+            <span class="winBanner" id="dealerWin">HOUSE WINS</span>
+            <span class="bustBanner" id="dealerBust">BUST!</span>
+          </p>
+          <p class="hand" id="dealerHand"></p>
+        </div>
+        <div class="cardArea">
+          <p id="title">
+            Your Hand 
+            <span class="winBanner" id="playerWin">PLAYER WINS</span>
+            <span class="bustBanner" id="playerBust">BUST!</span>
+          </p>
+          <p id="title">Bet: $<span id="playerBet">0</span></p>
+          <p class="hand" id="playerHand"></p>
+        </div>
+        <div class="cardArea">
+          <p id="title">
+            Split Hand 
+            <span class="winBanner" id="splitWin">SPLIT HAND WINS</span>
+            <span class="bustBanner" id="splitBust">BUST!</span>
+          </p>
+          <p id="title">Bet: $<span id="splitBet">0</span></p>
+          <p class="hand" id="splitHand"></p>
+        </div>
+      </div>
+      <div class="actionArea">
+        <h4>Actions</h4>
+        <button id="hit" onclick="actionHit()" disabled>Hit</button>
+        <button id="stand" onclick="actionStand()" disabled>Stand</button>
+        <button id="doubleDown" onclick="actionDoubleDown()" disabled>Double Down</button>
+        <button id="split" onclick="actionSplit()" disabled>Split</button>
+        <button id="surrender" onclick="actionSurrender()" disabled>Surrender</button>
+      </div>
+    </div>
+  </body>
+</html>

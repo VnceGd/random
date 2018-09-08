@@ -494,12 +494,15 @@
         }
         try {
           balance = localStorage.getItem("blackjackBalance");
+          if(balance == null)
+            balance = 2500;
           if(balance > 0)
             document.getElementById("bankBalance").innerHTML = balance;
           else {
             if(confirm("You're out of money. Reset balance to $2500?")) {
               balance = 2500;
-              document.getElementById("bankBalance").innerHTML = balance;
+              setBalance();
+              updateDisplay();
             }
           }
         }

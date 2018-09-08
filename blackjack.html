@@ -3,7 +3,9 @@
 <!-- Attempt at creating an in-browser blackjack -->
 <html>
   <head>
+    <meta charset="UTF-8">
     <title>Blackjack</title>
+    <link rel="icon" type="image/png" href="images/cardFavicon.png">
     <style>
       html, body {
         margin: 0;
@@ -37,6 +39,12 @@
         margin-left: 10vmin;
         width: 80vmin;
         position: relative;
+      }
+      #resetBalanceButton {
+        color: white;
+        background-color: maroon;
+        border-color: maroon;
+        float: right;
       }
       .dealerTable {
         margin: 0;
@@ -159,7 +167,7 @@
           balance += playerBet * 1.5;
         }
         else {
-          if(playerHand.length == 2 && dealerHand.length > 2) {
+          if(handTotal(playerHand) == 21 && playerHand.length == 2 && dealerHand.length > 2) {
             document.getElementById("playerWin").style.display = "inline";
             balance += playerBet * 1.5;
           }
@@ -177,7 +185,7 @@
             balance += splitBet * 1.5;
           }
           else {
-            if(splitHand.length == 2 && dealerHand.length > 2) {
+            if(handTotal(splitHand) == 21 && splitHand.length == 2 && dealerHand.length > 2) {
               document.getElementById("splitWin").style.display = "inline";
               balance += splitBet * 1.5;
             }
@@ -190,6 +198,7 @@
         document.getElementById("playButton").disabled = false;
         updateDisplay();
         disableActions();
+        setBalance();
       }
       // Hit by drawing a card
       function actionHit() {
@@ -477,16 +486,52 @@
       function updateSettings() {
         // Not Implemented
       }
-      // Set player balance in local storage
-      function setBalance() {
-        // Not Implemented
-      }
       // Get player balance from local storage
       function getBalance() {
-        // Not Implemented
+        if(typeof(Storage) == "undefined") {
+          document.getElementById("bankBalance").innerHTML = "(Not Supported)";
+          return;
+        }
+        try {
+          balance = localStorage.getItem("blackjackBalance");
+          if(balance > 0)
+            document.getElementById("bankBalance").innerHTML = balance;
+          else {
+            if(confirm("You're out of money. Reset balance to $2500?")) {
+              balance = 2500;
+              document.getElementById("bankBalance").innerHTML = balance;
+            }
+          }
+        }
+        catch(e) {
+          document.getElementById("bankBalance").innerHTML = 2500;
+        }
+      }
+      // Set player balance in local storage
+      function setBalance() {
+        if(typeof(Storage) == "undefined")
+          return;
+        try {
+          localStorage.setItem("blackjackBalance", balance);
+        }
+        catch(e) {
+          return balance;
+        }
+      }
+      // Reset balance to 2500 in local storage
+      function resetBalance() {
+        if(typeof(Storage) == "undefined")
+          return;
+        if(confirm("Reset balance to $2500?")) {
+          balance = 2500;
+          setBalance();
+          updateDisplay();  
+        }
       }
       // Reset and start a new game
       function startGame() {
+        getBalance();
+
         let input = prompt("Place a starting bet", balance);
         let initialBet = parseInt(input);
 
@@ -513,15 +558,21 @@
         generateDecks();
         dealCards();
       }
+      // Initialize balance
+      function initialize() {
+        getBalance();
+        updateDisplay();
+      }
     </script>
   </head>
-  <body>
+  <body onload="initialize();">
     <div class="menu">
       <!-- HEADER -->
       <h3><a href="index.html">&#9668;</a> Blackjack</h3>
       <button id="playButton" onclick="startGame()">Play</button>
       <button id="settingsButton" onclick="toggleSettings()">Settings</button>
       <button id="helpButton" onclick="toggleHelp()">How to play</button>
+      <button id="resetBalanceButton" onclick="resetBalance()">Reset Balance</button>
       <!-- SETTINGS -->
       <div id="settingsMenu" style="display:none">
         <p>
@@ -541,7 +592,6 @@
             <li>Only one split allowed.</li>
             <li>Start with a balance of $2500.</li>
           </ul>
-          
         </p>
         <hr>
       </div>

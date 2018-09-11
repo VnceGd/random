@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- Vincent Nguyen 2018 -->
-<!-- Attempt at creating an in-browser blackjack -->
+<!-- Single-player responsive blackjack -->
 <html>
   <head>
     <meta charset="UTF-8">
@@ -13,21 +13,17 @@
         font-family: Arial, Helvetica, sans-serif;
         transition: .2s;
       }
-      p {
-        margin: 1vmin;
-      }
       a { 
         text-decoration: none;
         color: rgb(200, 0, 0);
       }
       button {
         box-sizing: border-box;
-        font-weight: bold;
         background-color: lightgrey;
-        cursor: pointer;
         border: 0.5vmin solid lightgrey;
         border-radius: 1vmin;
         outline: none;
+        cursor: pointer;
         transition: .2s;
       }
       button:hover {
@@ -43,6 +39,34 @@
         width: 80vmin;
         position: relative;
       }
+      #playButton {
+        font-weight: bold;
+      }
+      .cookieDropDown {
+        position: relative;
+        display: inline-block;
+      }
+      .dropdownContent {
+        margin-left: -22vmin;
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        min-width: 44vmin;
+        box-shadow: 0 1vmin 2vmin 0 rgba(0,0,0,0.2);
+        padding: 0.5vmin;
+        font-size: 2vmin;
+        text-align: center;
+        z-index: 1;
+      }
+      .cookieDropDown:hover .dropdownContent {
+        display: block;
+      }
+      #cookieButton {
+        color: white;
+        background-color: #8D6E63;
+        border-color: #795548;
+        border-radius: 50%;
+      }
       #resetBalanceButton {
         color: white;
         background-color: maroon;
@@ -50,31 +74,30 @@
         float: right;
       }
       .dealerTable {
-        margin: 0;
-        width: 40vmin;
-        padding: 1vmin;
+        width: 42vmin;
         float: left;
       }
       .cardArea {
         background-color: seagreen;
         margin-bottom: 1vmin;
-        width: 38vmin;
-        height: 20vmin;
+        width: 41vmin;
+        height: 24vmin;
         border: 1vmin solid darkslategray;
         border-radius: 1vmin;
-        text-align: center;
         font-weight: bold;
+        text-align: center; 
       }
       .hand {
         margin: 0 0 0 1vmin;
       }
       .card {
-        margin: 1vmin 0 0 1vmin;
-        width: 4.5vmin;
-        padding: 1.5vmin 0 1.5vmin 0;
-        border-radius: 0.5vmin;
+        color: black;
         background-color: white;
-        font-size: 2.5vmin;
+        margin: 1vmin 0 0 1vmin;
+        padding: 2.25vmin 0 2.25vmin 0;
+        width: 5.25vmin;
+        border-radius: 0.5vmin;
+        font-size: 2.55vmin;
         text-align: center;
         float: left;
       }
@@ -94,25 +117,25 @@
         background-color: maroon;
       }
       .actionArea {
-        margin-top: 1vmin;
-        padding: 1vmin;
-        width: 36vmin;
-        height: 66vmin;
-        float: left;
-        text-align: center;
-        font-size: 2vmin;
         background-color: slateblue;
+        padding: 0 1vmin 0 1vmin;
+        width: 34vmin;
+        height: 80vmin;
         border-radius: 1vmin;
+        font-size: 2.5vmin;
+        text-align: center;
+        float: right;
       }
       .actionArea h4 {
-        margin: 1vmin;
         color: white;
+        margin: 1vmin;
       }
       .actionArea button {
-        width: 36vmin;
-        height: 6vmin;
         margin-bottom: 1vmin;
-        font-size: 3vmin;
+        width: 34vmin;
+        height: 7vmin;
+        font-size: 3.4vmin;
+        font-weight: bold;
       }
       #surrender {
         color: white;
@@ -123,28 +146,32 @@
         background-color: lightcoral;
       }
       #gameInfo {
-        margin: 1vmin;
         color: white;
+        margin: 1vmin;
         text-align: left;
       }
     </style>
     <script>
       const MAXCARDSHELD = 11;
-
+      
+      // Menus
       let inSettings = inHelp = false;
+      // Decks and hands
       let deckCollection = deck = [];
       let playerHand = [];
-      let splitHand = [];
+      let splitHand  = [];
       let dealerHand = [];
+      // Money
       let balance = 2500;
       let playerBet = splitBet = 0;
+      // Turn tracking
       let playerTurn = true;
       let playerStand = splitStand = false;
       
       // Determine whose turn it is
       function whichTurn() {
         if(playerTurn && !playerStand) {
-          document.getElementById("gameInfo").innerHTML = "Player's Turn";
+          document.getElementById("gameInfo").innerHTML = "Your Turn";
           return playerHand;
         }
         else if(splitHand.length > 0 && !splitStand) {
@@ -159,11 +186,12 @@
       // Check which actions are available
       function actionCheck() {
         let player = whichTurn();
+
         disableActions();
         document.getElementById("stand").disabled = false;
         if(playerHand.length == 2 && splitHand.length == 0) {
           document.getElementById("surrender").disabled = false;
-          if((playerHand[0][0] == playerHand[1][0]) && playerBet < balance)
+          if((playerHand[0][0] == playerHand[1][0]) || (playerHand[0][0] > 9 && playerHand[1][0] > 9) && playerBet < balance)
             document.getElementById("split").disabled = false;
         }
         if((!playerStand && playerHand.length < MAXCARDSHELD) || (!splitStand && splitHand.length < MAXCARDSHELD))
@@ -177,19 +205,22 @@
       function payout(bet, multiplier) {
         let increase = bet * multiplier;
         let i = 0;
-
+        
+        // Increase balance over 200 milliseconds
         function incrementBalance() {
           if(i < increase) {
-            i++;
-            balance++;
+            i += increase/100;
+            balance += increase/100;
             updateText();
-            setTimeout(incrementBalance, 5);
+            setTimeout(incrementBalance, 2);
           }
           else
             clearIncrement();
         }
+        // Enable play and make sure balance is within 2 decimal places
         function clearIncrement() {
           document.getElementById("playButton").disabled = false;
+          balance = Math.floor(balance * 100)/100;
           playerBet = splitBet = 0;
           setBalance();
           updateDisplay();
@@ -213,9 +244,9 @@
             document.getElementById("playerWin").style.display = "inline";
             payout(playerBet, 1.5);
           }
-          else {
+          else if(handTotal(playerHand) > 0) {
             payout(playerBet, 1);
-            document.getElementById("gameInfo").innerHTML = "Your hand tied with the dealer. <br> Bet has returned to your balance.";
+            document.getElementById("gameInfo").innerHTML = "Your hand tied with dealer. <br> Bet returned to balance.";
           }
         }
         if(splitHand.length > 0) {
@@ -233,9 +264,9 @@
               document.getElementById("splitWin").style.display = "inline";
               payout(splitBet, 1.5);
             }
-            else {
+            else if(handTotal(splitHand) > 0) {
               payout(splitBet, 1);
-              document.getElementById("gameInfo").innerHTML = "Split hand tied with the dealer. <br> Bet has returned to your balance.";
+              document.getElementById("gameInfo").innerHTML = "Split hand tied with dealer. <br> Bet returned to balance.";
             }
           }
         }
@@ -254,24 +285,24 @@
           splitHand.push(deckCollection[r].pop());
         else
           dealerHand.push(deckCollection[r].pop());
-        
         if(handTotal(player) == -1) {
           if(player == playerHand) {
             document.getElementById("playerBust").style.display = "inline";
-            playerTurn = false;
             playerStand = true;
             if(splitHand.length == 0) {
               resolveWinner();
               return;
             }
-            else
+            else {
+              playerTurn = false;
               actionCheck();
+            }
           }
           else if(player == splitHand) {
             document.getElementById("splitBust").style.display = "inline";
             splitStand = true;
-            if(handTotal(playerHand) == -1 || playerStand)
-              resolveWinner();
+            if(playerStand || handTotal(playerHand) < 0)
+                resolveWinner();
             else {
               playerTurn = true;
               actionCheck();
@@ -279,7 +310,6 @@
           }
           else {
             document.getElementById("dealerBust").style.display = "inline";
-            resolveWinner();
             return;
           }
         }
@@ -293,6 +323,8 @@
         
         disableActions();
         if(player == playerHand) {
+          if(handTotal(playerHand) < 0)
+            return;
           playerStand = true;
           playerTurn = false;
           if(splitHand.length == 0 || splitStand) {
@@ -306,6 +338,8 @@
           }
         }
         else {
+          if(handTotal(splitHand) < 0)
+            return;
           splitStand = true;
           if(playerStand) {
             let dealerTotal = handTotal(dealerHand);
@@ -344,13 +378,17 @@
       // Surrender half the bet to end the game (initial hand)
       function actionSurrender() {
         balance += playerBet/2;
+        balance = Math.floor(balance*100)/100;
         playerBet = 0;
         disableActions();
+        updateText();
+        document.getElementById("playButton").disabled = false;
+        document.getElementById("gameInfo").innerHTML = "You surrendered. <br> Half your bet was returned.";
       }
-
       // Create and shuffle decks
       function generateDecks () {
         let deckCount = document.getElementById("deckCount");
+
         // Shuffle a deck using Fisher-Yates (Knuth) Shuffle
         function shuffle(array) {
           let currentIndex = array.length, temporaryValue, randomIndex;
@@ -370,7 +408,6 @@
           
           return array;
         }
-        
         // Create a standard deck
         deck = [];
         for(let num = 1; num < 14; num++) {
@@ -442,33 +479,36 @@
         
         switch(num) {
           case 1:
-            str += "A";
+            str += "A ";
+            break;
+          case 10:
+            str += num;
             break;
           case 11:
-            str += "J";
+            str += "J ";
             break;
           case 12:
-            str += "Q";
+            str += "Q ";
             break;
           case 13:
-            str += "K";
+            str += "K ";
             break;
           default:
-            str += num;
+            str += num + " ";
             break;
         }
         switch(suit) {
           case 0:
-            str += "&clubs; ";
+            str += "&clubs;";
             break;
           case 1:
-            str += "&spades; ";
+            str += "&spades;";
             break;
           case 2:
-            str += "<span style='color:rgb(200, 0, 0);'>&diams;</span> ";
+            str += "<span style='color:rgb(200, 0, 0);'>&diams;</span>";
             break;
           case 3:
-            str += "<span style='color:rgb(200, 0, 0);'>&hearts;</span> ";
+            str += "<span style='color:rgb(200, 0, 0);'>&hearts;</span>";
             break;
         }
         str += "</div>";
@@ -476,9 +516,9 @@
       }
       // Updates text only (used to reduce computations in payout())
       function updateText() {
-        document.getElementById("bankBalance").innerHTML = balance;
-        document.getElementById("playerBet").innerHTML = playerBet;
-        document.getElementById("splitBet").innerHTML = splitBet;
+        document.getElementById("bankBalance").innerHTML = balance.toFixed(2);
+        document.getElementById("playerBet").innerHTML = playerBet.toFixed(2);
+        document.getElementById("splitBet").innerHTML = splitBet.toFixed(2);
       }
       // Update card and cash displays
       function updateDisplay() {
@@ -496,11 +536,11 @@
       }
       // Disable all actions
       function disableActions() {
-        document.getElementById("hit").disabled =
-        document.getElementById("stand").disabled =
+        document.getElementById("hit").disabled        =
+        document.getElementById("stand").disabled      =
         document.getElementById("doubleDown").disabled = 
-        document.getElementById("split").disabled = 
-        document.getElementById("surrender").disabled = true;
+        document.getElementById("split").disabled      = 
+        document.getElementById("surrender").disabled  = true;
       }
       // Reset hands
       function resetHands() {
@@ -508,8 +548,6 @@
         splitHand = [];
         dealerHand = [];
       }
-      
-      // Menu Functionality
       // Toggle settings menu
       function toggleSettings() {
         if(!inSettings) {
@@ -541,13 +579,24 @@
           count.value = 1;
       }
       // Updates game rules
-      function updateSettings() {
-        // Not Implemented
+      function updateSetting(which) {
+        // Change theme
+        if(which == "theme") {
+          let pref = document.querySelector('input[name = "themePref"]:checked');
+          if(pref.value == "light") {
+            document.body.style.backgroundColor = "#FFF";
+            document.body.style.color = "#000";
+          }
+          else if(pref.value == "dark") {
+            document.body.style.backgroundColor = "#212121";
+            document.body.style.color = "#FFF";
+          }
+        }
       }
       // Get player balance from local storage
       function getBalance() {
         if(typeof(Storage) == "undefined") {
-          document.getElementById("bankBalance").innerHTML = balance;
+          updateText();
           return;
         }
         try {
@@ -555,12 +604,12 @@
           if(balance == null)
             balance = 2500;
           if(balance > 0)
-            document.getElementById("bankBalance").innerHTML = balance;
+            updateText();
           else {
             if(confirm("You're out of money. Reset balance to $2500?")) {
               balance = 2500;
               setBalance();
-              updateDisplay();
+              updateText();
             }
           }
         }
@@ -576,7 +625,7 @@
           localStorage.setItem("blackjackBalance", balance);
         }
         catch(e) {
-          return balance;
+          return;
         }
       }
       // Reset balance to 2500 in local storage
@@ -591,30 +640,30 @@
       }
       // Reset and start a new game
       function startGame() {
-        getBalance();
-
-        let input = prompt("Place a starting bet", balance);
-        let initialBet = parseInt(input);
-
-        if(initialBet < 0 || initialBet > balance) {
-          return;
-        }
-        if(!Number.isInteger(initialBet)) {
-          return;
-        }
+        let input = initalBet = 0;
+        let rx = /^( *)(0*)(\d+)?(?:\.\d{1,2})?(0*)( *)?$/ // Accept only number values up to two decimal places
         
+        getBalance();
+        input = prompt("Place a starting bet", balance);
+        initialBet = parseFloat(input);
+        if(input == null)
+          return;
+        if(!rx.test(input)) {
+          document.getElementById("gameInfo").innerHTML = "Invalid bet. <br> Press 'Play' to try again."
+          return;
+        }
         balance -= initialBet;
         playerBet = initialBet;
         splitBet = 0;
         playerTurn = true;
         playerStand = splitStand = false;
-        document.getElementById("dealerWin").style.display =
-        document.getElementById("playerWin").style.display =
-        document.getElementById("splitWin").style.display =
+        document.getElementById("dealerWin").style.display  =
+        document.getElementById("playerWin").style.display  =
+        document.getElementById("splitWin").style.display   =
         document.getElementById("dealerBust").style.display =
         document.getElementById("playerBust").style.display =
-        document.getElementById("splitBust").style.display = "none";
-        document.getElementById("playButton").disabled = true;
+        document.getElementById("splitBust").style.display  = "none";
+        document.getElementById("playButton").disabled      = true;
         resetHands();
         generateDecks();
         dealCards();
@@ -630,35 +679,45 @@
     <div class="menu">
       <!-- HEADER -->
       <h3><a href="index.html">&#9668;</a> Blackjack</h3>
-      <button id="playButton" onclick="startGame()">Play</button>
+      <button id="playButton" onclick="startGame()">&#9658; Play</button>
       <button id="settingsButton" onclick="toggleSettings()">Settings</button>
       <button id="helpButton" onclick="toggleHelp()">How to play</button>
-      <button id="resetBalanceButton" onclick="resetBalance()">Reset Balance</button>
-      <!-- SETTINGS -->
-      <div id="settingsMenu" style="display:none">
-        <p>
-          <b>Decks:</b> <input id="deckCount" type="text" value="1" onchange="checkDeckCount()"> <i>1-8</i> <br>
-          <!-- <b>Dealer Hole Card:</b> <input name="holeCard" type="checkbox"/> <br> -->
-          <!-- <b>Dealer hits soft 17:</b> <input name="H17" type="checkbox"/> -->
-        </p>
-        <hr>
+      <div class="cookieDropDown">
+        <button id="cookieButton">?</button>
+        <div class="dropdownContent">
+          <p>This game uses cookies to store the balance. <a id="cookie" href="cookies.html" target="_blank">Learn More</a></p>
+        </div>
       </div>
+      <button id="resetBalanceButton" onclick="resetBalance()">&#11148; Reset Balance</button>
+      <!-- COOKIE DROPDOWN -->
+      
       <!-- HOW TO PLAY -->
       <div id="helpMenu" style="display:none">
         <p>
-          <a href="https://en.wikipedia.org/wiki/Blackjack#Rules_of_play_at_casinos">Rules on Wikipedia</a> <br>
+          <a href="https://en.wikipedia.org/wiki/Blackjack#Rules_of_play_at_casinos" target="_blank">Rules (Wikipedia)</a> <br>
           After pressing 'Play', place an initial bet to start the game. <br>
-          House Rules:
-          <ul>
+          <ul><b>House Rules:</b>
             <li>Start with a balance of $2500.</li>
             <li>House pays 3:2.</li>
             <li>Dealer hits on 16 or lower.</li>
             <li>Only one split allowed.</li>
           </ul>
-          
         </p>
         <hr>
       </div>
+      <!-- SETTINGS -->
+      <div id="settingsMenu" style="display:none">
+          <p>
+            <b>Decks:</b> <input id="deckCount" type="text" value="1" onchange="checkDeckCount()"> <i>1-8</i> <br>
+            <!-- <b>Split</b> -->
+            <!-- <b>Dealer Hole Card:</b> <input name="holeCard" type="checkbox"/> <br> -->
+            <!-- <b>Dealer hits soft 17:</b> <input name="H17" type="checkbox"/> -->
+            <b>Theme: </b>
+            <input type="radio" name="themePref" value="light" onchange="updateSetting('theme')" checked/>Light
+            <input type="radio" name="themePref" value="dark" onchange="updateSetting('theme')"/>Dark
+          </p>
+          <hr>
+        </div>
       <p><b>Balance: $<span id="bankBalance">2500</span> </b></p>
     </div>
     <div class="playArea">

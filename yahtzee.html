@@ -23,8 +23,8 @@
         text-align: center;
       }
       table {
-        border: 0.5vmin solid black;
         width: 80vmin;
+        border: 0.5vmin solid black;
         border-radius: 1vmin;
       }
       td, th {
@@ -48,12 +48,11 @@
       }
       button {
         box-sizing: border-box;
-        font-weight: bold;
-        background-color: lightgrey;
-        cursor: pointer;
-        border: 0.5vmin solid lightgrey;
+        background-color: lightgray;
+        border: 0.5vmin solid lightgray;
         border-radius: 1vmin;
         outline: none;
+        cursor: pointer;
         transition: .2s;
       }
       button:hover {
@@ -61,53 +60,80 @@
         transition: .2s;
       }
       button:active {
-        border-color: dimgrey;
+        border-color: dimgray;
         transition: .2s;
       }
       .category {
+        background-color: floralwhite;
         padding: 1vmin;
+        width: 100%;
+        height: 4vmin;
         border: none;
         border-radius: 0;
         border-spacing: 0;
-        width: 100%;
-        height: 4vmin;
         font-size: 2vmin;
-        cursor: pointer;
-        background-color: floralwhite;
+        font-weight: bold;
       }
       .category:hover {
         background-color: rgb(255,255,250);
       }
       .die {
-        font-size: 10vmin;
         margin: 1%;
         width: 18%;
         height: 100%;
+        font-size: 10vmin;
+        font-weight: bold;
         float: left;
       }
       #rollButton {
-        font-size: 5vmin;
         width: 80vmin;
         height: 10vmin;
+        font-size: 5vmin;
+        font-weight: bold;
+      }
+      .cookieDropDown {
+        position: relative;
+        display: inline-block;
+      }
+      .dropdownContent {
+        margin-left: -22vmin;
+        display: none;
+        position: absolute;
+        background-color: #f9f9f9;
+        min-width: 44vmin;
+        box-shadow: 0 1vmin 2vmin 0 rgba(0,0,0,0.2);
+        padding: 0.5vmin;
+        font-size: 2vmin;
+        text-align: center;
+        z-index: 1;
+      }
+      .cookieDropDown:hover .dropdownContent {
+        display: block;
+      }
+      #cookieButton {
+        color: white;
+        background-color: #8D6E63;
+        border-color: #795548;
+        border-radius: 50%;
       }
       #clearHSButton {
-        float: right;
         color: white;
         background-color: darkred;
         border-color: darkred;
+        float: right;
       }
       #yahtzeeBanner {
-        position: absolute;
+        color: white;
+        background-color: rgba(220, 20, 60, .8);
         top: 10vmin;
         width: 100%;
         height: 14vmin;
+        font-size: 12vmin;
         text-align: center;
         text-anchor: middle;
-        font-size: 12vmin;
-        color: white;
-        background-color: rgba(220, 20, 60, .8);
-        opacity: 0;
+        position: absolute;
         display: none;
+        opacity: 0;
         z-index: 55;
       }
       #yahtzeeText {
@@ -115,15 +141,16 @@
       }
       @media only screen and (max-width: 700px) {
         .category {
-          font-size: 1em;
           height: auto;
+          font-size: 1em;
         }
       }
     </style>
     <script>
-      // CONSTANTS AND VARIABLES
+      // Limits
       const MAXROLLS = 3;
       const MAXROUNDS = 13;
+      // SVG for dots on dice
       const ONE = '<svg width="100%" height="100%" viewbox="0 0 100 100"><circle cx="50" cy="50" r="15"/></svg>';
       const TWO = '<svg width="100%" height="100%" viewbox="0 0 100 100"><circle cx="15" cy="15" r="15"/><circle cx="85" cy="85" r="15"/></svg>';
       const THREE = '<svg width="100%" height="100%" viewbox="0 0 100 100"><circle cx="15" cy="15" r="15"/><circle cx="50" cy="50" r="15"/><circle cx="85" cy="85" r="15"/></svg>';
@@ -131,19 +158,22 @@
       const FIVE = '<svg width="100%" height="100%" viewbox="0 0 100 100"><circle cx="15" cy="15" r="15"/><circle cx="85" cy="15" r="15"/><circle cx="50" cy="50" r="15"/><circle cx="15" cy="85" r="15"/><circle cx="85" cy="85" r="15"/></svg>';
       const SIX = '<svg width="100%" height="100%" viewbox="0 0 100 100"><circle cx="15" cy="15" r="15"/><circle cx="85" cy="15" r="15"/><circle cx="15" cy="50" r="15"/><circle cx="85" cy="50" r="15"/><circle cx="15" cy="85" r="15"/><circle cx="85" cy="85" r="15"/></svg>';
 
+      // Game state
       let rolling; // Holds interval for animateDice()
-      let selected = [1, 1, 1, 1, 1];
+      let selected = [0, 0, 0, 0, -1]; // Initial values prevent 'cheating' by refreshing page in Firefox (maintains cache)
       let roll = round = 1;
-      let upperTotal = lowerTotal = 0;
+      // Scoring
+      let highScore = upperTotal = lowerTotal = 0;
       let upperBonus = joker = false;
+      // Preference
       let preferDots = true;
 
       // Randomly generate numbers 1-6 for selected array
       function animateDice() {
         for(let n = 0; n < 5; n++) {
-          if(document.getElementById("die" + n).style.backgroundColor == "lightgrey") {
+          if(document.getElementById("die" + n).style.backgroundColor == "lightgray") {
             selected[n] = Math.floor(Math.random() * 6 + 1);
-            if(preferDots) {
+            if(preferDots)
               switch(selected[n]) {
                 case 1:
                   document.getElementById("die" + n).innerHTML = ONE;
@@ -164,7 +194,6 @@
                   document.getElementById("die" + n).innerHTML = SIX;
                   break;
               }
-            }
             else
               document.getElementById("die" + n).innerHTML = selected[n];
           }
@@ -173,9 +202,8 @@
       // Stops animateDice() and updates game
       function clearAnimateDice() {
         clearInterval(rolling);
-        for(let n = 0; n < 5; n++) {
-          document.getElementById("die" + n).style.backgroundColor = "lightgrey";
-        }
+        for(let n = 0; n < 5; n++)
+          document.getElementById("die" + n).style.backgroundColor = "lightgray";
         if(roll < 3)
           document.getElementById("rollButton").disabled = false;
         roll++;
@@ -189,7 +217,6 @@
         rolling = setInterval(animateDice, 50);
         setTimeout(clearAnimateDice, 1000);
       }
-
       // Check for a small or large straight
       function checkStraight() {
         let largeStraights = [[1, 2, 3, 4, 5], [2, 3, 4, 5, 6]];
@@ -198,26 +225,24 @@
         let sorted = selected.slice();
         sorted = sorted.filter(function(item, pos) {
           return sorted.indexOf(item) == pos;
-        })
+        });
         if(sorted.length < 4)
           return;
 
         sorted.sort();
         for(let i = 0; i < largeStraights.length; i++) {
           matches = 0;
-          for(let j = 0; j < sorted.length; j++) {
+          for(let j = 0; j < sorted.length; j++)
             if(largeStraights[i].indexOf(sorted[j]) != -1)
               matches++;
-          }
           if(matches == 5)
             return "lgStraight";
         }
         for(let i = 0; i < smallStraights.length; i++) {
           matches = 0;
-          for(let j = 0; j < sorted.length; j++) {
+          for(let j = 0; j < sorted.length; j++)
             if(smallStraights[i].indexOf(sorted[j]) != -1)
               matches++;
-          }
           if(matches == 4)
             return "smStraight";
         }
@@ -231,9 +256,8 @@
         let count = pair = 0;
         for(let i = 0; i < 5; i++) {
           if(sorted[i] !== current) {
-            if(count == 4) {
+            if(count == 4)
               return "4kind";
-            }
             else if(count == 3) {
               if(pair == 2)
                 return "fullHouse";
@@ -249,9 +273,8 @@
             current = sorted[i];
             count = 1;
           }
-          else {
+          else
             count++;
-          }
         }
         if(count == 5)
           return "yahtzee";
@@ -267,12 +290,13 @@
           if(pair == 3)
             return "fullHouse";
         }
-        else if(pair == 3) {
+        else if(pair == 3)
           return "3kind";
-        }
       }
       // Disables categories already scored
       function updateBoard() {
+        let yahtzeeScore = document.getElementById("yahtzeeScore");
+
         if(document.getElementById("acesScore").innerHTML !== "")
           document.getElementById("aces").disabled = true;
         else 
@@ -317,7 +341,6 @@
           document.getElementById("lgStraight").disabled = true;
         else 
           document.getElementById("lgStraight").disabled = false;
-        let yahtzeeScore = document.getElementById("yahtzeeScore");
         if(yahtzeeScore.innerHTML !== "") {
           document.getElementById("yahtzee").disabled = true;
           if(checkOfKind() == "yahtzee") {
@@ -361,7 +384,6 @@
           document.getElementById("roundNum").innerHTML = MAXROUNDS;
         else
           document.getElementById("roundNum").innerHTML = round;
-        
         if(upperTotal > 62 && !upperBonus) {
           upperBonus = true;
           upperTotal += 35;
@@ -378,9 +400,11 @@
         let animating;
         let opacity = 0;
         
+        // Play the animation backwards to fade out banner
         function reverseAnimation() {
           animating = setInterval(function() {animateBanner(true);}, 10);
         }
+        // Animate banner by fading in or out
         function animateBanner(reverse) {
           if(reverse) {
             if(opacity <= 0) {
@@ -393,9 +417,8 @@
             }
           }
           else {
-            if(opacity >= 1) {
+            if(opacity >= 1)
               clearInterval(animating);
-            }
             else {
               opacity += 0.05;
               banner.style.opacity = opacity;
@@ -406,22 +429,19 @@
         banner.style.display = "inline";
         setTimeout(reverseAnimation, 2000);
       }
-
       // Scores dice for the category chosen
       function playCategory(id) {
         let total = 0;
         let straightCheck = checkStraight();
         let kindCheck = checkOfKind();
         
-        for(let n = 0; n < 5; n++) {
-          document.getElementById("die" + n).style.backgroundColor = "lightgrey";
-        }
+        for(let n = 0; n < 5; n++)
+          document.getElementById("die" + n).style.backgroundColor = "lightgray";
         switch(id) {
           case "aces":
-            for(let i = 0; i < 5; i++) {
+            for(let i = 0; i < 5; i++)
               if(selected[i] == 1)
                 total += selected[i];
-            }
             upperTotal += total;
             document.getElementById("acesScore").innerHTML = total;
             break;
@@ -434,54 +454,48 @@
             document.getElementById("twosScore").innerHTML = total;
             break;
           case "threes":
-            for(let i = 0; i < 5; i++) {
+            for(let i = 0; i < 5; i++)
               if(selected[i] == 3)
                 total += selected[i];
-            }
             upperTotal += total;
             document.getElementById("threesScore").innerHTML = total;
             break;
           case "fours":
-            for(let i = 0; i < 5; i++) {
+            for(let i = 0; i < 5; i++)
               if(selected[i] == 4)
                 total += selected[i];
-            }
             upperTotal += total;
             document.getElementById("foursScore").innerHTML = total;
             break;
           case "fives":
-            for(let i = 0; i < 5; i++) {
+            for(let i = 0; i < 5; i++)
               if(selected[i] == 5)
                 total += selected[i];
-            }
             upperTotal += total;
             document.getElementById("fivesScore").innerHTML = total;
             break;
           case "sixes":
-            for(let i = 0; i < 5; i++) {
+            for(let i = 0; i < 5; i++)
               if(selected[i] == 6)
                 total += selected[i];
-            }
             upperTotal += total;
             document.getElementById("sixesScore").innerHTML = total;
             break;
           case "3kind":
             if(kindCheck !== "fullHouse" && kindCheck !== "3kind" && kindCheck !== "4kind")
               total = 0;
-            else {
+            else
               for(let i = 0; i < 5; i++)
                 total += selected[i];
-            }
             lowerTotal += total;
             document.getElementById("3kindScore").innerHTML = total;
             break;
           case "4kind":
             if(kindCheck !== "4kind")
               total = 0;
-            else {
+            else
               for(let i = 0; i < 5; i++)
                 total += selected[i];
-            }
             lowerTotal += total;
             document.getElementById("4kindScore").innerHTML = total;
             break;
@@ -518,16 +532,12 @@
             }
             lowerTotal += total;
             document.getElementById("yahtzeeScore").innerHTML = total;
-            
             break;
           case "chance":
-            for(let i = 0; i < 5; i++) {
+            for(let i = 0; i < 5; i++)
               total += selected[i];
-            }
             lowerTotal += total;
             document.getElementById("chanceScore").innerHTML = total;
-            break;
-          default:
             break;
         }
         joker = false;
@@ -548,16 +558,15 @@
       function lockIn(n) {
         if(roll > 3 || roll == 1)
           return;
-        if(document.getElementById("die" + n).style.backgroundColor == "lightgrey") {
+        if(document.getElementById("die" + n).style.backgroundColor == "lightgray")
           document.getElementById("die" + n).style.backgroundColor = "lightcoral";
-        }
         else
-          document.getElementById("die" + n).style.backgroundColor = "lightgrey";
+          document.getElementById("die" + n).style.backgroundColor = "lightgray";
       }
       // Set background color of dice (for initial selected check)
       function setDice() {
         for(let i = 0; i < 5; i++)
-          document.getElementById("die" + i).style.backgroundColor = "lightgrey";
+          document.getElementById("die" + i).style.backgroundColor = "lightgray";
       }
       // Set preference for dots on dice or numbers
       function setPreference() {
@@ -568,7 +577,7 @@
         else
           preferDots = false;
         for(let n = 0; n < 5; n++) {
-          if(preferDots) {
+          if(preferDots)
             switch(selected[n]) {
               case 1:
                 document.getElementById("die" + n).innerHTML = ONE;
@@ -589,11 +598,11 @@
                 document.getElementById("die" + n).innerHTML = SIX;
                 break;
             }
-          }
           else
             document.getElementById("die" + n).innerHTML = selected[n];
         }
       }
+      // Set the theme to light or dark
       function setTheme() {
         let themePref = document.querySelector('input[name = "themePref"]:checked');
         let categories = document.getElementsByClassName("category");
@@ -609,14 +618,14 @@
         else {
           document.body.style.backgroundColor = "#212121";
           document.body.style.color = "white";
-          for(let i = 0; i < categories.length; i++) {
+          for(let i = 0; i < categories.length; i++)
             categories.item(i).style.backgroundColor = "#9E9E9E";
-          }
         }
       }
       // Toggle help menu
       function toggleHelp() {
         let helpMenu = document.getElementById("helpMenu");
+        
         if(helpMenu.style.display == "none")
           helpMenu.style.display = "inline";
         else
@@ -625,34 +634,45 @@
       // Toggle settings menu
       function toggleSettings() {
         let settingsMenu = document.getElementById("settingsMenu");
+
         if(settingsMenu.style.display == "none")
           settingsMenu.style.display = "inline";
         else
           settingsMenu.style.display = "none";
       }
+      // Refresh the page to start a new game
+      function startGame() {
+        if(confirm("This will reload the page. Continue?"))
+          window.location.reload(true);
+      }
       // Get high score from local storage
       function getHighScore() {
         if(typeof(Storage) == "undefined") {
-          document.getElementById("highScore").innerHTML = "(Not Supported)";
+          // document.getElementById("highScore").innerHTML = "(Not Supported)";
           return;
         }
         try {
-          let highScore = localStorage.getItem("yahtzeeHighScore");
+          highScore = localStorage.getItem("yahtzeeHighScore");
+
           if(highScore > 0)
             document.getElementById("highScore").innerHTML = highScore;
-          else
-            document.getElementById("highScore").innerHTML = 0;
+          // else
+          //   document.getElementById("highScore").innerHTML = 0;
           return highScore;
         }
         catch(e) {
-          document.getElementById("highScore").innerHTML = "(<a href='cookies.html' target='_blank'>Access denied</a>)";
+          document.getElementById("highScore").innerHTML = highScore;
+          // document.getElementById("highScore").innerHTML = "(<a href='cookies.html' target='_blank'>Access denied</a>)";
         }
       }
       // Set high score in local storage
       function setHighScore() {
+        let grandTotal = document.getElementById("grandTotal").innerHTML;
+
+        if(grandTotal > highScore)
+          highScore = grandTotal;
         if(typeof(Storage) == "undefined")
           return;
-        let grandTotal = document.getElementById("grandTotal").innerHTML;
         if(grandTotal > getHighScore())
           localStorage.setItem("yahtzeeHighScore", grandTotal);
       }
@@ -661,8 +681,13 @@
         if(typeof(Storage) == "undefined")
           return;
         if(confirm("Delete your high score?")) {
-          localStorage.removeItem("yahtzeeHighScore");
-          document.getElementById("highScore").innerHTML = 0;
+          try {
+            localStorage.removeItem("yahtzeeHighScore");
+            document.getElementById("highScore").innerHTML = 0;
+          }
+          catch(e) {
+            console.log("Failed to remove high score.");
+          }
         }
       }
     </script>
@@ -671,14 +696,21 @@
     <!-- NAVIGATION MENU ------------------------------------------->
     <div class="nav">
       <h3><a href="index.html">&#9668;</a> Yahtzee</h3>
-      <button id="helpButton" onclick="toggleHelp()">How to play</button>
+      <button id="playButton" onclick="startGame()">&#9658; <b>New Game</b></button>
       <button id="settingsButton" onclick="toggleSettings()">Settings</button>
-      <button id="clearHSButton" onclick="clearHighScore()">Clear High Score</button>
+      <button id="helpButton" onclick="toggleHelp()">How to play</button>
+      <div class="cookieDropDown">
+        <button id="cookieButton">?</button>
+        <div class="dropdownContent">
+          <p>This game uses cookies to store the high score. <a id="cookie" href="cookies.html" target="_blank">Learn More</a></p>
+        </div>
+      </div>
+      <button id="clearHSButton" onclick="clearHighScore()">&#10005; Clear High Score</button>
       <div id="helpMenu" style="display: none">
         <p>
           <a href="https://en.wikipedia.org/wiki/Yahtzee#Rules" target="_blank">Rules (Wikipedia)</a> <br>
           After the first roll, click on dice to lock them in. <br>
-          The grey dice will roll when you press 'Roll'. <br>
+          The gray dice will roll when you press 'Roll'. <br>
           Click a category to score your dice against it. <br>
           Refresh the page to start a new game (Game in progress is not saved).
           <hr>
@@ -769,9 +801,9 @@
     <div class="playArea">
       <div class="dice">
         <button class="die" id="die0" onclick="lockIn(0)">
-            <svg width="100%" height="100%" viewbox="0 0 100 100">
-                <circle cx="50" cy="50" r="15"/>
-              </svg>
+          <svg width="100%" height="100%" viewbox="0 0 100 100">
+              <circle cx="50" cy="50" r="15"/>
+            </svg>
         </button>
         <button class="die" id="die1" onclick="lockIn(1)">
           <svg width="100%" height="100%" viewbox="0 0 100 100">
@@ -779,14 +811,14 @@
           </svg>
         </button>
         <button class="die" id="die2" onclick="lockIn(2)">
-            <svg width="100%" height="100%" viewbox="0 0 100 100">
-              <circle cx="50" cy="50" r="15"/>
-            </svg>
+          <svg width="100%" height="100%" viewbox="0 0 100 100">
+            <circle cx="50" cy="50" r="15"/>
+          </svg>
         </button>
         <button class="die" id="die3" onclick="lockIn(3)">
-            <svg width="100%" height="100%" viewbox="0 0 100 100">
-              <circle cx="50" cy="50" r="15"/>
-            </svg>
+          <svg width="100%" height="100%" viewbox="0 0 100 100">
+            <circle cx="50" cy="50" r="15"/>
+          </svg>
         </button>
         <button class="die" id="die4" onclick="lockIn(4)">
           <svg width="100%" height="100%" viewbox="0 0 100 100">

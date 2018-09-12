@@ -8,10 +8,37 @@
     <link rel="icon" type="image/png" href="images/dieFavicon.png">
     <style>
       html, body {
+        margin: 0;
+        padding: 2vmin;
         font-family: Arial, Helvetica, sans-serif;
       }
       a {
         text-decoration: none;
+      }
+      h1, h2, h3, p {
+        margin-top: 0;
+      }
+      .header {
+        width: 100%;
+        /* position: relative; */
+        float: left;
+      }
+      .title {
+        margin: 0;
+        width: 75vmin;
+        /* position: relative; */
+        float: left;
+      }
+      .author {
+        margin: 0;
+        width: 20vmin;
+        font-size: 2vmin;
+        /* position: relative; */
+        float: right;
+      }
+      .gameMenu {
+        width: 100%;
+        
       }
       button {
         box-sizing: border-box;
@@ -28,6 +55,9 @@
       button:active {
         border-color: dimgrey;
         transition: .2s;
+      }
+      #author {
+        float: right;
       }
       #output {
         font-size: 2em;
@@ -239,39 +269,52 @@
     </script>
   </head>
   <body>
-    <h1>Kill Time With Random Number Generation (RNG)</h1>
-    <p> Vincent Nguyen 2018</p>
+    <div class="header">
+      <div class="title">
+        <h1>Test Your Luck </h1>
+        <h3 style="font-size: 1rem">Fun with random number generation</h3>
+      </div>
+      <div class="author">
+        <p>Vincent Nguyen 2018</p>
+      </div>
+    </div>
     <hr>
-    <!-- LINKS -->
-    <h2>Games <span style="font-size: .85rem"><a href="cookies.html">Manage Cookies</a></span></h2>
-    <a href="snake.html"><button>Snake</button></a>
-    <a href="yahtzee.html"><button>Yahtzee</button></a>
-    <a href="blackjack.html"><button>Blackjack</button></a>
+    <div class="gameMenu">
+      <!-- LINKS -->
+      <h2>Games <span style="font-size: .85rem"><a href="cookies.html">Manage Cookies</a></span></h2>
+      <a href="snake.html"><button>Snake</button></a>
+      <a href="yahtzee.html"><button>Yahtzee</button></a>
+      <a href="blackjack.html"><button>Blackjack</button></a>
+    </div>
     <hr>
     <!-- INPUT AREA -->
-    <h2>Dice Roll</h2>
-    <p>
-      # of Dice: 
-      <input type="text" id="diceCount" value="1" onchange="checkDice()">
-      # of Sides: 
-      <input type="text" id="diceSides" value="6" onchange="checkDice()">
-      <button onclick="rollDice()">Roll</button>
-    </p>
-    <h2>Card Picker (Standard 52-card deck)</h2>
-    <p>
-      # of Cards:
-      <input type="text" id="cardCount" value="1" onchange="checkCards()">
-      # of Decks:
-      <input type="text" id="deckCount" value="1">
-      <button onclick="drawCards()">Draw</button>
-    </p>
+    <div class="inputArea">
+      <h2>Dice Roll</h2>
+      <p>
+        # of Dice: 
+        <input type="text" id="diceCount" value="1" onchange="checkDice()">
+        # of Sides: 
+        <input type="text" id="diceSides" value="6" onchange="checkDice()">
+        <button onclick="rollDice()">Roll</button>
+      </p>
+      <h2>Card Picker (Standard 52-card deck)</h2>
+      <p>
+        # of Cards:
+        <input type="text" id="cardCount" value="1" onchange="checkCards()">
+        # of Decks:
+        <input type="text" id="deckCount" value="1">
+        <button onclick="drawCards()">Draw</button>
+      </p>
+    </div>
     <!-- RESULTS AREA -->
-    <h3>Results</h3>
-    <p>
-      Preference: 
-      <input type="radio" name="pref" value="icon" checked> Symbols
-      <input type="radio" name="pref" value="text"> Text
-    </p>
-    <p id="output"></p>
+    <div class="resultArea">
+      <h3>Results</h3>
+      <p>
+        Preference: 
+        <input type="radio" name="pref" value="icon" checked> Symbols
+        <input type="radio" name="pref" value="text"> Text
+      </p>
+      <p id="output"></p>
+    </div>
   </body>
 </html>

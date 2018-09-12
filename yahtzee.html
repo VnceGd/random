@@ -17,6 +17,14 @@
         text-decoration: none;
         color: rgb(200, 0, 0);
       }
+      h3 {
+        margin: 3vmin 0 1vmin 0;
+        font-size: 3vmin;
+      }
+      .subHeader {
+        margin: 1vmin 0 1vmin 0;
+        font-size: 2vmin;
+      }
       table, tr, th, td {
         margin: 0;
         border-spacing: 0;
@@ -47,10 +55,11 @@
         height: 15vmin;
       }
       button {
-        box-sizing: border-box;
         background-color: lightgray;
-        border: 0.5vmin solid lightgray;
+        height: 3vmin;
+        border: 0.25vmin solid lightgray;
         border-radius: 1vmin;
+        font-size: 1.75vmin;
         outline: none;
         cursor: pointer;
         transition: .2s;
@@ -112,17 +121,16 @@
       }
       #cookieButton {
         color: white;
-        width: 4vmin;
-        height: 4vmin;
+        width: 3vmin;
         background-color: #8D6E63;
         border-color: #795548;
         border-radius: 50%;
-        font-size: 2vmin;
+        font-weight: bold;
       }
       #clearHSButton {
         color: white;
-        background-color: darkred;
-        border-color: darkred;
+        background-color: maroon;
+        border-color: maroon;
         float: right;
       }
       #yahtzeeBanner {
@@ -143,9 +151,27 @@
         margin: 0;
       }
       @media only screen and (max-width: 700px) {
+        h3 {
+          font-size: 1.25em;
+        }
+        .subHeader {
+          font-size: 1em;
+        }
+        button {
+          height: 1.75em;
+          font-size: 1em;
+        }
+        #cookieButton {
+          width: 1.75em;
+        }
         .category {
           height: auto;
           font-size: 1em;
+        }
+      }
+      @media only screen and (max-width: 610px) {
+        #chsTxt {
+          display: none;
         }
       }
     </style>
@@ -708,7 +734,7 @@
           <p>This game uses cookies to store the high score. <a id="cookie" href="cookies.html" target="_blank">Learn More</a></p>
         </div>
       </div>
-      <button id="clearHSButton" onclick="clearHighScore()">&#10005; Clear High Score</button>
+      <button id="clearHSButton" onclick="clearHighScore()">&#10005; <span id="chsTxt">Clear High Score</span></button>
       <div id="helpMenu" style="display: none">
         <p>
           <a href="https://en.wikipedia.org/wiki/Yahtzee#Rules" target="_blank">Rules (Wikipedia)</a> <br>
@@ -731,7 +757,7 @@
         </p>
         <hr>
       </div>
-      <p>
+      <p class="subHeader">
         <b>Roll#</b> <span id="rollNum">1</span>
         <b>Round#</b> <span id="roundNum">1</span>
         <b>/ High Score:</b> <span id="highScore">0</span>

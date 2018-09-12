@@ -17,11 +17,21 @@
         text-decoration: none;
         color: rgb(200, 0, 0);
       }
+      h3 {
+        margin: 3vmin 0 1vmin 0;
+        font-size: 3vmin;
+      }
+      .subHeader {
+        margin: 1vmin 0 1vmin 0;
+        font-size: 2vmin;
+      }
       button {
         box-sizing: border-box;
         background-color: lightgrey;
-        border: 0.5vmin solid lightgrey;
+        height: 3vmin;
+        border: 0.25vmin solid lightgrey;
         border-radius: 1vmin;
+        font-size: 1.75vmin;
         outline: none;
         cursor: pointer;
         transition: .2s;
@@ -63,12 +73,11 @@
       }
       #cookieButton {
         color: white;
-        width: 4vmin;
-        height: 4vmin;
+        width: 3vmin;
         background-color: #8D6E63;
         border-color: #795548;
         border-radius: 50%;
-        font-size: 2vmin;
+        font-weight: bold;
       }
       #resetBalanceButton {
         color: white;
@@ -144,6 +153,9 @@
         color: white;
         background-color: maroon;
       }
+      #resetBalanceButton:hover, #surrender:hover {
+        background-color: darkred;
+      }
       #surrender:disabled {
         color: gray;
         background-color: lightcoral;
@@ -152,6 +164,26 @@
         color: white;
         margin: 1vmin;
         text-align: left;
+      }
+      @media only screen and (max-width: 700px) {
+        h3 {
+          font-size: 1.25em;
+        }
+        .subHeader {
+          font-size: 1em;
+        }
+        button {
+          height: 1.75em;
+          font-size: 1em;
+        }
+        #cookieButton {
+          width: 1.75em;
+        }
+      }
+      @media only screen and (max-width: 530px) {
+        #rbTxt {
+          display: none;
+        }
       }
     </style>
     <script>
@@ -273,7 +305,6 @@
             }
           }
         }
-        setBalance();
         updateDisplay();
         disableActions();
       }
@@ -483,22 +514,19 @@
         
         switch(num) {
           case 1:
-            str += "A ";
-            break;
-          case 10:
-            str += num;
+            str += "A";
             break;
           case 11:
-            str += "J ";
+            str += "J";
             break;
           case 12:
-            str += "Q ";
+            str += "Q";
             break;
           case 13:
-            str += "K ";
+            str += "K";
             break;
           default:
-            str += num + " ";
+            str += num;
             break;
         }
         switch(suit) {
@@ -518,7 +546,7 @@
         str += "</div>";
         return str;
       }
-      // Updates text only (used to reduce computations in payout())
+      // Updates text only
       function updateText() {
         document.getElementById("bankBalance").innerHTML = balance.toFixed(2);
         document.getElementById("playerBet").innerHTML = playerBet.toFixed(2);
@@ -604,7 +632,7 @@
           return;
         }
         try {
-          balance = parseFloat(localStorage.getItem("blackjackBalance"));
+          balance = localStorage.getItem("blackjackBalance");
           if(balance == null)
             balance = 2500;
           if(balance > 0)
@@ -686,15 +714,14 @@
       <button id="playButton" onclick="startGame()">&#9658; Play</button>
       <button id="settingsButton" onclick="toggleSettings()">Settings</button>
       <button id="helpButton" onclick="toggleHelp()">How to play</button>
+      <!-- COOKIE DROPDOWN -->
       <div class="cookieDropDown">
         <button id="cookieButton">?</button>
         <div class="dropdownContent">
           <p>This game uses cookies to store the balance. <a id="cookie" href="cookies.html" target="_blank">Learn More</a></p>
         </div>
       </div>
-      <button id="resetBalanceButton" onclick="resetBalance()">&#8634; Reset Balance</button>
-      <!-- COOKIE DROPDOWN -->
-      
+      <button id="resetBalanceButton" onclick="resetBalance()">&#11148; <span id="rbTxt">Reset Balance</span></button>
       <!-- HOW TO PLAY -->
       <div id="helpMenu" style="display:none">
         <p>
@@ -722,7 +749,7 @@
           </p>
           <hr>
         </div>
-      <p><b>Balance: $<span id="bankBalance">2500</span> </b></p>
+      <p class="subHeader"><b>Balance: $<span id="bankBalance">2500</span> </b></p>
     </div>
     <div class="playArea">
       <div class="dealerTable">

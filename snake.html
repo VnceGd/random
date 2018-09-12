@@ -107,9 +107,6 @@
         width: 100%; 
         height: 100%;
       }
-      .apple {
-        border-radius: 50%;
-      }
       .empty {
         background-color: gray;
       }
@@ -207,8 +204,6 @@
             cells[c].style.border = 'none';
         }
         updateBoard();
-        if(roundApple.checked)
-          document.getElementById("apple").style.borderRadius = '50%';
       }
       // Update the colors of the board tiles
       function updateBoard() {
@@ -218,10 +213,16 @@
         
         for(let d = 0; d < snakeCells.length; d++)   
           snakeCells[d].style.backgroundColor = document.querySelector('input[name = "snakeColor"]:checked').value;
-        for(let e = 0; e < appleCell.length; e++)
+        for(let e = 0; e < appleCell.length; e++) {
           appleCell[e].style.backgroundColor = document.querySelector('input[name = "appleColor"]:checked').value;
+          if(roundApple.checked)
+            appleCell[e].style.borderRadius = '50%';
+          else
+            appleCell[e].style.borderRadius = '0';
+        }
         for(let f = 0; f < emptyCells.length; f++)
           emptyCells[f].style.backgroundColor = document.querySelector('input[name = "bgColor"]:checked').value;
+          
       }
       // Spawn an apple on an empty tile
       function spawnApple() {
@@ -499,7 +500,7 @@
           <p><b>Board Size: </b><input id="boardSize" type="text" value="20" onchange="checkSettings()"> <i>Recommended: 20-40</i></p>
           <p><b>Updates Per Second: </b><input id="updatesPerSecond" type="text" value="10" onchange="checkSettings()"> <i>Recommended: 10-20</i></p>
           <p><b>Cell Borders: </b><input id="cellBorders" type="checkbox"/> <i>Recommended: Off</i></p>
-          <p><b>Round Apple: </b><input id="roundApple" type="checkbox" onchange="roundApple()"/></p>
+          <p><b>Round Apple: </b><input id="roundApple" type="checkbox"/></p>
           <p>
             <b>Snake Color: </b>
             <input type="radio" name="snakeColor" value="#4CAF50" checked>Green  

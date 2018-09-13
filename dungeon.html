@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<!-- Vincent Nguyen 2018 -->
+<!-- A remake of Dungeon Dilemma (github.com/vncegd/dungeon-proto) with no server side -->
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Dungeon Dilemma</title>
+    <style>
+      @keyframes darken {
+        from {background-color: #FFF;}
+        to {background-color: #263238;}
+      }
+      @keyframes lighten {
+        from {background-color:#263238;}
+        to {background-color: #FFF;}
+      }
+      html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        font-family: sans-serif;
+        transition: 1s;
+      }
+      /* TITLE SCREEN */
+      .titleScreen {
+        padding: 10%;
+        text-align: center;
+      }
+      #settingsMenu, #helpMenu, #creditsScreen, #patchNotesScreen {
+        display: none;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        color: #000;
+        background-color: #000;
+        background-color: rgba(0, 0, 0, 0.5);
+        position: fixed;
+        overflow: auto;
+        z-index: 1;
+      }
+      .menu-content {
+        margin: 10% auto;
+        padding: 2vmin;
+        width: 80%;
+        background-color: #FAFAFA;
+      }
+      li {
+        margin-left: 10px;
+      }
+      .backBtn {
+        float: right;
+      }
+      #versionBtn {
+        padding: 0 1vmin;
+        width: auto;
+        float: right;
+      }
+      .radioLabel {
+        display: block;
+        margin: 0.25vmin;
+        padding: 0.5vmin 0 0.5vmin 3.5vmin;
+        position: relative;
+        width: 30%;
+        border-bottom: 0.25vmin solid gray;
+        font-size: 2vmin;
+        cursor: pointer;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+      .radioLabel input {
+        position: absolute;
+        opacity: 0;
+      }
+      .checkmark {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 2vmin;
+        width: 2vmin;
+        background-color: #FFF8E1;
+        border: 0.5vmin solid #FFC107;
+        border-radius: 50%;
+      }
+      .radioLabel input:checked ~ .checkmark  {
+        background-color: #FFC107;
+        border-color: #FF6F00;
+      }
+      .checkmark:after {
+        content: "";
+        display: none;
+      }
+      .radioLabel .checkmark:after {
+        width: 2vmin;
+        height: 2vmin;
+        background: white;
+      }
+      .slider {
+        -webkit-appearance: none;  /* Override default CSS styles */
+        appearance: none;
+        width: 50%;
+        height: 1vmin;
+        background-color: #9E9E9E;
+        opacity: 0.8;
+        border-radius: 2vmin;
+      }
+      .slider:hover {
+        opacity: 1;
+        cursor: pointer;
+      }
+      .slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 1.75vmin;
+        height: 1.75vmin;
+        background-color: #FF8F00;
+        border: 0.25vmin solid #FF6F00;
+        border-radius: 2vmin;
+      }
+      .slider::-moz-range-thumb {
+        width: 2vmin;
+        height: 2vmin;
+      }
+      h1 {
+        font-size: 5vmin;
+      }
+      h3 {
+        font-size: 3.5vmin;
+      }
+      p {
+        font-size: 2.5vmin;
+      }
+      button {
+        margin: 1% 0;
+        padding: 1%;
+        width: 20%;
+        border: 0.25vmin solid gray;
+        border-radius: 10vmin;
+        font-size: 2vmin;
+        outline: none;
+        cursor: pointer;
+        transition: .1s;
+      }
+      button:focus, button:hover {
+        background-color: whitesmoke;
+        box-shadow: 0 0 0.2vmin 0.2vmin lightblue;
+        
+        transition: .1s;
+      }
+      .footer {
+        position: fixed;
+        left: 10%;
+        bottom: 10%;
+        width: 80%;
+      }
+      #author {
+        float: left;
+      }
+      #versionNo {
+        float: right;
+      }
+      
+      /* GAME BOARD */
+      .gameBoard {
+        width: 100%;
+      }
+      .gameMenu {
+        width: 80vmin;
+        padding: 1% 0 0 10%;
+      }
+      table, tr, td {
+        border: 1px solid #aaa;
+        border-collapse: collapse;
+      }
+      table {
+        left: 10%;
+        position: absolute;
+        width: 80vmin;
+        height: 80vmin;
+      }
+      td {
+        padding: 1vmin;
+      }
+      .gameBoard button {
+        padding: 1vmin 2vmin;
+        width: auto;
+      }
+      #player, #exit, .monster, .elite, .item {
+        position: absolute;
+        width: 5%;
+        height: 5%;
+        border-radius: 50%;
+        float: right;
+      }
+      #player {
+        background-color: cyan;
+        float: left;
+      }
+      #exit {
+        background-color: white;
+      }
+      .monster {
+        background-color: red;
+      }
+      .elite {
+        background-color: darkred;
+      }
+      .item { 
+        background-color: yellow;
+      }
+    </style>
+    <script>
+      // Difficulty values
+      const EASY = 0;
+      const NORMAL = 1;
+      const HARD = 2;
+      const INSANE = 3;
+      const NIGHTMARE = 4;
+      const CUSTOM = 5;
+      // Settings
+      let difficulty = 0;
+      let room_count = room_width = 5;
+      let monster_rate = item_rate = 4;
+      let elite_rate = 1;
+      // Game State
+      let room_number = 1;
+      let player_pos = [0, 0];
+      let exit_pos = [1, 1];
+
+      // Change the advanced settings unless set to CUSTOM
+      function updateDifficulty() {
+        let roomCount = document.getElementById("roomCount");
+        let roomWidth = document.getElementById("roomWidth");
+        let monsterRate = document.getElementById("monSpawnRate");
+        let eliteRate = document.getElementById("eliteSpawnRate");
+        let itemRate = document.getElementById("itemSpawnRate");
+
+        difficulty = parseInt(document.querySelector("input[name='difficulty']:checked").value);
+        
+        switch(difficulty) {
+          case EASY:
+            roomCount.value = roomWidth.value = 4;
+            monsterRate.value = 2;
+            eliteRate.value = 0;
+            itemRate.value = 5;
+            break;
+          default:
+          case NORMAL:
+            roomCount.value = roomWidth.value = 5;
+            monsterRate.value = 4;
+            eliteRate.value = 1;
+            itemRate.value = 4;
+            break;
+          case HARD:
+            roomCount.value = roomWidth.value = 6;
+            monsterRate.value = 6;
+            eliteRate.value = 2;
+            itemRate.value = 3;
+            break;
+          case INSANE:
+            roomCount.value = roomWidth.value = 8;
+            monsterRate.value = 10;
+            eliteRate.value = 3;
+            itemRate.value = 2;
+            break;
+          case NIGHTMARE:
+            roomCount.value = roomWidth.value = 10;
+            monsterRate.value = 15;
+            eliteRate.value = 5;
+            itemRate.value = 1;
+            break;
+          case CUSTOM:
+            break;
+        }
+        updateSettingsDisplay();
+      }
+      // Update display to show values of settings
+      function updateSettingsDisplay() {
+        let roomCountText  = document.getElementById("roomCountText");
+        let roomWidthText  = document.getElementById("roomWidthText");
+        let monSRText      = document.getElementById("monSpawnRateText");
+        let eliteSRText    = document.getElementById("eliteSpawnRateText");
+        let itemSRText     = document.getElementById("itemSpawnRateText");
+
+        roomCountText.innerHTML = room_count = parseInt(document.getElementById("roomCount").value);
+        roomWidthText.innerHTML = room_width = parseInt(document.getElementById("roomWidth").value);
+        monSRText.innerHTML     = monster_rate = parseInt(document.getElementById("monSpawnRate").value);
+        eliteSRText.innerHTML   = elite_rate = parseInt(document.getElementById("eliteSpawnRate").value);
+        itemSRText.innerHTML    = item_rate = parseInt(document.getElementById("itemSpawnRate").value);
+        document.getElementById("roomSizeText").innerHTML = room_width * room_width;
+      }
+      // Configure settings while maintaining limits
+      function updateSettings() {
+        let maxSpawns = 0;
+        let currentSpawns = monster_rate + elite_rate + item_rate;
+        let monSpawnRate = document.getElementById("monSpawnRate");
+        let eliteSpawnRate = document.getElementById("eliteSpawnRate");
+        let itemSpawnRate = document.getElementById("itemSpawnRate");
+        
+        room_count = document.getElementById("roomCount").value;
+        room_width = document.getElementById("roomWidth").value;
+        maxSpawns = roomWidth.value * roomWidth.value - 2;
+
+        while(currentSpawns > maxSpawns) {
+          if(monster_rate < elite_rate) {
+            if(elite_rate < item_rate)
+              itemSpawnRate.value = item_rate--;
+            else 
+              eliteSpawnRate.value = elite_rate--;
+          }
+          else if(monster_rate < item_rate) {
+            itemSpawnRate.value = item_rate--;
+          }
+          else {
+            monSpawnRate.value = monster_rate--;
+          }
+          currentSpawns = monster_rate + elite_rate + item_rate;
+        }
+        document.getElementById("roomSizeText").innerHTML = maxSpawns;
+        monster_rate = parseInt(monSpawnRate.value);
+        currentSpawns = monster_rate + elite_rate + item_rate;
+        if(currentSpawns > maxSpawns) {
+          monSpawnRate.value = monster_rate = maxSpawns - elite_rate - item_rate;
+        }
+        elite_rate = parseInt(eliteSpawnRate.value);
+        currentSpawns = monster_rate + elite_rate + item_rate;
+        if(currentSpawns > maxSpawns) {
+          eliteSpawnRate.value = elite_rate = maxSpawns - monster_rate - item_rate;
+        }
+        item_rate = parseInt(itemSpawnRate.value);
+        currentSpawns = monster_rate + elite_rate + item_rate;
+        if(currentSpawns > maxSpawns) {
+          itemSpawnRate.value = item_rate = maxSpawns - elite_rate - monster_rate;
+        }
+        document.getElementsByName("difficulty")[5].checked = true;
+        updateDifficulty();
+      }
+      // Open or close a modal based on option
+      function toggleMenu(option) {
+        let menu;
+
+        switch(option) {
+          case 'settings':
+            menu = document.getElementById("settingsMenu");
+            break;
+          case 'help':
+            menu = document.getElementById("helpMenu");
+            break;
+          case 'credits':
+            menu = document.getElementById("creditsScreen");
+          case 'patchNotes':
+            menu = document.getElementById("patchNotesScreen");
+        }
+        if(menu.style.display == "block")
+          menu.style.display = "none";
+        else
+          menu.style.display = "block";
+      }
+      // When the user clicks anywhere outside of the modal, close it
+      window.onclick = function(event) {
+        let settingsMenu = document.getElementById("settingsMenu");
+        let helpMenu = document.getElementById("helpMenu");
+        let creditsScreen = document.getElementById("creditsScreen");
+
+        if(event.target == settingsMenu)
+          settingsMenu.style.display = "none";
+        else if(event.target == helpMenu)
+          helpMenu.style.display = "none";
+        else if(event.target == creditsScreen)
+          creditsScreen.style.display = "none";
+      }
+
+      // Place the player on the board
+      function placePlayer(row, col) {
+        let cell = document.getElementById(row + "," + col);
+
+        cell.innerHTML += "<div id='player'></div>"
+      }
+      function placeRandom(object) {
+        do {
+          tempRow = Math.floor(Math.random() * room_width);
+          tempCol = Math.floor(Math.random() * room_width);
+        } while(document.getElementById(tempRow + "," + tempCol).innerHTML != "");
+        if(object == 'exit') {
+          exit_pos = [tempRow, tempCol];
+          document.getElementById(tempRow + "," + tempCol).innerHTML += "<div id='" + object + "'></div>";
+        }
+        else
+          document.getElementById(tempRow + "," + tempCol).innerHTML += "<div class='" + object + "'></div>";
+      }
+      function generateBoard() {
+        let str = "";
+        let tempRow = tempCol = 0;
+
+        for(let row = 0; row < room_width; row++) {
+          str += "<tr style='height:" + 80/room_width + "%'>";
+          for(let col = 0; col < room_width; col++) {
+            str += "<td id='" + row + "," + col + "'></td>";
+          }
+          str += "</tr>";
+        }
+        document.getElementById("room").innerHTML = str;
+        if(roomNo = 1)
+          placePlayer(0, 0);
+        else
+          playePlayer(exit_pos[0], exit_pos[1]);
+        // Place exit at a random position on the board
+        placeRandom('exit');
+        for(let i = 0; i < monster_rate; i++)
+          placeRandom('monster');
+        for(let j = 0; j < elite_rate; j++)
+          placeRandom('elite');
+        for(let k = 0; k < item_rate; k++)
+          placeRandom('item');
+      }
+
+      // Generate a table based on settings then display the gameBoard div
+      function startGame() {
+        console.log("Setting up game...");
+        document.getElementsByClassName("gameBoard")[0].style.display = "inline";
+        document.getElementsByClassName("titleScreen")[0].style.display = "none";
+        generateBoard();
+        document.body.style.WebkitAnimation = "darken 2s";
+        document.body.style.animation = "darken 2s";
+        document.body.style.color = "#FFF";
+        document.body.style.backgroundColor = "#263238";
+      }
+      // Return to the title screen
+      function quitGame() {
+        document.getElementsByClassName("gameBoard")[0].style.display = "none";
+        document.getElementsByClassName("titleScreen")[0].style.display = "inline";
+        document.body.style.WebkitAnimation = "lighten 2s";
+        document.body.style.animation = "lighten 2s";
+        document.body.style.color = "#000";
+        document.body.style.backgroundColor = "#FFF";
+      }
+    </script>
+  </head>
+  <body>
+    <div id="settingsMenu">
+      <div class="menu-content">
+        <button class="backBtn" onclick="toggleMenu('settings')">&#9668; Back</button>
+        <h1>Settings</h1>
+        <div id="basicSettings">
+          <h3>Basic</h3>
+          <p>
+            <b>Difficulty:</b> <br>
+            <label class="radioLabel">Easy 
+              <input type="radio" name="difficulty" value="0" onchange="updateDifficulty()"/>
+              <span class="checkmark"></span>
+            </label>
+            <label class="radioLabel">Normal 
+              <input class="radio" type="radio" name="difficulty" value="1" onchange="updateDifficulty()" checked/>
+              <span class="checkmark"></span> 
+            </label>
+            <label class="radioLabel">Hard 
+              <input class="radio" type="radio" name="difficulty" value="2" onchange="updateDifficulty()"/>
+              <span class="checkmark"></span> 
+            </label>
+            <label class="radioLabel">Insane 
+              <input class="radio" type="radio" name="difficulty" value="3" onchange="updateDifficulty()"/>
+              <span class="checkmark"></span> 
+            </label>
+            <label class="radioLabel">Nightmare 
+              <input class="radio" type="radio" name="difficulty" value="4" onchange="updateDifficulty()"/>
+              <span class="checkmark"></span> 
+            </label>
+            <label class="radioLabel">Custom 
+              <input class="radio" type="radio" name="difficulty" value="5" onchange="updateDifficulty()"/>
+              <span class="checkmark"></span> 
+            </label>
+          </p>
+        </div>
+        <div id="advSettings">
+          <h3>Advanced</h3>
+          <p>
+            <b>Dungeon Length (# of Rooms)</b>: <span id="roomCountText">5</span> <br>
+            <input id="roomCount" class="slider" type="range" min="3" max="15" value="5" oninput="updateSettings()"/> <br>
+            <b>Room width</b>: <span id="roomWidthText">5</span> (Room size = <span id="roomSizeText">25</span>)<br>
+            <input id="roomWidth" class="slider" type="range" min="3" max="12" value="5" oninput="updateSettings()"/> <br>
+            <b>Monsters per room</b>: <span id="monSpawnRateText">4</span> <br>
+            <input id="monSpawnRate" class="slider" type="range" min="1" max="50" value="4" oninput="updateSettings()"/> <br>
+            <b>Elite Monsters per room</b>: <span id="eliteSpawnRateText">1</span> <br>
+            <input id="eliteSpawnRate" class="slider" type="range" min="0" max="20" value="1" oninput="updateSettings()"/> <br>
+            <b>Items per room</b>: <span id="itemSpawnRateText">4</span> <br>
+            <input id="itemSpawnRate" class="slider" type="range" min="1" max="50" value="4" oninput="updateSettings()"/> <br>
+          </p>
+        </div>
+      </div>
+    </div>
+    <div id="creditsScreen">
+      <div class="menu-content">
+        <button class="backBtn" onclick="toggleMenu('credits')">&#9668; Back</button>
+        <h1>Credits</h1>
+        <h3>Made By</h3>
+        <p>
+          Vincent Nguyen <br>
+          <a href="https://github.com/vncegd">Github</a>
+        </p>
+        <h3>References</h3>
+        <p>
+          <a href="https://w3schools.com">W3Schools</a> (HTML, CSS, Javascript) <br>
+          <a href="https://material.io/design/">Google Material Design</a> (Design, Colors) <br>
+          <a href="https://github.com/vncegd/dungeon-proto">Dungeon Proto</a> (School project, Original inspiration)
+        </p>
+      </div>
+    </div>
+    <div id="patchNotesScreen">
+        <div class="menu-content">
+          <button class="backBtn" onclick="toggleMenu('patchNotes')">&#9668; Back</button>
+          <h1>Patch Notes</h1>
+          <h3>v0.1.0</h3>
+          <b>This version includes:</b>
+            <li>Basic UI Interaction</li>
+            <li>Ability to change settings/difficulty</li>
+            <li>Room generation</li>
+        </div>
+      </div>
+    <div id="helpMenu">
+      <div class="menu-content">
+        <button class="backBtn" onclick="toggleMenu('help')">&#9668; Back</button>
+        <h1>How to Play</h1>
+        <p>
+          Battle & loot your way through a series of rooms populated by monsters. <br>
+          Reach the end to win. <br>
+          <i>Gameplay not yet implemented.</i>
+          <hr>
+          <b>Controls:</b> <br>
+          <!-- <i>Movement</i> <br> -->
+          <svg width="25%" viewbox="0 0 100 100">
+            <text x="0" y="20" fill="black">Movement</text>
+            <g>
+              <polygon points="35,35 65,35 65,65 35,65" style="fill: gainsboro"/>
+              <text x="50" y="50" fill="black" text-anchor="middle" alignment-baseline="central">W</text>
+            </g>
+            <g>
+              <polygon points="0,70 30,70 30,100 0,100" style="fill: gainsboro"/>
+              <text x="15" y="85" fill="black" text-anchor="middle" alignment-baseline="central">A</text>
+            </g>
+            <g>
+              <polygon points="35,70 65,70 65,100 35,100" style="fill: gainsboro"/>
+              <text x="50" y="85" fill="black" text-anchor="middle" alignment-baseline="central">S</text>
+            </g>
+            <g>
+              <polygon points="70,70 100,70 100,100 70,100" style="fill: gainsboro"/>
+              <text x="85" y="85" fill="black" text-anchor="middle" alignment-baseline="central">D</text>
+            </g>
+          </svg>
+        </p>
+      </div>
+    </div>
+    <div class="titleScreen">
+      <h1>DUNGEON DILEMMA</h1>
+      <div class="buttonBox">
+        <button onclick="startGame()">Play</button> <br>
+        <button onclick="toggleMenu('settings')">Settings</button> <br>
+        <button onclick="toggleMenu('help')">How to Play</button> <br>
+        <button onclick="toggleMenu('credits')">Credits</button>
+      </div>
+      <div class="footer">
+        <span id="author"><img style="width: 2vmin" src="images/GitHub-Mark-120px-plus.png"/> VnceGd</span>
+        <button id="versionBtn" onclick="toggleMenu('patchNotes')"><span id="versionNo">v.0.1.0</span></button>
+      </div>
+    </div>
+    <div class="gameBoard" style="display:none">
+      <div class="gameMenu">
+        <button class="backBtn" onclick="quitGame()">Quit</button>
+        <button>Room <span id="roomNo">1</span></button>
+        <button>Inventory</button>
+        <button onclick="toggleMenu('help')">?</button> <br>
+      </div>  
+      <table id="room"></table>
+    </div>
+  </body>
+</html>

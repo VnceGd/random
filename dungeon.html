@@ -5,22 +5,16 @@
   <head>
     <meta charset="UTF-8">
     <title>Dungeon Dilemma</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
     <style>
-      @keyframes darken {
-        from {background-color: #FFF;}
-        to {background-color: #263238;}
-      }
-      @keyframes lighten {
-        from {background-color:#263238;}
-        to {background-color: #FFF;}
-      }
       html, body {
         margin: 0;
         padding: 0;
         height: 100%;
         font-family: sans-serif;
-        transition: 1s;
+        transition: 2s;
       }
+
       /* TITLE SCREEN */
       .titleScreen {
         padding: 10%;
@@ -59,20 +53,22 @@
       .radioLabel {
         display: block;
         margin: 0.25vmin;
-        padding: 0.5vmin 0 0.5vmin 3.5vmin;
+        padding: 0.5vmin 0 0.5vmin 4.5vmin;
         position: relative;
         width: 30%;
-        border-bottom: 0.25vmin solid gray;
         font-size: 2vmin;
         cursor: pointer;
         -webkit-user-select: none;
         -moz-user-select: none;
         -ms-user-select: none;
         user-select: none;
-    }
+      }
       .radioLabel input {
         position: absolute;
         opacity: 0;
+      }
+      .radioLabel:hover {
+        background-color: #FFECB3; 
       }
       .checkmark {
         position: absolute;
@@ -88,18 +84,9 @@
         background-color: #FFC107;
         border-color: #FF6F00;
       }
-      .checkmark:after {
-        content: "";
-        display: none;
-      }
-      .radioLabel .checkmark:after {
-        width: 2vmin;
-        height: 2vmin;
-        background: white;
-      }
       .slider {
         -webkit-appearance: none;  /* Override default CSS styles */
-        appearance: none;
+        -moz-appearance: none;
         width: 50%;
         height: 1vmin;
         background-color: #9E9E9E;
@@ -112,7 +99,7 @@
       }
       .slider::-webkit-slider-thumb {
         -webkit-appearance: none;
-        appearance: none;
+        -moz-appearance: none;
         width: 1.75vmin;
         height: 1.75vmin;
         background-color: #FF8F00;
@@ -139,6 +126,7 @@
         border: 0.25vmin solid gray;
         border-radius: 10vmin;
         font-size: 2vmin;
+        font-weight: bold;
         outline: none;
         cursor: pointer;
         transition: .1s;
@@ -156,10 +144,25 @@
         width: 80%;
       }
       #author {
+        margin-top: 1.5vmin;
         float: left;
+      }
+      #exitBtn {
+        width: auto;
+        padding: 0 1vmin;
       }
       #versionNo {
         float: right;
+      }
+      @media only screen and (max-width: 600px) {
+        h1 {
+          font-size: 2em;
+        }
+        button {
+          font-size: 1em;
+          width: 80%;
+          border: 1px solid gray;
+        }
       }
       
       /* GAME BOARD */
@@ -169,6 +172,10 @@
       .gameMenu {
         width: 80vmin;
         padding: 1% 0 0 10%;
+      }
+      .gameBoard button {
+        padding: 1vmin 2vmin;
+        width: auto;
       }
       table, tr, td {
         border: 1px solid #aaa;
@@ -180,96 +187,112 @@
         width: 80vmin;
         height: 80vmin;
       }
-      td {
-        padding: 1vmin;
+      .fog {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        background-color: #212121;
+        transition: 2s;
+        z-index: 3;
       }
-      .gameBoard button {
-        padding: 1vmin 2vmin;
-        width: auto;
+      .discovered {
+        background-color: white;
       }
       #player, #exit, .monster, .elite, .item {
-        position: absolute;
-        width: 5%;
-        height: 5%;
+        position: relative;
+        margin: 0 2%;
+        width: 45%;
+        height: 45%;
         border-radius: 50%;
         float: right;
       }
       #player {
-        background-color: cyan;
+        background-image: radial-gradient(#B2EBF2, #00BCD4);
         float: left;
       }
       #exit {
-        background-color: white;
+        background-image: radial-gradient(#CFD8DC, #607D8B);
+      }
+      .exitSVG line {
+        stroke: black;
+        stroke-width: 1.5vmin;
       }
       .monster {
-        background-color: red;
+        background-image: radial-gradient(#F44336, #B71C1C);
       }
       .elite {
-        background-color: darkred;
+        background-image: radial-gradient(#BA68C8, #7B1FA2);
       }
       .item { 
-        background-color: yellow;
+        background-image: radial-gradient(#FFF176, #FBC02D);
       }
     </style>
     <script>
       // Difficulty values
-      const EASY = 0;
-      const NORMAL = 1;
-      const HARD = 2;
-      const INSANE = 3;
-      const NIGHTMARE = 4;
-      const CUSTOM = 5;
+      const EASY       = 0;
+      const NORMAL     = 1;
+      const HARD       = 2;
+      const INSANE     = 3;
+      const NIGHTMARE  = 4;
+      const CUSTOM     = 5;
+      // SVG Icons
+      const PLAYER     = "<svg width='100%' viewbox='0 0 100 100'><polygon points='50,25 75,75 25,75'/></svg>";
+      const EXIT       = "<svg class='exitSVG' width='100%' viewbox='0 0 100 100'><line x1='25' y1='5' x2='25' y2='75'/><line x1='75' y1='5' x2='75' y2='75'/><line x1='25' y1='20' x2='75' y2='20'/><line x1='25' y1='40' x2='75' y2='40'/><line x1='25' y1='60' x2='75' y2='60'/</svg>";
+      const MONSTER    = "<svg width='100%' viewbox='0 0 100 100'><polygon points='50,25 75,50 50,75 25,50'/></svg>";
+      const ELITE      = "<svg width='100%' viewbox='0 0 100 100'><polygon points='50,20 75,75 20,40 80,40 25,75'/></svg>";
+      const ITEM       = "<svg width='100%' viewbox='0 0 100 100'><polygon points='25,35 35,25 65,25 75,35 75,45 25,45'/><polygon points='25,50 75,50 75,75 25,75'/></svg>";
       // Settings
-      let difficulty = 0;
-      let room_count = room_width = 5;
-      let monster_rate = item_rate = 4;
-      let elite_rate = 1;
+      let difficulty   = 0;
+      let room_count   = room_width = 5;
+      let monster_rate = item_rate  = 4;
+      let elite_rate   = 1;
       // Game State
-      let room_number = 1;
-      let player_pos = [0, 0];
-      let exit_pos = [1, 1];
+      let room_number  = 1;
+      let player_pos   = [0, 0];
+      let exit_pos     = [1, 1];
+      let keys         = {};
 
       // Change the advanced settings unless set to CUSTOM
       function updateDifficulty() {
-        let roomCount = document.getElementById("roomCount");
-        let roomWidth = document.getElementById("roomWidth");
+        let roomCount   = document.getElementById("roomCount");
+        let roomWidth   = document.getElementById("roomWidth");
         let monsterRate = document.getElementById("monSpawnRate");
-        let eliteRate = document.getElementById("eliteSpawnRate");
-        let itemRate = document.getElementById("itemSpawnRate");
+        let eliteRate   = document.getElementById("eliteSpawnRate");
+        let itemRate    = document.getElementById("itemSpawnRate");
 
         difficulty = parseInt(document.querySelector("input[name='difficulty']:checked").value);
         
         switch(difficulty) {
           case EASY:
-            roomCount.value = roomWidth.value = 4;
+            roomCount.value   = roomWidth.value = 4;
             monsterRate.value = 2;
-            eliteRate.value = 0;
-            itemRate.value = 5;
+            eliteRate.value   = 0;
+            itemRate.value    = 5;
             break;
           default:
           case NORMAL:
-            roomCount.value = roomWidth.value = 5;
+            roomCount.value   = roomWidth.value = 5;
             monsterRate.value = 4;
-            eliteRate.value = 1;
-            itemRate.value = 4;
+            eliteRate.value   = 1;
+            itemRate.value    = 4;
             break;
           case HARD:
-            roomCount.value = roomWidth.value = 6;
+            roomCount.value   = roomWidth.value = 6;
             monsterRate.value = 6;
-            eliteRate.value = 2;
-            itemRate.value = 3;
+            eliteRate.value   = 2;
+            itemRate.value    = 3;
             break;
           case INSANE:
-            roomCount.value = roomWidth.value = 8;
+            roomCount.value   = roomWidth.value = 8;
             monsterRate.value = 10;
-            eliteRate.value = 3;
-            itemRate.value = 2;
+            eliteRate.value   = 3;
+            itemRate.value    = 2;
             break;
           case NIGHTMARE:
-            roomCount.value = roomWidth.value = 10;
+            roomCount.value   = roomWidth.value = 10;
             monsterRate.value = 15;
-            eliteRate.value = 5;
-            itemRate.value = 1;
+            eliteRate.value   = 5;
+            itemRate.value    = 1;
             break;
           case CUSTOM:
             break;
@@ -284,24 +307,24 @@
         let eliteSRText    = document.getElementById("eliteSpawnRateText");
         let itemSRText     = document.getElementById("itemSpawnRateText");
 
-        roomCountText.innerHTML = room_count = parseInt(document.getElementById("roomCount").value);
-        roomWidthText.innerHTML = room_width = parseInt(document.getElementById("roomWidth").value);
+        roomCountText.innerHTML = room_count   = parseInt(document.getElementById("roomCount").value);
+        roomWidthText.innerHTML = room_width   = parseInt(document.getElementById("roomWidth").value);
         monSRText.innerHTML     = monster_rate = parseInt(document.getElementById("monSpawnRate").value);
-        eliteSRText.innerHTML   = elite_rate = parseInt(document.getElementById("eliteSpawnRate").value);
-        itemSRText.innerHTML    = item_rate = parseInt(document.getElementById("itemSpawnRate").value);
+        eliteSRText.innerHTML   = elite_rate   = parseInt(document.getElementById("eliteSpawnRate").value);
+        itemSRText.innerHTML    = item_rate    = parseInt(document.getElementById("itemSpawnRate").value);
         document.getElementById("roomSizeText").innerHTML = room_width * room_width;
       }
       // Configure settings while maintaining limits
       function updateSettings() {
         let maxSpawns = 0;
-        let currentSpawns = monster_rate + elite_rate + item_rate;
-        let monSpawnRate = document.getElementById("monSpawnRate");
+        let currentSpawns  = monster_rate + elite_rate + item_rate;
+        let monSpawnRate   = document.getElementById("monSpawnRate");
         let eliteSpawnRate = document.getElementById("eliteSpawnRate");
-        let itemSpawnRate = document.getElementById("itemSpawnRate");
+        let itemSpawnRate  = document.getElementById("itemSpawnRate");
         
         room_count = document.getElementById("roomCount").value;
         room_width = document.getElementById("roomWidth").value;
-        maxSpawns = roomWidth.value * roomWidth.value - 2;
+        maxSpawns  = roomWidth.value * roomWidth.value - 2;
 
         while(currentSpawns > maxSpawns) {
           if(monster_rate < elite_rate) {
@@ -350,8 +373,10 @@
             break;
           case 'credits':
             menu = document.getElementById("creditsScreen");
+            break;
           case 'patchNotes':
             menu = document.getElementById("patchNotesScreen");
+            break;
         }
         if(menu.style.display == "block")
           menu.style.display = "none";
@@ -360,9 +385,10 @@
       }
       // When the user clicks anywhere outside of the modal, close it
       window.onclick = function(event) {
-        let settingsMenu = document.getElementById("settingsMenu");
-        let helpMenu = document.getElementById("helpMenu");
-        let creditsScreen = document.getElementById("creditsScreen");
+        let settingsMenu     = document.getElementById("settingsMenu");
+        let helpMenu         = document.getElementById("helpMenu");
+        let creditsScreen    = document.getElementById("creditsScreen");
+        let patchNotesScreen = document.getElementById("patchNotesScreen");
 
         if(event.target == settingsMenu)
           settingsMenu.style.display = "none";
@@ -370,34 +396,101 @@
           helpMenu.style.display = "none";
         else if(event.target == creditsScreen)
           creditsScreen.style.display = "none";
+        else if(event.target == patchNotesScreen)
+          patchNotesScreen.style.display = "none";
       }
 
+      // Listens for keypresses
+      addEventListener("keydown", function(e) {
+        keys[e.keyCode] = true
+        movePlayer();
+      }, false)
+      addEventListener("keyup", function(e) {
+        delete keys[e.keyCode]
+      }, false)
+      // Move the player token on keypress
+      function movePlayer() {
+        let up    = (38 in keys || 87 in keys);
+        let down  = (40 in keys || 83 in keys);
+        let left  = (37 in keys || 65 in keys);
+        let right = (39 in keys || 68 in keys);
+        let player;
+
+        if($("#player").length < 1)
+          return;
+
+        if(up && player_pos[0] > 0)
+          player_pos[0]--;
+        else if(down && player_pos[0] < room_width - 1)
+          player_pos[0]++;
+        else if(left && player_pos[1] > 0)
+          player_pos[1]--;
+        else if(right && player_pos[1] < room_width - 1)
+          player_pos[1]++;
+        else
+          return;
+        player = document.getElementById("player");
+        player.remove();
+        updateBoard();
+      }
       // Place the player on the board
       function placePlayer(row, col) {
-        let cell = document.getElementById(row + "," + col);
-
-        cell.innerHTML += "<div id='player'></div>"
+        player_pos[0] = row;
+        player_pos[1] = col;
       }
+      // Place object in a random empty cell
       function placeRandom(object) {
+        let cell;
         do {
           tempRow = Math.floor(Math.random() * room_width);
           tempCol = Math.floor(Math.random() * room_width);
-        } while(document.getElementById(tempRow + "," + tempCol).innerHTML != "");
+          cell = document.getElementById(tempRow + "," + tempCol);
+        } while(cell.innerHTML != "" || (tempRow == player_pos[0] && tempCol == player_pos[1]));
         if(object == 'exit') {
           exit_pos = [tempRow, tempCol];
-          document.getElementById(tempRow + "," + tempCol).innerHTML += "<div id='" + object + "'></div>";
+          cell.innerHTML += "<div id='" + object + "'>" + EXIT + "</div>";
         }
-        else
-          document.getElementById(tempRow + "," + tempCol).innerHTML += "<div class='" + object + "'></div>";
+        else {
+          let str = "<div class='" + object + "'>";
+          if(object == 'monster')
+            str += MONSTER;
+          else if(object == 'elite')
+            str += ELITE;
+          else if(object == 'item')
+            str += ITEM;
+          str += "</div>";
+          cell.innerHTML += str;
+        }
       }
+      // Place fog over the whole room
+      function placeFog() {
+        let cell;
+
+        for(let row = 0; row < room_width; row++) {
+          for(let col = 0; col < room_width; col++) {
+            cell = document.getElementById(row + "," + col);
+            cell.innerHTML += "<div class='fog'></div>";
+          }
+        }
+      }
+      // Clear fog and trigger events
+      function updateBoard() {
+        let playerCell = document.getElementById(player_pos[0] + "," + player_pos[1]);
+        let fog = $("#" + player_pos[0] + "\\," + player_pos[1] + " div.fog");
+
+        if(fog.length > 0)
+          fog[0].className = "discovered";
+        playerCell.innerHTML += "<div id='player'>" + PLAYER + "</div>";
+      }
+      // Create a room according to settings
       function generateBoard() {
-        let str = "";
+        let str     = "";
         let tempRow = tempCol = 0;
 
         for(let row = 0; row < room_width; row++) {
           str += "<tr style='height:" + 80/room_width + "%'>";
           for(let col = 0; col < room_width; col++) {
-            str += "<td id='" + row + "," + col + "'></td>";
+            str += "<td style='width:" + 80/room_width + "%' id='" + row + "," + col + "'></td>";
           }
           str += "</tr>";
         }
@@ -406,7 +499,6 @@
           placePlayer(0, 0);
         else
           playePlayer(exit_pos[0], exit_pos[1]);
-        // Place exit at a random position on the board
         placeRandom('exit');
         for(let i = 0; i < monster_rate; i++)
           placeRandom('monster');
@@ -414,16 +506,15 @@
           placeRandom('elite');
         for(let k = 0; k < item_rate; k++)
           placeRandom('item');
+        placeFog();
+        updateBoard();
       }
 
       // Generate a table based on settings then display the gameBoard div
       function startGame() {
-        console.log("Setting up game...");
         document.getElementsByClassName("gameBoard")[0].style.display = "inline";
         document.getElementsByClassName("titleScreen")[0].style.display = "none";
         generateBoard();
-        document.body.style.WebkitAnimation = "darken 2s";
-        document.body.style.animation = "darken 2s";
         document.body.style.color = "#FFF";
         document.body.style.backgroundColor = "#263238";
       }
@@ -431,8 +522,6 @@
       function quitGame() {
         document.getElementsByClassName("gameBoard")[0].style.display = "none";
         document.getElementsByClassName("titleScreen")[0].style.display = "inline";
-        document.body.style.WebkitAnimation = "lighten 2s";
-        document.body.style.animation = "lighten 2s";
         document.body.style.color = "#000";
         document.body.style.backgroundColor = "#FFF";
       }
@@ -508,16 +597,22 @@
       </div>
     </div>
     <div id="patchNotesScreen">
-        <div class="menu-content">
-          <button class="backBtn" onclick="toggleMenu('patchNotes')">&#9668; Back</button>
-          <h1>Patch Notes</h1>
-          <h3>v0.1.0</h3>
-          <b>This version includes:</b>
-            <li>Basic UI Interaction</li>
-            <li>Ability to change settings/difficulty</li>
-            <li>Room generation</li>
-        </div>
+      <div class="menu-content">
+        <button class="backBtn" onclick="toggleMenu('patchNotes')">&#9668; Back</button>
+        <h1>Patch Notes</h1>
+        <h3>v0.1.1</h3>
+        <b>Updates:</b>
+          <li>WASD Movement</li>
+          <li>Icons created for board tokens</li>
+          <li>Fog added to dungeon rooms</li>
+          <li>Fixed 'Credits' button opening patch notes</li>
+        <h3>v0.1.0</h3>
+        <b>This version includes:</b>
+          <li>Basic UI Interaction</li>
+          <li>Ability to change settings/difficulty</li>
+          <li>Room generation</li>
       </div>
+    </div>
     <div id="helpMenu">
       <div class="menu-content">
         <button class="backBtn" onclick="toggleMenu('help')">&#9668; Back</button>
@@ -528,8 +623,7 @@
           <i>Gameplay not yet implemented.</i>
           <hr>
           <b>Controls:</b> <br>
-          <!-- <i>Movement</i> <br> -->
-          <svg width="25%" viewbox="0 0 100 100">
+          <svg width="20vmin" viewbox="0 0 100 100">
             <text x="0" y="20" fill="black">Movement</text>
             <g>
               <polygon points="35,35 65,35 65,65 35,65" style="fill: gainsboro"/>
@@ -561,7 +655,8 @@
       </div>
       <div class="footer">
         <span id="author"><img style="width: 2vmin" src="images/GitHub-Mark-120px-plus.png"/> VnceGd</span>
-        <button id="versionBtn" onclick="toggleMenu('patchNotes')"><span id="versionNo">v.0.1.0</span></button>
+        <a href="index.html"><button id="exitBtn">Exit</button></a>
+        <button id="versionBtn" onclick="toggleMenu('patchNotes')"><span id="versionNo">v0.1.1</span></button>
       </div>
     </div>
     <div class="gameBoard" style="display:none">
@@ -570,7 +665,7 @@
         <button>Room <span id="roomNo">1</span></button>
         <button>Inventory</button>
         <button onclick="toggleMenu('help')">?</button> <br>
-      </div>  
+      </div>
       <table id="room"></table>
     </div>
   </body>

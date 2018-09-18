@@ -17,7 +17,11 @@ Playing around with random number generation in Javascript.
 `blackjack.html`
 - Responsive blackjack game for a single player.
 
-*Note: Games track high score in local browser storage/cache.*
+`dungeon.html`
+- Remake of Dungeon Dilemma (dungeon-proto) with no server side.
+- Features more detailed combat and use of items.
+
+*Note: Games may store data in local browser storage/cache.*
   
 ## Other
 

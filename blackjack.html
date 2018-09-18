@@ -415,6 +415,7 @@
         balance += playerBet/2;
         balance = Math.floor(balance*100)/100;
         playerBet = 0;
+        setBalance();
         disableActions();
         updateText();
         document.getElementById("playButton").disabled = false;
@@ -685,6 +686,7 @@
           return;
         }
         balance -= initialBet;
+        setBalance();
         playerBet = initialBet;
         splitBet = 0;
         playerTurn = true;

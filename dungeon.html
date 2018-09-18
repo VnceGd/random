@@ -5,12 +5,15 @@
   <head>
     <meta charset="UTF-8">
     <title>Dungeon Dilemma</title>
+    <link rel="icon" type="image/png" href="images/dungeonFavicon.png"/>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
     <style>
+      /* ANIMATION */
       @keyframes clear {
         from{opacity: 1}
         to{opacity: 0}
       }
+      /* GENERAL */
       html, body {
         margin: 0;
         padding: 0;
@@ -18,12 +21,34 @@
         font-family: sans-serif;
         transition: 1s;
       }
-
-      /* TITLE SCREEN */
-      .titleScreen {
-        padding: 10%;
-        text-align: center;
+      h1 {
+        font-size: 5vmin;
       }
+      h3 {
+        font-size: 3.5vmin;
+      }
+      p {
+        font-size: 2.5vmin;
+      }
+      button {
+        margin: 1% 0;
+        padding: 1%;
+        width: 25%;
+        border: 0.25vmin solid gray;
+        border-radius: 10vmin;
+        font-size: 2vmin;
+        font-weight: bold;
+        outline: none;
+        cursor: pointer;
+        transition: .1s;
+      }
+      button:focus, button:hover {
+        background-color: whitesmoke;
+        box-shadow: 0 0 0.2vmin 0.2vmin lightblue;
+        
+        transition: .1s;
+      }
+      /* MODALS */
       #settingsMenu, #helpMenu, #creditsScreen, #patchNotesScreen, #combatScreen, #roomInfoScreen, #characterScreen, #combatHelpMenu, #exitRoomMenu {
         display: none;
         left: 0;
@@ -114,32 +139,10 @@
         width: 2vmin;
         height: 2vmin;
       }
-      h1 {
-        font-size: 5vmin;
-      }
-      h3 {
-        font-size: 3.5vmin;
-      }
-      p {
-        font-size: 2.5vmin;
-      }
-      button {
-        margin: 1% 0;
-        padding: 1%;
-        width: 25%;
-        border: 0.25vmin solid gray;
-        border-radius: 10vmin;
-        font-size: 2vmin;
-        font-weight: bold;
-        outline: none;
-        cursor: pointer;
-        transition: .1s;
-      }
-      button:focus, button:hover {
-        background-color: whitesmoke;
-        box-shadow: 0 0 0.2vmin 0.2vmin lightblue;
-        
-        transition: .1s;
+      /* TITLE SCREEN */
+      .titleScreen {
+        padding: 10%;
+        text-align: center;
       }
       .footer {
         position: fixed;
@@ -190,7 +193,6 @@
         width: 100%;
         height: 15%;
       }
-
       /* GAME BOARD */
       .gameBoard {
         width: 100%;
@@ -289,40 +291,51 @@
     </style>
     <script>
       // Difficulty values
-      const EASY       = 0;
-      const NORMAL     = 1;
-      const HARD       = 2;
-      const INSANE     = 3;
-      const NIGHTMARE  = 4;
-      const CUSTOM     = 5;
+      const EASY         = 0;
+      const NORMAL       = 1;
+      const HARD         = 2;
+      const INSANE       = 3;
+      const NIGHTMARE    = 4;
+      const CUSTOM       = 5;
       // SVG Icons
-      const PLAYER     = "<svg width='100%' viewbox='0 0 100 100'><polygon points='50,25 75,75 25,75'/></svg>";
-      const EXIT       = "<svg class='exitSVG' width='100%' viewbox='0 0 100 100'><line x1='25' y1='5' x2='25' y2='75'/><line x1='75' y1='5' x2='75' y2='75'/><line x1='25' y1='20' x2='75' y2='20'/><line x1='25' y1='40' x2='75' y2='40'/><line x1='25' y1='60' x2='75' y2='60'/></svg>";
-      const MONSTER    = "<svg width='100%' viewbox='0 0 100 100'><polygon points='50,25 75,50 50,75 25,50'/></svg>";
-      const ELITE      = "<svg width='100%' viewbox='0 0 100 100'><polygon points='50,20 75,75 20,40 80,40 25,75'/></svg>";
-      const ITEM       = "<svg width='100%' viewbox='0 0 100 100'><polygon points='25,35 35,25 65,25 75,35 75,45 25,45'/><polygon points='25,50 75,50 75,75 25,75'/></svg>";
+      const PLAYER       = "<svg width='100%' viewbox='0 0 100 100'><polygon points='50,25 75,75 25,75'/></svg>";
+      const EXIT         = "<svg class='exitSVG' width='100%' viewbox='0 0 100 100'><line x1='25' y1='5' x2='25' y2='75'/><line x1='75' y1='5' x2='75' y2='75'/><line x1='25' y1='20' x2='75' y2='20'/><line x1='25' y1='40' x2='75' y2='40'/><line x1='25' y1='60' x2='75' y2='60'/></svg>";
+      const MONSTER      = "<svg width='100%' viewbox='0 0 100 100'><polygon points='50,25 75,50 50,75 25,50'/></svg>";
+      const ELITE        = "<svg width='100%' viewbox='0 0 100 100'><polygon points='50,20 75,75 20,40 80,40 25,75'/></svg>";
+      const ITEM         = "<svg width='100%' viewbox='0 0 100 100'><polygon points='25,35 35,25 65,25 75,35 75,45 25,45'/><polygon points='25,50 75,50 75,75 25,75'/></svg>";
       // Starting values for game
       const MAXPLAYERHP  = 100;
       const MAXMONSTERHP = 10;
       const MAXELITEHP   = 20;
+      const MAXSTAMINA   = 5;
+      // Item Values
+      const TOTALITEMS   = 3; // Update when adding new items
+      //    **********
+      const SMHEALTHPOT  = 0;
+      const LGHEALTHPOT  = 1;
+      const DOUBLEDMG    = 2;
       // Settings
-      let difficulty   = 0;
-      let room_count   = room_width = 5;
-      let monster_rate = item_rate  = 4;
-      let elite_rate   = 1;
+      let difficulty     = 0;
+      let room_count     = room_width = 5;
+      let monster_rate   = item_rate  = 4;
+      let elite_rate     = 1;
       // Game State
-      let room_number  = 1;
-      let player_pos   = [0, 0];
-      let exit_pos     = [1, 1];
-      let keys         = {};
-      let moving       = inMenu = inCombat = false;
+      let room_number    = 1;
+      let player_pos     = [0, 0];
+      let exit_pos       = [1, 1];
+      let keys           = {};
+      let moving         = inMenu = inCombat = inGame = false;
+      // Room Progress
+      let mons_defeated  = elites_defeated = items_found = tiles_explored = 0;
       // Combat State
-      let player_hp    = MAXPLAYERHP;
-      let monster_hp   = MAXMONSTERHP;
-      let elite_hp     = MAXELITEHP;
-      let stamina      = 5;
-      let selected     = [[],[],[],[],[]]; // For each array in selected, [0] = die number & [1] = 1 if selected or 0 if not selected
-      let monster_dice = [];
+      let player_hp      = MAXPLAYERHP;
+      let monster_hp     = MAXMONSTERHP;
+      let elite_hp       = MAXELITEHP;
+      let stamina        = MAXSTAMINA;
+      let dmg_multiplier = 1;
+        // For each array in selected, [0] = die number & [1] = 1 if selected or 0 if not selected
+      let selected       = [[0, 0],[0, 0],[0, 0],[0, 0],[0, 0]]; 
+      let monster_dice   = [0, 0, 0];
 
       // Change the advanced settings unless set to CUSTOM
       function updateDifficulty() {
@@ -468,6 +481,8 @@
           inMenu = true;
           if(option == 'character')
             document.getElementById("characterHealth").innerHTML = player_hp;
+          else if(option == 'room')
+            updateProgress();
         }
       }
       // When the user clicks anywhere outside of a modal, close it
@@ -500,11 +515,12 @@
       }
       // Listens for keypresses
       addEventListener("keydown", function(e) {
-        keys[e.keyCode] = true
+        keys[e.keyCode] = true;
         movePlayer();
+        delete keys[e.keyCode];
       }, false)
       addEventListener("keyup", function(e) {
-        delete keys[e.keyCode]
+        // delete keys[e.keyCode];
       }, false)
       // Move the player token on keypress
       function movePlayer() {
@@ -512,9 +528,9 @@
         let down  = (40 in keys || 83 in keys);
         let left  = (37 in keys || 65 in keys);
         let right = (39 in keys || 68 in keys);
-        let player;
+        let player = document.getElementById("player");
 
-        if($("#player").length < 1 || moving || inMenu || inCombat)
+        if($("#player").length < 1 || moving || inMenu || inCombat || !inGame)
           return;
         if(up && player_pos[0] > 0)
           player_pos[0]--;
@@ -527,7 +543,6 @@
         else
           return;
         moving = true;
-        player = document.getElementById("player");
         player.remove();
         updateBoard();
       }
@@ -572,8 +587,6 @@
       }
       // Select die and all dice to the left while unselected those to the right
       function selectDie(n) {
-        if(n > stamina - 1)
-          return;
         for(let i = n; i >= 0; i--) {
           selected[i][1] = 1;
           document.getElementById("die" + i).style.backgroundColor = "#FFC107";
@@ -593,18 +606,19 @@
         document.getElementById("itemButton").disabled   =
         document.getElementById("fleeButton").disabled   = true;
       }
-      // Enable 'Defend', 'Item', and 'Flee' buttons
+      // Enable 'Defend', 'Item', and 'Flee' buttons while resetting stats modified by items
       function enableActions() {
         document.getElementById("defendButton").disabled =
         document.getElementById("itemButton").disabled   =
         document.getElementById("fleeButton").disabled   = false;
+        dmg_multiplier = 1;
       }
       // Perform an action based on input button
       function playerAction(action) {
         let playerAttackValue = monsterAttackValue = 0;
         
-        disableActions();
         if(action == 'attack') {
+          disableActions();
           playerAttack();
           if(document.getElementById("monDie2").style.display == "none") {
             monsterAttack(2);
@@ -615,6 +629,7 @@
               }
               for(let j = 0; j < monster_dice.length; j++)
                 monsterAttackValue += monster_dice[j];
+              playerAttackValue *= dmg_multiplier;
               if(playerAttackValue > monsterAttackValue)
                 monster_hp -= (playerAttackValue - monsterAttackValue);
               else
@@ -625,6 +640,7 @@
                 setTimeout(function() {
                   let monster = $("#" + player_pos[0] + "\\," + player_pos[1] + " div.monster");
                   monster[0].remove();
+                  mons_defeated++;
                   toggleMenu('combat');
                 }, 1000);
               else
@@ -640,6 +656,7 @@
               }
               for(let j = 0; j < monster_dice.length; j++)
                 monsterAttackValue += monster_dice[j];
+              playerAttackValue *= dmg_multiplier;
               if(playerAttackValue > monsterAttackValue)
                 elite_hp -= (playerAttackValue - monsterAttackValue);
               else
@@ -650,6 +667,7 @@
                 setTimeout(function() {
                   let monster = $("#" + player_pos[0] + "\\," + player_pos[1] + " div.elite");
                   monster[0].remove();
+                  elites_defeated++;
                   toggleMenu('combat');
                 }, 1000);
               else
@@ -658,21 +676,24 @@
           }
         }
         else if(action == 'defend') {
-          for(let n = 0; n < selected.length; n++) {
-            selected[n][0] = selected[n][1] = 0;
-            document.getElementById("die" + n).disabled = false;
-            document.getElementById("die" + n).style.backgroundColor = "lightgray";
-            document.getElementById("die" + n).innerHTML = selected[n][0];
-          }
-          stamina += 2;
-          if(stamina < 5)
-            for(let i = stamina; i < selected.length; i++)
-              document.getElementById("die" + i).disabled = true;
+          disableActions();
           if(document.getElementById("monDie2").style.display == "none")
             monsterAttack(1);
           else 
             monsterAttack(2);
           setTimeout(function() {
+            for(let n = 0; n < selected.length; n++) {
+              selected[n][0] = selected[n][1] = 0;
+              document.getElementById("die" + n).disabled = false;
+              document.getElementById("die" + n).style.backgroundColor = "lightgray";
+              document.getElementById("die" + n).innerHTML = selected[n][0];
+            }
+            stamina += 2;
+            if(stamina > MAXSTAMINA)
+              stamina = MAXSTAMINA;
+            if(stamina < 5)
+              for(let i = stamina; i < selected.length; i++)
+                document.getElementById("die" + i).disabled = true;
             for(let j = 0; j < monster_dice.length; j++)
               monsterAttackValue += monster_dice[j];
             player_hp -= monsterAttackValue;
@@ -681,11 +702,10 @@
           }, 1000); 
         }
         else if(action == 'item') {
-          console.log("Not implemented");
           toggleMenu('character');
-          enableActions();
         }
         else if(action == 'flee') {
+          disableActions();
           monsterAttack(1);
           setTimeout(function() {
             for(let j = 0; j < monster_dice.length; j++)
@@ -698,6 +718,44 @@
             }, 1000);
           }, 1000);
         }
+      }
+      // Use an item in battle
+      function useItem(item) {
+        let amount = 0;
+
+        if(!inCombat)
+          return;
+        switch(item) {
+          case SMHEALTHPOT: // 0
+            amount = parseInt(document.getElementById("smHealthPot").innerHTML);
+            if(amount <= 0)
+              return;
+            document.getElementById("smHealthPot").innerHTML = --amount;
+            player_hp += 20;
+            if(player_hp > MAXPLAYERHP)
+              player_hp = MAXPLAYERHP;
+            break;
+          case LGHEALTHPOT: // 1
+            amount = parseInt(document.getElementById("lgHealthPot").innerHTML);
+            if(amount <= 0)
+              return;
+            document.getElementById("lgHealthPot").innerHTML = --amount;
+            player_hp += 40;
+            if(player_hp > MAXPLAYERHP)
+              player_hp = MAXPLAYERHP;
+            break;
+          case DOUBLEDMG:   // 2
+            amount = parseInt(document.getElementById("doubleDamage").innerHTML);
+            if(amount <= 0)
+              return;
+            document.getElementById("doubleDamage").innerHTML = --amount;
+            dmg_multiplier = 2;
+            break;
+          default:
+            break;
+        }
+        toggleMenu('character');
+        document.getElementById("itemButton").disabled = true;
       }
       // Roll player's dice up to amount selected
       function playerAttack() {
@@ -741,12 +799,38 @@
           clearInterval(rolling);
         }, 1000);
       }
+      // Obtain a random item
+      function obtainItem() {
+        let rng = Math.floor(Math.random() * TOTALITEMS);
+        let token = $("#" + player_pos[0] + "\\," + player_pos[1] + " div.item");
+        let item, itemName, itemAmount;
+        switch(rng) {
+          case SMHEALTHPOT: // 0
+            item = document.getElementById("smHealthPot");
+            itemName = "Small Health Potion (+20 HP)";
+            break;
+          case LGHEALTHPOT: // 1
+            item = document.getElementById("lgHealthPot");
+            itemName = "Large Health Potion (+40 HP)";
+            break;
+          case DOUBLEDMG:   // 2
+            item = document.getElementById("doubleDamage");
+            itemName = "2x Damage Booster";
+            break;
+        }
+        alert("Found a " + itemName); // **Temporary**
+        token[0].remove();
+        itemAmount = parseInt(item.innerHTML);
+        item.innerHTML = ++itemAmount;
+        items_found++;
+      }
       // Initialize the combat screen
       function combatSequence(type) {
         selected = [[0, 0], [0, 0], [0, 0], [0, 0], [0, 0]];
         inCombat = true;
         stamina  = 5;
         document.getElementById("attackButton").disabled = true;
+        document.getElementById("playerHealth").innerHTML = player_hp;
         toggleMenu('combat');
         enableActions();
         for(let i = 0; i < selected.length; i++) {
@@ -770,6 +854,13 @@
         for(let j = 0; j < monster_dice.length; j++)
           document.getElementById("monDie" + j).innerHTML = monster_dice[j];
       }
+      // Update room progress
+      function updateProgress() {
+        document.getElementById("monsterProgress").innerHTML = mons_defeated + "/" + monster_rate + " (" + Math.floor(100 * mons_defeated/monster_rate) + "%)";
+        document.getElementById("eliteProgress").innerHTML   = elites_defeated + "/" + elite_rate + " (" + Math.floor(100 * elites_defeated/elite_rate) + "%)";
+        document.getElementById("itemProgress").innerHTML       = items_found + "/" + item_rate + " (" + Math.floor(100 * items_found/item_rate) + "%)";
+        document.getElementById("tileProgress").innerHTML    = tiles_explored + "/" + (room_width * room_width) + " (" + Math.floor(100 * tiles_explored/(room_width * room_width)) + "%)";
+      }
       // Clear fog and trigger events
       function updateBoard() {
         let playerCell = document.getElementById(player_pos[0] + "," + player_pos[1]);
@@ -785,7 +876,9 @@
           }
           fog.fadeTo(0, 0);
           setTimeout(function() {
-            moving = false; fog[0].remove();
+            moving = false; 
+            fog[0].remove();
+            tiles_explored++;
           }, 500);
         }
         playerCell.innerHTML += "<div id='player'>" + PLAYER + "</div>";
@@ -795,8 +888,7 @@
         else if(elite.length > 0)
           combatSequence('elite');
         else if(item.length > 0)
-          console.log("Item found");
-          // obtainItem();
+          obtainItem();
         else if(player_pos[0] == exit_pos[0] && player_pos[1] == exit_pos[1])
           toggleMenu('exit');
       }
@@ -805,10 +897,12 @@
         let str     = "";
         let tempRow = tempCol = 0;
 
+        // Reset progress
+        mons_defeated = elites_defeated = items_found = tiles_explored = 0;
         for(let row = 0; row < room_width; row++) {
-          str += "<tr style='height:" + 80/room_width + "%'>";
+          str += "<tr style='height:" + Math.floor(80/room_width) + "%'>";
           for(let col = 0; col < room_width; col++)
-            str += "<td style='width:" + 80/room_width + "%' id='" + row + "," + col + "'></td>";
+            str += "<td style='width:" + Math.floor(80/room_width) + "%' id='" + row + "," + col + "'></td>";
           str += "</tr>";
         }
         document.getElementById("room").innerHTML = str;
@@ -830,15 +924,19 @@
       // Generates a new room
       function nextRoom() {
         room_number++;
-        if(room_number > room_count)
+        if(room_number > room_count) {
+          inGame = false;
           alert("Dungeon escaped!");
+        }
         else
           generateBoard();
         toggleMenu('exit');
       }
       // Generate a table based on settings then display the gameBoard div
       function startGame() {
+        inGame = true;
         room_number = 1;
+        player_hp = MAXPLAYERHP;
         document.getElementsByClassName("gameBoard")[0].style.display = "inline";
         document.getElementsByClassName("titleScreen")[0].style.display = "none";
         generateBoard();
@@ -848,8 +946,9 @@
       // Return to the title screen
       function quitGame() {
         if(confirm("Progress is not saved. Quit?")) {
+          inGame = false;
           document.getElementsByClassName("gameBoard")[0].style.display = "none";
-          document.getElementsByClassName("titleScreen")[0].style.display = "inline";
+          document.getElementsByClassName("titleScreen")[0].style.display = "block";
           document.body.style.color = "#000";
           document.body.style.backgroundColor = "#FFF";
         }
@@ -857,6 +956,7 @@
     </script>
   </head>
   <body>
+    <!-- SETTINGS MENU -->
     <div id="settingsMenu">
       <div class="menu-content">
         <button class="backBtn" onclick="toggleMenu('settings')">&#9668; Back</button>
@@ -908,6 +1008,7 @@
         </div>
       </div>
     </div>
+    <!-- CREDITS -->
     <div id="creditsScreen">
       <div class="menu-content">
         <button class="backBtn" onclick="toggleMenu('credits')">&#9668; Back</button>
@@ -925,30 +1026,44 @@
         </p>
       </div>
     </div>
+    <!-- PATCH NOTES -->
     <div id="patchNotesScreen">
       <div class="menu-content">
         <button class="backBtn" onclick="toggleMenu('patchNotes')">&#9668; Back</button>
         <h1>Patch Notes</h1>
+        <h3>v0.2.0</h3>
+          <b>Updates:</b>
+            <li>Items can now be found and used in combat (check character menu)</li>
+            <li>Room progression menu contains new information</li>
+            <li>Placeholder favicon added</li>
+          <b>Fixes: </b>
+            <li>Title screen position no longer changes after quitting a game</li>
+            <li>Player's health now resets when starting a new game</li>
+            <li>Player can no longer move after finishing a dungeon</li>
+            <li>Tiles are now displayed properly on certain widths</li>
+          <b>Issues:</b>
+            <li>Investigating a bug where a key gets stuck in the queue, causing keypresses to move the player in the wrong direction</li>
         <h3>v0.1.2</h3>
-        <b>Updates:</b>
-          <li>Combat encounters added</li>
-          <li>Token icons added to 'How to Play'</li>
-          <li>'Room' and 'Character' buttons added (not fully implemented)</li>
-          <li>Room progression added</li>
-          <li>Resized 'Movement' SVG in 'How to Play'</li>
+          <b>Updates:</b>
+            <li>Combat encounters added</li>
+            <li>Token icons added to 'How to Play'</li>
+            <li>'Room' and 'Character' buttons added (not fully implemented)</li>
+            <li>Room progression added</li>
+            <li>Resized 'Movement' SVG in 'How to Play'</li>
         <h3>v0.1.1</h3>
-        <b>Updates:</b>
-          <li>WASD Movement</li>
-          <li>Icons created for board tokens</li>
-          <li>Fog added to dungeon rooms</li>
-          <li>Fixed 'Credits' button opening patch notes</li>
+          <b>Updates:</b>
+            <li>WASD Movement</li>
+            <li>Icons created for board tokens</li>
+            <li>Fog added to dungeon rooms</li>
+            <li>Fixed 'Credits' button opening patch notes</li>
         <h3>v0.1.0</h3>
-        <b>This version includes:</b>
-          <li>Basic UI Interaction</li>
-          <li>Ability to change settings/difficulty</li>
-          <li>Room generation</li>
+          <b>This version includes:</b>
+            <li>Basic UI Interaction</li>
+            <li>Ability to change settings/difficulty</li>
+            <li>Room generation</li>
       </div>
     </div>
+    <!-- TITLE -->
     <div class="titleScreen">
       <h1>DUNGEON DILEMMA</h1>
       <div class="buttonBox">
@@ -960,9 +1075,10 @@
       <div class="footer">
         <span id="author"><img style="width: 2vmin" src="images/GitHub-Mark-120px-plus.png"/> VnceGd</span>
         <a href="index.html"><button id="exitBtn">Exit</button></a>
-        <button id="versionBtn" onclick="toggleMenu('patchNotes')"><span id="versionNo">v0.1.2</span></button>
+        <button id="versionBtn" onclick="toggleMenu('patchNotes')"><span id="versionNo">v0.2.0</span></button>
       </div>
     </div>
+    <!-- COMBAT -->
     <div id="combatScreen">
       <div class="menu-content">
         <button class="backBtn" onclick="toggleMenu('combatHelp')">Combat Help</button>
@@ -994,24 +1110,34 @@
         <div style="clear:both"></div>
       </div>
     </div>
+    <!-- ROOM PROGRESSION -->
     <div id="roomInfoScreen">
       <div class="menu-content">
         <button class="backBtn" onclick="toggleMenu('room')">&#9668; Back</button>
         <h1>Room Progress</h1>
+        <p><b>Monsters Defeated</b>: <span id="monsterProgress"></span></p>
+        <p><b>Elites Defeated</b>: <span id="eliteProgress"></span></p>
+        <p><b>Items Found</b>: <span id="itemProgress"></span></p>
+        <p><b>Tiles Explored</b>: <span id="tileProgress"></span></p>
       </div>
     </div>
+    <!-- CHARACTER -->
     <div id="characterScreen">
       <div class="menu-content">
         <button class="backBtn" onclick="toggleMenu('character')">&#9668; Back</button>
         <h1>Character</h1>
         <h3>Health: <span id="characterHealth">100</span></h3>
         <h3>Items</h3>
-        <p id="itemContainer">Not implemented.</p>
+        <p id="itemContainer">
+          <button class="characterItem" onclick="useItem(0)">Small Health Potion (<span id="smHealthPot">0</span>)</button>
+          <button class="characterItem" onclick="useItem(1)">Large Health Potion (<span id="lgHealthPot">0</span>)</button>
+          <button class="characterItem" onclick="useItem(2)">2x Damage Booster (<span id="doubleDamage">0</span>)</button>
+        </p>
       </div>
     </div>
+    <!-- EXIT FOUND -->
     <div id="exitRoomMenu">
       <div class="menu-content">
-        <!-- <button class="backBtn" onclick="toggleMenu('exit')">&#9668; Back</button> -->
         <h1>Exit Found</h1>
         <h3>There is no turning back.</h3>
         <h3>Proceed to the next room?</h3>
@@ -1019,6 +1145,7 @@
         <button onclick="toggleMenu('exit')">Stay</button>
       </div>
     </div>
+    <!-- COMBAT HELP -->
     <div id="combatHelpMenu">
       <div class="menu-content">
         <button class="backBtn" onclick="toggleMenu('combatHelp')">&#9668; Back</button>
@@ -1041,6 +1168,7 @@
         </p>
         <h3>Items</h3>
         <p>
+          One item can be used per turn. <br>
           Items used are only effective the turn they are played. <br>
           Monster does not attack when you use an item.
         </p>
@@ -1051,87 +1179,89 @@
         </p>
       </div>
     </div>
+    <!-- HOW TO PLAY -->
     <div id="helpMenu">
-        <div class="menu-content">
-          <button class="backBtn" onclick="toggleMenu('help')">&#9668; Back</button>
-          <h1>How to Play</h1>
-          <p>
-            Battle & loot your way through a series of rooms populated by monsters. <br>
-            Reach the end to win. <br>
-            <i>Gameplay not yet fully implemented.</i>
-            <hr>
-            <h3>Controls:</h3> 
-            <svg id="wasdSVG" width="20vmin" viewbox="0 0 100 100">
-              <text x="0" y="20" fill="black">Movement</text>
-              <g>
-                <polygon points="35,35 65,35 65,65 35,65" style="fill: gainsboro"/>
-                <text x="50" y="50" fill="black" text-anchor="middle" alignment-baseline="central">W</text>
-              </g>
-              <g>
-                <polygon points="0,70 30,70 30,100 0,100" style="fill: gainsboro"/>
-                <text x="15" y="85" fill="black" text-anchor="middle" alignment-baseline="central">A</text>
-              </g>
-              <g>
-                <polygon points="35,70 65,70 65,100 35,100" style="fill: gainsboro"/>
-                <text x="50" y="85" fill="black" text-anchor="middle" alignment-baseline="central">S</text>
-              </g>
-              <g>
-                <polygon points="70,70 100,70 100,100 70,100" style="fill: gainsboro"/>
-                <text x="85" y="85" fill="black" text-anchor="middle" alignment-baseline="central">D</text>
-              </g>
-            </svg>
-          </p>
-          <h3>Icons</h3>
-          <div class="tokenContainer">
-            <div class="tokenBox">
-              <b>Player</b> <br>
-              <div class="token" style="background-color: #B2EBF2;">
-                <svg width='100%' viewbox='0 0 100 100'>
-                  <polygon points='50,25 75,75 25,75'/>
-                </svg>
-              </div>
-            </div>
-            <div class="tokenBox">
-              <b>Exit</b> <br>
-              <div class="token" style="background-color: #CFD8DC;">
-                <svg class='exitSVG' width='100%' viewbox='0 0 100 100'>
-                  <line x1='25' y1='5' x2='25' y2='75'/>
-                  <line x1='75' y1='5' x2='75' y2='75'/>
-                  <line x1='25' y1='20' x2='75' y2='20'/>
-                  <line x1='25' y1='40' x2='75' y2='40'/>
-                  <line x1='25' y1='60' x2='75' y2='60'/>
-                </svg>
-              </div>
-            </div>
-            <div class="tokenBox">
-              <b>Monster</b> <br>
-              <div class="token" style="background-color: #F44336;">
-                <svg width='100%' viewbox='0 0 100 100'>
-                  <polygon points='50,25 75,50 50,75 25,50'/>
-                </svg>
-              </div>
-            </div>
-            <div class="tokenBox">
-              <b>Elite</b> <br>
-              <div class="token" style="background-color: #BA68C8;">
-                <svg width='100%' viewbox='0 0 100 100'>
-                  <polygon points='50,20 75,75 20,40 80,40 25,75'/>
-                </svg>
-              </div>
-            </div>
-            <div class="tokenBox">
-              <b>Item</b> <br>
-              <div class="token" style="background-color: #FFF176;">
-                <svg width='100%' viewbox='0 0 100 100'>
-                  <polygon points='25,35 35,25 65,25 75,35 75,45 25,45'/>
-                  <polygon points='25,50 75,50 75,75 25,75'/>
-                </svg>
-              </div>
+      <div class="menu-content">
+        <button class="backBtn" onclick="toggleMenu('help')">&#9668; Back</button>
+        <h1>How to Play</h1>
+        <p>
+          Battle & loot your way through a series of rooms populated by monsters. <br>
+          Reach the end to win. <br> <br>
+          When encountering a monster, press the 'Combat Help' button to view a combat tutorial.
+          <hr>
+          <h3>Controls:</h3> 
+          <svg id="wasdSVG" width="20vmin" viewbox="0 0 100 100">
+            <text x="0" y="20" fill="black">Movement</text>
+            <g>
+              <polygon points="35,35 65,35 65,65 35,65" style="fill: gainsboro"/>
+              <text x="50" y="50" fill="black" text-anchor="middle" alignment-baseline="central">W</text>
+            </g>
+            <g>
+              <polygon points="0,70 30,70 30,100 0,100" style="fill: gainsboro"/>
+              <text x="15" y="85" fill="black" text-anchor="middle" alignment-baseline="central">A</text>
+            </g>
+            <g>
+              <polygon points="35,70 65,70 65,100 35,100" style="fill: gainsboro"/>
+              <text x="50" y="85" fill="black" text-anchor="middle" alignment-baseline="central">S</text>
+            </g>
+            <g>
+              <polygon points="70,70 100,70 100,100 70,100" style="fill: gainsboro"/>
+              <text x="85" y="85" fill="black" text-anchor="middle" alignment-baseline="central">D</text>
+            </g>
+          </svg>
+        </p>
+        <h3>Icons</h3>
+        <div class="tokenContainer">
+          <div class="tokenBox">
+            <b>Player</b> <br>
+            <div class="token" style="background-color: #B2EBF2;">
+              <svg width='100%' viewbox='0 0 100 100'>
+                <polygon points='50,25 75,75 25,75'/>
+              </svg>
             </div>
           </div>
-          <div style="clear:both;"></div>
+          <div class="tokenBox">
+            <b>Exit</b> <br>
+            <div class="token" style="background-color: #CFD8DC;">
+              <svg class='exitSVG' width='100%' viewbox='0 0 100 100'>
+                <line x1='25' y1='5' x2='25' y2='75'/>
+                <line x1='75' y1='5' x2='75' y2='75'/>
+                <line x1='25' y1='20' x2='75' y2='20'/>
+                <line x1='25' y1='40' x2='75' y2='40'/>
+                <line x1='25' y1='60' x2='75' y2='60'/>
+              </svg>
+            </div>
+          </div>
+          <div class="tokenBox">
+            <b>Monster</b> <br>
+            <div class="token" style="background-color: #F44336;">
+              <svg width='100%' viewbox='0 0 100 100'>
+                <polygon points='50,25 75,50 50,75 25,50'/>
+              </svg>
+            </div>
+          </div>
+          <div class="tokenBox">
+            <b>Elite</b> <br>
+            <div class="token" style="background-color: #BA68C8;">
+              <svg width='100%' viewbox='0 0 100 100'>
+                <polygon points='50,20 75,75 20,40 80,40 25,75'/>
+              </svg>
+            </div>
+          </div>
+          <div class="tokenBox">
+            <b>Item</b> <br>
+            <div class="token" style="background-color: #FFF176;">
+              <svg width='100%' viewbox='0 0 100 100'>
+                <polygon points='25,35 35,25 65,25 75,35 75,45 25,45'/>
+                <polygon points='25,50 75,50 75,75 25,75'/>
+              </svg>
+            </div>
+          </div>
         </div>
+        <div style="clear:both;"></div>
       </div>
+    </div>
+    <!-- GAME BOARD -->
     <div class="gameBoard" style="display:none">
       <div class="gameMenu">
         <button class="backBtn" onclick="quitGame()">Quit</button>

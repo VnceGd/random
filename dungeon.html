@@ -679,6 +679,10 @@
                 document.getElementById("playerHealth").innerHTML  = player_hp + " (<b>" + (playerAttackValue - monsterAttackValue) + "</b>)";
                 document.getElementById("monsterHealth").innerHTML = monster_hp;
               }
+              else {
+                document.getElementById("playerHealth").innerHTML  = player_hp;
+                document.getElementById("monsterHealth").innerHTML = monster_hp;
+              }
               if(monster_hp <= 0)
                 setTimeout(function() {
                   let monster = $("#" + player_pos[0] + "\\," + player_pos[1] + " div.monster");
@@ -708,6 +712,10 @@
               else if(playerAttackValue < monsterAttackValue) {
                 player_hp -= (monsterAttackValue - playerAttackValue);
                 document.getElementById("playerHealth").innerHTML  = player_hp + " (<b>" + (playerAttackValue - monsterAttackValue) + "</b>)";
+                document.getElementById("monsterHealth").innerHTML = elite_hp;
+              }
+              else {
+                document.getElementById("playerHealth").innerHTML  = player_hp;
                 document.getElementById("monsterHealth").innerHTML = elite_hp;
               }
               if(elite_hp <= 0)
@@ -871,7 +879,7 @@
         let rng   = Math.floor(Math.random() * TOTALITEMS);
         let item, itemName, itemAmount;
         
-        // Fades out the popup over 1/2 a second
+        // Fades out the popup over half a second
         function fadePopup() {
           if(popup.style.opacity > 0) {
             popup.style.opacity -= 0.05;
@@ -882,11 +890,11 @@
         }
         switch(rng) {
           case SMHEALTHPOT: // 0
-            itemName = "Small Health Potion (20 HP)";
+            itemName = "Small Health Potion";
             item     = document.getElementById("smHealthPot");
             break;
           case LGHEALTHPOT: // 1
-            itemName = "Large Health Potion (40 HP)";
+            itemName = "Large Health Potion";
             item     = document.getElementById("lgHealthPot");
             break;
           case DOUBLEDMG:   // 2
@@ -1223,7 +1231,8 @@
       <div class="menu-content">
         <button class="backBtn" onclick="toggleMenu('character')">&#9668; Back</button>
         <h1>Character</h1>
-        <h3>Health: <span id="characterHealth">100</span></h3>
+        <h3>Health: <span id="characterHealth">100</span></h3> 
+        <hr>
         <h3>Items</h3>
         <p id="itemContainer">
           <button class="characterItem" onclick="useItem(0)">
@@ -1317,7 +1326,7 @@
             </g>
           </svg>
         </p>
-        <h3>Icons</h3>
+        <h3>Icons:</h3>
         <div class="tokenContainer">
           <div class="tokenBox">
             <b>Player</b> <br>

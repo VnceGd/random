@@ -206,13 +206,13 @@
                 <span class="menu-x" onclick="toggleMenu('settings-menu')">&times;</span>
                 <h4>Gameplay</h4>
                 <p>Board Size (side length)</p>
-                <input id="board-size" type="number" value="20" min="4" max="100"/>
+                <input id="board-size" type="number" value="20" min="4" max="100" onchange="updateSettings('board')"/>
                 <p>Update Speed (per second)</p>
-                <input id="update-speed" type="number" value="10" min="1" max="1000"/>
+                <input id="update-speed" type="number" value="10" min="1" max="999" onchange="updateSettings('speed')"/>
                 <h4>Appearance</h4>
                 <p><b>Theme</b> <br>
-                    <input type="radio" name="theme" value="light" onchange="updateSettings()" checked/> Light
-                    <input type="radio" name="theme" value="dark" onchange="updateSettings()"/> Dark
+                    <input type="radio" name="theme" value="light" onchange="updateSettings('theme')" checked/> Light
+                    <input type="radio" name="theme" value="dark" onchange="updateSettings('theme')"/> Dark
                 </p>
                 <p><b>Round Apple</b> <br>
                     <input id="round-apple" type="checkbox"/>
@@ -265,11 +265,6 @@
             </div>
         </div>
         <script>
-            // Limits
-            const MINBOARDSIZE   = 2;
-            const MAXBOARDSIZE   = 100;
-            const MINUPDATESPEED = 1;
-            const MAXUPDATESPEED = 100;
             // Menus
             let in_game = in_settings = in_help = false;
             // Game state
@@ -321,33 +316,61 @@
                 }
             }
             // Update settings to reflect changes
-            function updateSettings() {
-                let theme = document.querySelector('input[name = "theme"]:checked').value;
-
-                if(theme == "light") {
-                    let menus = document.getElementsByClassName("menu-content");
-
-                    document.body.style.color = "#000";
-                    document.body.style.backgroundColor = "#fff";
-                    document.getElementById("board").style.backgroundColor = 
-                    document.getElementById("title").style.backgroundColor = "#ddd";
-                    document.getElementById("grid").style.backgroundColor = document.querySelector('input[name = "bgColor"]:checked').value;
-                    for(let i = 0; i < menus.length; i++) {
-                        if(menus[i].id != "gameover-menu-content")
-                            menus[i].style.backgroundColor = "#ddd";
-                    }
+            function updateSettings(type) {
+                if(type == "board" || type == "all") {
+                    let size = document.getElementById("board-size");
+                    let current = parseInt(size.value);
+                    let max = parseInt(size.max);
+                    let min = parseInt(size.min);
+                    
+                    if(!Number.isInteger(current))
+                        size.value = 20;
+                    if(current > max)
+                        size.value = max;
+                    else if(current < min)
+                        size.value = min;
                 }
-                else {
-                    let menus = document.getElementsByClassName("menu-content");
+                else if(type == "speed" || type == "all") {
+                    let speed = document.getElementById("update-speed");
+                    let current = parseInt(speed.value);
+                    let max = parseInt(speed.max);
+                    let min = parseInt(speed.min);
 
-                    document.body.style.color = "#fff";
-                    document.body.style.backgroundColor = "#000";
-                    document.getElementById("board").style.backgroundColor = 
-                    document.getElementById("title").style.backgroundColor = "#333";
-                    document.getElementById("grid").style.backgroundColor = document.querySelector('input[name = "bgColor"]:checked').value;
-                    for(let i = 0; i < menus.length; i++) {
-                        if(menus[i].id != "gameover-menu-content")
-                            menus[i].style.backgroundColor = "#333";
+                    if(!Number.isInteger(current))
+                        speed.value = 10;
+                    if(current > max)
+                        speed.value = max;
+                    else if(current < min)
+                        speed.value = min;
+                }
+                else if(type == "theme" || type == "all") {
+                    let theme = document.querySelector('input[name = "theme"]:checked').value;
+
+                    if(theme == "light") {
+                        let menus = document.getElementsByClassName("menu-content");
+
+                        document.body.style.color = "#000";
+                        document.body.style.backgroundColor = "#fff";
+                        document.getElementById("board").style.backgroundColor = 
+                        document.getElementById("title").style.backgroundColor = "#ddd";
+                        document.getElementById("grid").style.backgroundColor = document.querySelector('input[name = "bgColor"]:checked').value;
+                        for(let i = 0; i < menus.length; i++) {
+                            if(menus[i].id != "gameover-menu-content")
+                                menus[i].style.backgroundColor = "#ddd";
+                        }
+                    }
+                    else {
+                        let menus = document.getElementsByClassName("menu-content");
+
+                        document.body.style.color = "#fff";
+                        document.body.style.backgroundColor = "#000";
+                        document.getElementById("board").style.backgroundColor = 
+                        document.getElementById("title").style.backgroundColor = "#333";
+                        document.getElementById("grid").style.backgroundColor = document.querySelector('input[name = "bgColor"]:checked').value;
+                        for(let i = 0; i < menus.length; i++) {
+                            if(menus[i].id != "gameover-menu-content")
+                                menus[i].style.backgroundColor = "#333";
+                        }
                     }
                 }
             }
@@ -482,7 +505,7 @@
             function makeBoard() {
                 let board = appleCoord = '';
                 
-                board_size = document.getElementById("board-size").value;
+                board_size = parseInt(document.getElementById("board-size").value);
                 for(let y = 0; y < board_size; y++) {
                     board += '<tr>';
                     for(let x = 0; x < board_size; x++) {
@@ -499,7 +522,7 @@
                 document.getElementById("grid").innerHTML = board;
                 appleCoord = apple.pos[0].toString() + ',' + apple.pos[1].toString();
                 document.getElementById(appleCoord).innerHTML = '<div class="apple"></div>';
-                updateSettings();
+                updateSettings('all');
                 updateBoard();
             }
             // Check if position is in snake body
@@ -516,14 +539,14 @@
             }
             // Hide the title screen then create and display the game board
             function startGame() {
-                let update_speed = document.getElementById("update-speed");
+                let update_speed = parseInt(document.getElementById("update-speed").value);
                 
                 in_game = true;
                 paused = false;
                 document.getElementById("title").style.display = "none";
                 document.getElementById("board").style.display = "block";
                 document.getElementById("score").innerHTML = score;
-                updating = setInterval(update, 1000/update_speed.value);
+                updating = setInterval(update, 1000/update_speed);
                 makeBoard();
                 getHighScore();
             }

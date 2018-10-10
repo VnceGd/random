@@ -6,11 +6,12 @@
     <meta charset="UTF-8">
     <title> RNG </title>
     <link rel="icon" type="image/png" href="images/dieFavicon.png">
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
     <style>
       html, body {
         margin: 0;
-        padding: 2vmin;
-        font-family: Arial, Helvetica, sans-serif;
+        /* padding: 2vmin; */
+        font-family: 'Lato', Arial, Helvetica, sans-serif;
       }
       a {
         text-decoration: none;
@@ -18,9 +19,32 @@
       h1, h2, h3, p {
         margin-top: 0;
       }
+      button {
+        box-sizing: border-box;
+        border: 0.5vmin solid #222;
+        border-radius: 1vmin;
+        color: #FFF;
+        background-color: #000;
+        font-size: 1rem;
+        font-family: 'Lato', sans-serif;
+        outline: none;
+        transition: .2s;
+      }
+      button:hover {
+        background-color: #555;
+        transition: .2s;
+      }
+      button:active {
+        border-color: #aaa;
+        transition: .2s;
+      }
+      .container {
+        padding: 2vmin;
+      }
       .header {
         width: 100%;
         float: left;
+        background-color: #eee;
       }
       .title {
         margin: 0;
@@ -30,28 +54,13 @@
       .author {
         margin: 0;
         width: 20vmin;
-        font-size: 1.5vmin;
+        font-size: 2vmin;
         text-align: right;
         float: right;
       }
       .gameMenu {
         width: 100%;
-      }
-      button {
-        box-sizing: border-box;
-        border: 0.5vmin solid lightgrey;
-        border-radius: 1vmin;
-        background-color: lightgrey;
-        outline: none;
-        transition: .2s;
-      }
-      button:hover {
-        background-color: gainsboro;
-        transition: .2s;
-      }
-      button:active {
-        border-color: dimgrey;
-        transition: .2s;
+        background-color: #ddd;
       }
       #author {
         float: right;
@@ -267,52 +276,60 @@
   </head>
   <body>
     <div class="header">
-      <div class="title">
-        <h1>Test Your Luck </h1>
-        <h3 style="font-size: 1rem">Fun with random number generation</h3>
-      </div>
-      <div class="author">
-        <p>Vincent Nguyen 2018</p>
+      <div class="container">
+        <div class="title">
+          <h1>Test Your Luck </h1>
+          <h3 style="font-size: 1rem">Fun with random number generation</h3>
+        </div>
+        <div class="author">
+          <p>Vincent Nguyen 2018</p>
+        </div>
       </div>
     </div>
-    <hr>
+    <!-- <hr> -->
     <div class="gameMenu">
-      <!-- LINKS -->
-      <h2>Games <span style="font-size: .85rem"><a href="cookies.html">Manage Cookies</a></span></h2>
-      <a href="snake.html"><button>Snake</button></a>
-      <a href="yahtzee.html"><button>Yahtzee</button></a>
-      <a href="blackjack.html"><button>Blackjack</button></a>
-      <a href="dungeon.html"><button>Dungeon</button></a>
+      <div class="container">
+        <!-- LINKS -->
+        <h2>Games <span style="font-size: .85rem"><a href="cookies.html">Manage Cookies</a></span></h2>
+        <a href="snake_v2.html"><button>Snake</button></a>
+        <a href="yahtzee.html"><button>Yahtzee</button></a>
+        <a href="blackjack.html"><button>Blackjack</button></a>
+        <a href="dungeon.html"><button>Dungeon</button></a>
+      </div>
     </div>
-    <hr>
+    <!-- <hr> -->
     <!-- INPUT AREA -->
     <div class="inputArea">
-      <h2>Dice Roll</h2>
-      <p>
-        # of Dice: 
-        <input type="text" id="diceCount" value="1" onchange="checkDice()">
-        # of Sides: 
-        <input type="text" id="diceSides" value="6" onchange="checkDice()">
-        <button onclick="rollDice()">Roll</button>
-      </p>
-      <h2>Card Picker (Standard 52-card deck)</h2>
-      <p>
-        # of Cards:
-        <input type="text" id="cardCount" value="1" onchange="checkCards()">
-        # of Decks:
-        <input type="text" id="deckCount" value="1">
-        <button onclick="drawCards()">Draw</button>
-      </p>
+      <div class="container">
+        <h2>Dice Roll</h2>
+        <p>
+          # of Dice: 
+          <input type="text" id="diceCount" value="1" onchange="checkDice()">
+          # of Sides: 
+          <input type="text" id="diceSides" value="6" onchange="checkDice()">
+          <button onclick="rollDice()">Roll</button>
+        </p>
+        <h2>Card Picker (Standard 52-card deck)</h2>
+        <p>
+          # of Cards:
+          <input type="text" id="cardCount" value="1" onchange="checkCards()">
+          # of Decks:
+          <input type="text" id="deckCount" value="1">
+          <button onclick="drawCards()">Draw</button>
+        </p>
+      </div>
     </div>
     <!-- RESULTS AREA -->
     <div class="resultArea">
-      <h3>Results</h3>
-      <p>
-        Preference: 
-        <input type="radio" name="pref" value="icon" checked> Symbols
-        <input type="radio" name="pref" value="text"> Text
-      </p>
-      <p id="output"></p>
+      <div class="container">
+        <h3>Results</h3>
+        <p>
+          Preference: 
+          <input type="radio" name="pref" value="icon" checked> Symbols
+          <input type="radio" name="pref" value="text"> Text
+        </p>
+        <p id="output"></p>
+      </div>
     </div>
   </body>
 </html>

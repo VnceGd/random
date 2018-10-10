@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Snake v2</title>
+        <link rel="icon" type="image/png" href="images/snakeFavicon.png">
+        <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+        <style>
+            html, body {
+                margin: 0;
+                font-family: 'Lato', Arial, Helvetica, sans-serif;
+                transition: .5s;
+            }
+            h1, h3, h4, p {
+                margin: 1vmin 0 1vmin 0;
+            }
+            h1 {
+                font-size: 8vmin;
+                margin-bottom: 2vmin;
+            }
+            h3 {
+                font-size: 6vmin;
+            }
+            h4 {
+                font-size: 4vmin;
+            }
+            p {
+                font-size: 3vmin;
+            }
+            a {
+                text-decoration: none;
+                color: #55f;
+            }
+            a:hover { 
+                text-decoration: underline;
+            }
+            input {
+                font-size: 3vmin;
+            }
+            button {
+                margin: 1vmin auto;
+                width: 50vmin;
+                font-size: 3vmin;
+                font-family: 'Lato', Arial, Helvetica, sans-serif;
+                background-color: #eee;
+                border: 0;
+                border-radius: 2vmin;
+                transition: .2s;
+            }
+            button:hover {
+                background-color: #fff;
+                transition: .1s;
+            }
+            tr, td {
+                border: none;
+                border-spacing: 0;
+                border-collapse: collapse;
+                padding: 0;
+            }
+            .circle-btn {
+                margin-left: 1vmin;
+                width: 4vmin;
+                float: right;
+                border-radius: 50%;
+            }
+            .menu-content {
+                margin: auto;
+                position: relative;
+                padding: 4vmin; 
+                width: 92vmin;
+                height: 92vmin;
+                background-color: #ddd;
+                overflow-y: scroll;
+            }
+            .modal {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: #555;
+                background-color: #5555;
+                z-index: 2;
+            }
+            #cookie-menu .menu-content {
+                top: 60vmin;
+                width: 80vmin;
+                height: 30vmin;
+            }
+            .menu-x {
+                position: absolute;
+                top: 4vmin;
+                right: 4vmin;
+                padding: 0 2vmin;
+                font-size: 6vmin;
+                cursor: pointer;
+            }
+            .menu-x:hover{
+                background-color: #aaa;
+            }
+            .snake, .apple, .empty {
+                margin: 0;
+                width: 100%; 
+                height: 100%;
+            }
+            .snake, .apple, .empty {
+                background-color: #555;
+            }
+            #board {
+                display: none;
+                margin: auto;
+                width: 100vmin;
+                height: 100vmin;
+                background-color: #ddd;
+            }
+            #score-display, #ingame-menu {
+                float: left;
+                padding: 2vmin 4vmin;
+                width: 42vmin;
+                height: 4vmin;
+                font-weight: bold;
+            }
+            #grid {
+                margin: auto;
+                width: 86vmin;
+                height: 86vmin;
+                background-color: #333;
+                border: 2vmin solid #aaa;
+                border-spacing: 0;
+            }
+            #title {
+                margin: auto;
+                padding: 4vmin;
+                width: 92vmin;
+                height: 92vmin;
+                background-color: #ddd;
+                text-align: center;
+                z-index: 1;
+            }
+            #version-button {
+                width: 25vmin;
+            }
+            #gameover-menu {
+                text-align: center;
+            }
+            #gameover-menu .menu-content {
+                padding-top: 20vmin;
+                color: #fff;
+                background-color: #f555;
+                transition: .2s;
+            }
+            #gameover-menu .menu-content:hover {
+                background-color: #f559;
+                transition: .1s;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="board">
+            <div id="score-display">
+                <p>
+                    Score: <span id="score"></span>
+                    <b style="float:right">High Score: <span id="high-score"></span></b>
+                </p>
+            </div>
+            <div id="ingame-menu">
+                <button class="circle-btn" onclick="exitGame()">&times;</button>
+                <button class="circle-btn" onclick="toggleMenu('help-menu')">?</button>
+            </div>
+            <table id="grid"></table>
+        </div>
+        <div id="title">
+            <h1>Snake Game</h1>
+            <button onclick="startGame()"><b>&#9658; Play</b></button>
+            <button onclick="toggleMenu('settings-menu')">Settings</button>
+            <button onclick="toggleMenu('help-menu')">How to Play</button>
+            <a href="index.html"><button>Exit</button></a>
+            <br>
+            <button onclick="toggleMenu('version-menu')" id="version-button">v2.0</button>
+        </div>
+        <div class="modal" id="gameover-menu">
+            <div class="menu-content" id="gameover-menu-content">
+                <h3>Game Over</h3>
+                <button onclick="toggleMenu('gameover-menu'); startGame()">Play Again</button>
+                <button onclick="toggleMenu('gameover-menu'); exitGame()">Exit to Title</button>
+            </div>
+        </div>
+        <div class="modal" id="version-menu">
+            <div class="menu-content">
+                <h3>Patch Notes</h3>
+                <span class="menu-x" onclick="toggleMenu('version-menu')">&times;</span>
+                <h4>v2.0</h4>
+                <p>What's New:</p>
+                <ul>
+                    <li>UI redesign</li>
+                    <li>Light/Dark theme selection</li>
+                    <li>Removed pause functionality</li>
+                </ul>
+                <h4>v1.0</h4>
+                <p>Version 1 of this game can be found <a href="snake.html">here</a>.</p>
+            </div>
+        </div>
+        <div class="modal" id="settings-menu">
+            <div class="menu-content">
+                <h3>Settings</h3>
+                <span class="menu-x" onclick="toggleMenu('settings-menu')">&times;</span>
+                <h4>Gameplay</h4>
+                <p>Board Size (side length)</p>
+                <input id="board-size" type="number" value="20" min="4" max="100"/>
+                <p>Update Speed (per second)</p>
+                <input id="update-speed" type="number" value="10" min="1" max="1000"/>
+                <h4>Appearance</h4>
+                <p><b>Theme</b> <br>
+                    <input type="radio" name="theme" value="light" onchange="updateSettings()" checked/> Light
+                    <input type="radio" name="theme" value="dark" onchange="updateSettings()"/> Dark
+                </p>
+                <p><b>Round Apple</b> <br>
+                    <input id="round-apple" type="checkbox"/>
+                </p>
+                <p>
+                    Snake Color:
+                    <input type="radio" name="snakeColor" value="#4CAF50" checked>Green  
+                    <input type="radio" name="snakeColor" value="#FFFF00">Yellow  
+                    <input type="radio" name="snakeColor" value="#FFF">White  
+                    </p>
+                    <p>
+                    Apple Color:
+                    <input type="radio" name="appleColor" value="#F44336" checked>Red  
+                    <input type="radio" name="appleColor" value="#FF9800">Orange  
+                    <input type="radio" name="appleColor" value="#9C27B0">Purple  
+                    </p>
+                    <p>
+                    Background Color:
+                    <input type="radio" name="bgColor" value="#212121" checked>Gray  
+                    <input type="radio" name="bgColor" value="#006064">Cyan  
+                    <input type="radio" name="bgColor" value="#0D47A1">Blue  
+                </p>
+                <h4>Other</h4>
+                <a href="cookies.html"><button>Manage Cookies</button></a>
+                <button onclick="clearHighScore()">Clear High Score</button>
+            </div>
+        </div>
+        <div class="modal" id="help-menu">
+            <div class="menu-content">
+                <h3>How to Play</h3>
+                <span class="menu-x" onclick="toggleMenu('help-menu')">&times;</span>
+                <h4>Objective</h4>
+                <p>Grow as long as you can by eating apples, while avoiding moving into walls and your own body.</p>
+                <h4>Controls</h4>
+                <p>Move the snake with WASD or the arrow keys.</p>
+            </div>
+        </div>
+        <div class="modal" id="cookie-menu" style="display:block">
+            <div class="menu-content" style="text-align:center">
+                <svg width="10vmin" viewbox="0 0 100 100">
+                    <circle cx=50 cy=50 r=50></circle>
+                    <circle cx=50 cy=50 r=48 style="fill:#d95"></circle>
+                    <circle cx=15 cy=40 r=5 style="fill:#951"></circle>
+                    <circle cx=65 cy=35 r=7 style="fill:#951"></circle>
+                    <circle cx=45 cy=75 r=6 style="fill:#951"></circle>
+                </svg>
+                <p>Cookies are used to save the high score.</p>
+                <button onclick="toggleMenu('cookie-menu')">Accept & Close</button> <br>
+                <a href="cookies.html"><button>Manage Cookies</button></a>
+            </div>
+        </div>
+        <script>
+            // Limits
+            const MINBOARDSIZE   = 2;
+            const MAXBOARDSIZE   = 100;
+            const MINUPDATESPEED = 1;
+            const MAXUPDATESPEED = 100;
+            // Menus
+            let in_game = in_settings = in_help = false;
+            // Game state
+            let paused = true;
+            let updating;
+            let keys  = {};
+            let high_score = score = 0;
+            let board_size = 20;
+            // Objects
+            let snake = {
+                x_pos: 1,
+                y_pos: 1,
+                body: [],
+                vel: [0, 0]
+            };
+            let apple = {
+                pos: [0, 0]
+            };
+
+            window.onclick = function(event) {
+                let settingsMenu  = document.getElementById("settings-menu");
+                let helpMenu = document.getElementById("help-menu");
+                let versionMenu   = document.getElementById("version-menu");
+                let cookieMenu  = document.getElementById("cookie-menu");
+                let modals = [settingsMenu, helpMenu, versionMenu, cookieMenu];
+
+                if(modals.includes(event.target))
+                    event.target.style.display = "none";
+            }
+
+            function toggleMenu(menu) {
+                let which = document.getElementById(menu);
+
+                if(which.style.display == "block")
+                    which.style.display = "none";
+                else
+                    which.style.display = "block";
+                if(menu == 'settings-menu') {
+                    if(in_settings)
+                        in_settings = false;
+                    else
+                        in_settings = true;
+                }
+                else if(menu == 'help-menu') {
+                    if(in_help)
+                        in_help = false;
+                    else
+                        in_help = true;
+                }
+            }
+            // Update settings to reflect changes
+            function updateSettings() {
+                let theme = document.querySelector('input[name = "theme"]:checked').value;
+
+                if(theme == "light") {
+                    let menus = document.getElementsByClassName("menu-content");
+
+                    document.body.style.color = "#000";
+                    document.body.style.backgroundColor = "#fff";
+                    document.getElementById("board").style.backgroundColor = 
+                    document.getElementById("title").style.backgroundColor = "#ddd";
+                    document.getElementById("grid").style.backgroundColor = document.querySelector('input[name = "bgColor"]:checked').value;
+                    for(let i = 0; i < menus.length; i++) {
+                        if(menus[i].id != "gameover-menu-content")
+                            menus[i].style.backgroundColor = "#ddd";
+                    }
+                }
+                else {
+                    let menus = document.getElementsByClassName("menu-content");
+
+                    document.body.style.color = "#fff";
+                    document.body.style.backgroundColor = "#000";
+                    document.getElementById("board").style.backgroundColor = 
+                    document.getElementById("title").style.backgroundColor = "#333";
+                    document.getElementById("grid").style.backgroundColor = document.querySelector('input[name = "bgColor"]:checked').value;
+                    for(let i = 0; i < menus.length; i++) {
+                        if(menus[i].id != "gameover-menu-content")
+                            menus[i].style.backgroundColor = "#333";
+                    }
+                }
+            }
+            // Update the colors of the board tiles
+            function updateBoard() {
+                let snakeCells = document.getElementsByClassName("snake");
+                let appleCell = document.getElementsByClassName("apple");
+                let emptyCells = document.getElementsByClassName("empty");
+                let roundApple = document.getElementById("round-apple");
+                
+                for(let d = 0; d < snakeCells.length; d++)
+                    snakeCells[d].style.backgroundColor = document.querySelector('input[name = "snakeColor"]:checked').value;
+                for(let e = 0; e < appleCell.length; e++) {
+                    appleCell[e].style.backgroundColor = document.querySelector('input[name = "appleColor"]:checked').value;
+                    if(roundApple.checked)
+                        appleCell[e].style.borderRadius = '50%';
+                    else
+                        appleCell[e].style.borderRadius = '0';
+                }
+                for(let f = 0; f < emptyCells.length; f++)
+                    emptyCells[f].style.backgroundColor = document.querySelector('input[name = "bgColor"]:checked').value; 
+            }
+            // Undraw and redraw snake and apple by setting class to 'empty'
+            function undraw() {
+                let coord = '';
+                
+                if(!in_game)
+                    return;
+                appleCoord = apple.pos[0].toString() + ',' + apple.pos[1].toString();
+                document.getElementById(appleCoord).innerHTML = '<div class="empty"></div>';
+                for(let x = 0; x < snake.body.length; x++) {
+                    if(snake.body[x] !== null) {
+                        coord = snake.body[x][0].toString() + ',' + snake.body[x][1].toString();
+                        document.getElementById(coord).innerHTML = '<div class="empty"></div>';
+                    }
+                }
+            }
+            // Set coordinate tiles to class 'snake' or 'apple'
+            function draw() {
+                let appleCoord = coord = '';
+
+                if(!in_game)
+                    return;
+                appleCoord = apple.pos[0].toString() + ',' + apple.pos[1].toString();
+                document.getElementById(appleCoord).innerHTML = '<div class="apple"></div>';
+                for(let x = 0; x < snake.body.length; x++) {
+                    if(snake.body[x] !== null) {
+                        coord = snake.body[x][0].toString() + ',' + snake.body[x][1].toString();
+                        document.getElementById(coord).innerHTML = '<div class="snake"></div>';
+                    }
+                }
+                updateBoard();
+            }
+            // Increase score, spawn another apple, increase snake length
+            function eat() {
+                snake.body.push(apple.pos);
+                apple.pos = spawnApple();
+                score++;
+                document.getElementById("score").innerHTML = score;
+            }
+            // Listens for keypresses
+            addEventListener("keydown", function(e) {
+                keys[e.keyCode] = true
+            }, false)
+            addEventListener("keyup", function(e) {
+                delete keys[e.keyCode]
+            }, false)
+            // Changes snake velocity on key down
+            function turn() {
+                let up    = (38 in keys || 87 in keys);
+                let down  = (40 in keys || 83 in keys);
+                let left  = (37 in keys || 65 in keys);
+                let right = (39 in keys || 68 in keys);
+                
+                if(!in_game)
+                    in_game = true;
+                if(up && snake.vel[1] !== -1)
+                    snake.vel = [0, 1];
+                else if(down && snake.vel[1] !== 1)
+                    snake.vel = [0, -1];
+                else if(left && snake.vel[0] !== 1)
+                    snake.vel = [-1, 0];
+                else if(right && snake.vel[0] !== -1)
+                    snake.vel = [1, 0];
+            }
+            // Increase x or y position of snake head and push into body array
+            function move() {
+                if(snake.vel[0] == 0 && snake.vel[1] == 0)
+                    return;
+                else if(snake.vel[0] == 1)
+                    snake.x_pos++;
+                else if(snake.vel[0] == -1)
+                    snake.x_pos--;
+                else if(snake.vel[1] == 1)
+                    snake.y_pos--;
+                else if(snake.vel[1] == -1)
+                    snake.y_pos++;
+                // Snake dies if it moves into itself or a wall
+                let snakePos = [snake.x_pos, snake.y_pos];
+                if(snake.x_pos < 0 || snake.y_pos < 0 || 
+                    snake.x_pos > board_size - 1 || snake.y_pos > board_size - 1)
+                    gameOver();
+                if(inSnakeBody(snakePos))
+                    gameOver();
+                snake.body.push([snake.x_pos, snake.y_pos]);
+                snake.body.shift();
+            }
+            // Called by play() to constantly update the game board
+            function update() {
+                if(in_game && !paused) {
+                    undraw();
+                    turn();
+                    move();
+                    if(snake.x_pos == apple.pos[0] && snake.y_pos == apple.pos[1])
+                        eat();
+                    draw();
+                }
+            }
+            // Spawn an apple on an empty tile
+            function spawnApple() {
+                let appleX = appleY = 0;
+                let pos = [];
+
+                do {
+                    appleX = Math.floor(Math.random() * board_size);
+                    appleY = Math.floor(Math.random() * board_size);
+                    pos = [appleX, appleY];
+                } while(inSnakeBody(pos));
+                return pos;
+            }
+            // Populate the table 'grid' with square cells
+            function makeBoard() {
+                let board = appleCoord = '';
+                
+                board_size = document.getElementById("board-size").value;
+                for(let y = 0; y < board_size; y++) {
+                    board += '<tr>';
+                    for(let x = 0; x < board_size; x++) {
+                        if(x == 1 && y == 1) {
+                            board += '<td class="cell" id="' + x + ',' + y + '"style="height:' + Math.floor(100/board_size) + '%"><div class="snake"></div></td>';
+                            snake.body.push([x, y]);
+                        }
+                        else
+                            board += '<td class="cell" id="' + x + ',' + y + '"style="height:' + Math.floor(100/board_size) + '%"><div class="empty"></div></td>';
+                    }
+                    board += '</tr>';
+                }
+                apple.pos = spawnApple();
+                document.getElementById("grid").innerHTML = board;
+                appleCoord = apple.pos[0].toString() + ',' + apple.pos[1].toString();
+                document.getElementById(appleCoord).innerHTML = '<div class="apple"></div>';
+                updateSettings();
+                updateBoard();
+            }
+            // Check if position is in snake body
+            function inSnakeBody(pos) {
+                let i, j, current;
+
+                for(i = 0; i < snake.body.length; i++) {
+                    current = snake.body[i];
+                    for(j = 0; j < pos.length && pos[j] == current[j]; j++)
+                        if(j == pos.length - 1)
+                            return true;
+                }
+                return false;
+            }
+            // Hide the title screen then create and display the game board
+            function startGame() {
+                let update_speed = document.getElementById("update-speed");
+                
+                in_game = true;
+                paused = false;
+                document.getElementById("title").style.display = "none";
+                document.getElementById("board").style.display = "block";
+                document.getElementById("score").innerHTML = score;
+                updating = setInterval(update, 1000/update_speed.value);
+                makeBoard();
+                getHighScore();
+            }
+            // Resets all values to default (except settings)
+            function reset() {
+                in_game = false;
+                paused = true;
+                keys = {};
+                score = 0;
+                snake.x_pos = snake.y_pos = 1;
+                snake.body = [];
+                snake.vel = [0, 0];
+                apple.pos = [];
+                clearInterval(updating);
+            }
+            // You died. Reset game.
+            function gameOver() {
+                in_game = false;
+                if(typeof(Storage) !== undefined) {
+                setHighScore();
+                getHighScore();
+                }
+                reset();
+                toggleMenu('gameover-menu');
+            }
+            // Hide the game board and show the title screen
+            function exitGame() {
+                in_game = false;
+                paused = true;
+                reset();
+                document.getElementById("title").style.display = "block";
+                document.getElementById("board").style.display = "none";
+            }
+            // Get high score from local storage
+            function getHighScore() {
+                if(typeof(Storage) !== "undefined") {
+                    try {
+                        high_score = localStorage.getItem("snakeV2HighScore");
+                        if(high_score > 0)
+                            document.getElementById("high-score").innerHTML = high_score;
+                        return high_score;
+                    }
+                    catch(e) {
+                        document.getElementById("high-score").innerHTML = high_score;
+                    }
+                }
+                else {
+                    document.getElementById("high-score").innerHTML = high_score;
+                }
+            }
+            // Set high score in local storage
+            function setHighScore() {
+                if(score > high_score)
+                    highScore = score;
+                if(typeof(Storage) == "undefined")
+                    return;
+                if(score > getHighScore())
+                    localStorage.setItem("snakeV2HighScore", score);
+            }
+            // Remove the high score from local storage
+            function clearHighScore() {
+                if(typeof(Storage) == "undefined")
+                    return;
+                if(confirm("Delete your high score?")) {
+                    try {
+                        localStorage.removeItem("snakeV2HighScore");
+                        document.getElementById("high-score").innerHTML = 0;
+                    }
+                    catch(e) {
+                        console.log("Failed to remove high score.");
+                    }
+                }
+            }
+        </script>
+    </body>
+</html>

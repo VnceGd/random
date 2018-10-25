@@ -406,7 +406,7 @@
                 upperBonus.innerHTML = upper_bonus;
                 upperTotal.innerHTML = upper_total;
                 lowerTotal.innerHTML = lower_total;
-                grandTotal.innerHTML = grand_total = upper_total + lower_total;
+                grandTotal.innerHTML = grand_total;
             }
             function yahtzeeFlair() {
                 let banner = document.getElementById("yahtzee-banner");
@@ -762,6 +762,7 @@
                     upper_bonus = 35;
                 joker = false;
                 round++;
+                grand_total = upper_total + lower_total;
                 if(round > MAXROUNDS) {
                     setHighScore();
                     getHighScore();

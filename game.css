@@ -1,0 +1,91 @@
+html, body {
+    margin: 0;
+    font-family: 'Lato', Arial, Helvetica, sans-serif;
+    transition: .5s;
+}
+h1, h3, h4, p {
+    margin: 1vmin 0 1vmin 0;
+}
+h1 {
+    font-size: 8vmin;
+    margin-bottom: 2vmin;
+}
+h3 {
+    font-size: 6vmin;
+}
+h4 {
+    font-size: 4vmin;
+}
+p {
+    font-size: 3vmin;
+}
+a {
+    text-decoration: none;
+    color: #77f;
+}
+a:hover { 
+    text-decoration: underline;
+}
+button {
+    margin: 1vmin auto;
+    width: 50vmin;
+    font-size: 3vmin;
+    font-family: 'Lato', Arial, Helvetica, sans-serif;
+    background-color: #eee;
+    border: 0;
+    border-radius: 2vmin;
+    transition: .1s;
+}
+button:hover {
+    background-color: #fff;
+    transition: .1s;
+}
+button:focus {
+    outline: none;
+}
+.circle-btn {
+    margin: 0 0.5vmin;
+    width: 6vmin;
+    float: right;
+    border-radius: 5vmin;
+}
+.menu-content {
+    margin: auto;
+    position: relative;
+    padding: 4vmin; 
+    width: 92vmin;
+    min-height: 92vmin;
+    background-color: #ddd;
+}
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #555;
+    background-color: #5555;
+    overflow-y: scroll;
+    z-index: 2;
+}
+#cookie-menu .menu-content {
+    top: 60vmin;
+    width: 80vmin;
+    height: 30vmin;
+}
+.menu-x {
+    position: absolute;
+    top: 4vmin;
+    right: 4vmin;
+    padding: 0 2vmin;
+    font-size: 6vmin;
+    cursor: pointer;
+}
+.menu-x:hover{
+    background-color: #aaa;
+}
+.disabled {
+    pointer-events: none;
+    background-color: none;
+}

@@ -3,100 +3,18 @@
     <head>
         <title>Snake v2</title>
         <link rel="icon" type="image/png" href="images/snakeFavicon.png">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
         <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+        <link href="game.css" rel="stylesheet">
         <style>
-            html, body {
-                margin: 0;
-                font-family: 'Lato', Arial, Helvetica, sans-serif;
-                transition: .5s;
-            }
-            h1, h3, h4, p {
-                margin: 1vmin 0 1vmin 0;
-            }
-            h1 {
-                font-size: 8vmin;
-                margin-bottom: 2vmin;
-            }
-            h3 {
-                font-size: 6vmin;
-            }
-            h4 {
-                font-size: 4vmin;
-            }
-            p {
-                font-size: 3vmin;
-            }
-            a {
-                text-decoration: none;
-                color: #55f;
-            }
-            a:hover { 
-                text-decoration: underline;
-            }
             input {
                 font-size: 3vmin;
-            }
-            button {
-                margin: 1vmin auto;
-                width: 50vmin;
-                font-size: 3vmin;
-                font-family: 'Lato', Arial, Helvetica, sans-serif;
-                background-color: #eee;
-                border: 0;
-                border-radius: 2vmin;
-                transition: .2s;
-            }
-            button:hover {
-                background-color: #fff;
-                transition: .1s;
             }
             tr, td {
                 border: none;
                 border-spacing: 0;
                 border-collapse: collapse;
                 padding: 0;
-            }
-            .circle-btn {
-                margin-left: 1vmin;
-                width: 4vmin;
-                float: right;
-                border-radius: 50%;
-            }
-            .menu-content {
-                margin: auto;
-                position: relative;
-                padding: 4vmin; 
-                width: 92vmin;
-                height: 92vmin;
-                background-color: #ddd;
-                overflow-y: scroll;
-            }
-            .modal {
-                display: none;
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background-color: #555;
-                background-color: #5555;
-                z-index: 2;
-            }
-            #cookie-menu .menu-content {
-                top: 60vmin;
-                width: 80vmin;
-                height: 30vmin;
-            }
-            .menu-x {
-                position: absolute;
-                top: 4vmin;
-                right: 4vmin;
-                padding: 0 2vmin;
-                font-size: 6vmin;
-                cursor: pointer;
-            }
-            .menu-x:hover{
-                background-color: #aaa;
             }
             .snake, .apple, .empty {
                 margin: 0;
@@ -155,7 +73,7 @@
             }
         </style>
     </head>
-    <body>
+    <body onload="checkCookie()">
         <div id="board">
             <div id="score-display">
                 <p>
@@ -166,12 +84,14 @@
             <div id="ingame-menu">
                 <button class="circle-btn" onclick="exitGame()">&times;</button>
                 <button class="circle-btn" onclick="toggleMenu('help-menu')">?</button>
+                <button class="circle-btn" id="pause-button" onclick="pauseGame()"><i class="fas fa-pause"></i></button>
+                <button class="circle-btn" id="resume-button" onclick="resumeGame()" style="display:none"><i class="fas fa-play"></i></button>
             </div>
             <table id="grid"></table>
         </div>
         <div id="title">
-            <h1>Snake Game</h1>
-            <button onclick="startGame()"><b>&#9658; Play</b></button>
+            <h1>Snake</h1>
+            <button onclick="startGame()"><b>Play</b></button>
             <button onclick="toggleMenu('settings-menu')">Settings</button>
             <button onclick="toggleMenu('help-menu')">How to Play</button>
             <a href="index.html"><button>Exit</button></a>
@@ -198,6 +118,13 @@
                 </ul>
                 <h4>v1.0</h4>
                 <p>Version 1 of this game can be found <a href="snake.html">here</a>.</p>
+                <h4>Credits</h4>
+                <p>
+                    Made by Vincent Nguyen <br><br>
+                    References/Sources: <br>
+                    <a href="w3schools.com">W3 Schools</a> <br>
+                    <a href="fonts.google.com">Google Fonts</a> <br>
+                </p>
             </div>
         </div>
         <div class="modal" id="settings-menu">
@@ -250,7 +177,7 @@
                 <p>Move the snake with WASD or the arrow keys.</p>
             </div>
         </div>
-        <div class="modal" id="cookie-menu" style="display:block">
+        <div class="modal" id="cookie-menu" style="display: block">
             <div class="menu-content" style="text-align:center">
                 <svg width="10vmin" viewbox="0 0 100 100">
                     <circle cx=50 cy=50 r=50></circle>
@@ -260,7 +187,7 @@
                     <circle cx=45 cy=75 r=6 style="fill:#951"></circle>
                 </svg>
                 <p>Cookies are used to save the high score.</p>
-                <button onclick="toggleMenu('cookie-menu')">Accept & Close</button> <br>
+                <button onclick="toggleMenu('cookie-menu'); setCookie()">Accept & Close</button> <br>
                 <a href="cookies.html"><button>Manage Cookies</button></a>
             </div>
         </div>
@@ -550,6 +477,21 @@
                 makeBoard();
                 getHighScore();
             }
+            function pauseGame() {
+                clearInterval(updating);
+                paused = true;
+                document.getElementById("pause-button").style.display  = 'none';
+                document.getElementById("resume-button").style.display = 'inline';                
+            }
+            function resumeGame() {
+                let update_speed = parseInt(document.getElementById("update-speed").value);
+
+                clearInterval(updating);
+                paused = false;
+                document.getElementById("pause-button").style.display  = 'inline';
+                document.getElementById("resume-button").style.display = 'none';
+                updating = setInterval(update, 1000/update_speed);
+            }
             // Resets all values to default (except settings)
             function reset() {
                 in_game = false;
@@ -600,7 +542,7 @@
             // Set high score in local storage
             function setHighScore() {
                 if(score > high_score)
-                    highScore = score;
+                    high_score = score;
                 if(typeof(Storage) == "undefined")
                     return;
                 if(score > getHighScore())
@@ -619,6 +561,28 @@
                         console.log("Failed to remove high score.");
                     }
                 }
+            }
+            function checkCookie() {
+                if(typeof(Storage) !== "undefined") {
+                    try {
+                        let cookie_consent = localStorage.getItem("snakeV2CookieConsent");
+                        if(cookie_consent == "true")
+                            document.getElementById("cookie-menu").style.display = "none";
+                        return;
+                    }
+                    catch(e) {
+                        return;
+                    }
+                }
+                else {
+                    return;
+                }
+            }
+            function setCookie() {
+                if(typeof(Storage) == "undefined")
+                    return;
+                else
+                    localStorage.setItem("snakeV2CookieConsent", true);
             }
         </script>
     </body>

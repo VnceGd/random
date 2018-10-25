@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Yahtzee v2</title>
+        <link rel="icon" type="image/png" href="images/dieFavicon.png">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
+        <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+        <link href="game.css" rel="stylesheet">
+        <style>
+            table, th, td {
+                font-size: 3vmin;
+                border-collapse: collapse;
+            }
+            a {
+                cursor: pointer;
+            }
+            th {
+                text-align: left;
+            }
+            .box {
+                width: 100%;
+            }
+            .container {
+                margin: auto;
+                padding: 4vmin;
+                width: 92vmin;
+                height: 92vmin;
+                background-color: #ddd;
+            }
+            #title {
+                text-align: center;
+            }
+            #game {
+                display: none;
+            }
+            #version-btn {
+                width: 25vmin;
+            }
+            .categories {
+                margin: 2vmin auto;
+                padding: 1vmin;
+                width: 80vmin;
+            }
+            .categories table {
+                width: 100%;
+                background-color: #fff3;
+            }
+            .categories table, th, td {
+                border: 1px solid #000;
+                border-spacing: 0;
+            }
+            th, td {
+                padding: 1vmin;
+            }
+            .category {
+                background-color: #dfd;
+                transition: .1s;
+            }
+            .category:hover {
+                background-color: #efe;
+                padding-left: 2vmin;
+                padding-right: 0;
+                cursor: pointer;
+                transition: .1s;
+            }
+            .dark-cat {
+                background-color: #595;
+            }
+            .dark-cat:hover {
+                background-color: #696;
+            }
+            .dice, .roll {
+                margin: auto;
+                width: 80vmin;
+                text-align: center;
+            }
+            .die, .selected {
+                width: 14vmin;
+                height: 14vmin;
+                font-size: 10vmin;
+            }
+            .selected {
+                background-color: #f88;
+            }
+            .selected:hover {
+                background-color: #faa;
+            }
+            .roll button {
+                padding: 1vmin;
+                width: 72vmin;
+                font-size: 5vmin;
+            }
+            #yahtzee-banner {
+                position: absolute;
+                padding: 4vmin;
+                width: 72vmin;
+                background-color: #f75d;
+                color: #fff;
+                display: none;
+                opacity: 0;
+                font-size: 6vmin;
+                text-align: center;
+                z-index: 2;
+            }
+        </style>
+    </head>
+    <body onload="checkCookie()">
+        <div class="box" id="game">
+            <div class="container">
+                <div class="score-display">
+                    <button class="circle-btn" onclick="exitGame()">&times;</button>
+                    <button class="circle-btn" onclick="toggleMenu('help-menu')">?</button>
+                    <button class="circle-btn" onclick="toggleMenu('settings-menu')"><i class="fas fa-cog"></i></button>
+                    <p>Round <span id="round">1</span>, Roll <span id="roll">1</span> | High score: <span id="high-score"></span></p>
+                </div>
+                <div class="categories">
+                    <table>
+                        <tr>
+                            <th>Upper Section</th>
+                            <th>Score</th>
+                            <th>Lower Section</th>
+                            <th>Score</th>
+                        </tr>
+                        <tr>
+                            <td class="category" id="aces" onclick="playCategory('aces')">Aces</td>
+                            <td class="score" id="ace-score"></td>
+                            <td class="category" id="3kind" onclick="playCategory('3kind')">3 of a Kind</td>
+                            <td class="score" id="3kind-score"></td>
+                        </tr>
+                        <tr>
+                            <td class="category" id="twos" onclick="playCategory('twos')">Twos</td>
+                            <td class="score" id="two-score"></td>
+                            <td class="category" id="4kind" onclick="playCategory('4kind')">4 of a Kind</td>
+                            <td class="score" id="4kind-score"></td>
+                        </tr>
+                        <tr>
+                            <td class="category" id="threes" onclick="playCategory('threes')">Threes</td>
+                            <td class="score" id="three-score"></td>
+                            <td class="category" id="fullHouse" onclick="playCategory('fullHouse')">Full House</td>
+                            <td class="score" id="fullhouse-score"></td>
+                        </tr>
+                        <tr>
+                            <td class="category" id="fours" onclick="playCategory('fours')">Fours</td>
+                            <td class="score" id="four-score"></td>
+                            <td class="category" id="smStraight" onclick="playCategory('smStraight')">Small Straight</td>
+                            <td class="score" id="smstraight-score"></td>
+                        </tr>
+                        <tr>
+                            <td class="category" id="fives" onclick="playCategory('fives')">Fives</td>
+                            <td class="score" id="five-score"></td>
+                            <td class="category" id="lgStraight" onclick="playCategory('lgStraight')">Large Straight</td>
+                            <td class="score" id="lgstraight-score"></td>
+                        </tr>
+                        <tr>
+                            <td class="category" id="sixes" onclick="playCategory('sixes')">Sixes</td>
+                            <td class="score" id="six-score"></td>
+                            <td class="category" id="yahtzee" onclick="playCategory('yahtzee')">Yahtzee!</td>
+                            <td class="score" id="yahtzee-score"></td>
+                        </tr>
+                        <tr>
+                            <td>Upper Bonus</td>
+                            <td class="score" id="bonus-score"></td>
+                            <td class="category" id="chance" onclick="playCategory('chance')">Chance</td>
+                            <td class="score" id="chance-score"></td>
+                        </tr>
+                        <tr>
+                            <th>Upper Total</th>
+                            <td class="score" id="upper-total"></td>
+                            <th>Lower Total</th>
+                            <td class="score" id="lower-total"></td>
+                        </tr>
+                        <tr><th colspan="2">Grand Total</th><td class="score" id="grand-total" colspan="2"></td></tr>
+                    </table>
+                </div>
+                <div class="dice">
+                    <div id="yahtzee-banner">YAHTZEE!</div>
+                    <button class="die" id="die0" onclick="selectDie(0)">1</button>
+                    <button class="die" id="die1" onclick="selectDie(1)">2</button>
+                    <button class="die" id="die2" onclick="selectDie(2)">3</button>
+                    <button class="die" id="die3" onclick="selectDie(3)">4</button>
+                    <button class="die" id="die4" onclick="selectDie(4)">5</button>
+                </div>
+                <div class="roll">
+                    <button id="roll-button" onclick="rollDice()">Roll</button>
+                </div>
+            </div>
+        </div>
+        <div class="box" id="title">
+            <div class="container">
+                <h1>Yahtzee</h1>
+                <button onclick="startGame()"><b>Play</b></button>
+                <button onclick="toggleMenu('settings-menu')">Settings</button>
+                <button onclick="toggleMenu('help-menu')">How to Play</button>
+                <a href="index.html"><button>Exit</button></a>
+                <br>
+                <button onclick="toggleMenu('version-menu')" id="version-btn">v2.0</button>
+            </div>
+        </div>
+        <div class="modal" id="version-menu">
+            <div class="menu-content">
+                <span class="menu-x" onclick="toggleMenu('version-menu')">&times;</span>
+                <h3>Patch Notes</h3>
+                <h4>v2.0</h4>
+                <b>What's New:</b>
+                <ul>
+                    <li>New UI design</li>
+                    <li>New icons</li>
+                    <li>JQuery optimization</li>
+                </ul>
+                <h4>v1.0</h4>
+                <p>Version 1 of this game can be found <a href="yahtzee.html">here</a>.</p>
+                <h4>Credits</h4>
+                <p>
+                    Made by Vincent Nguyen <br><br>
+                    References/Sources: <br>
+                    <a href="w3schools.com">W3 Schools</a> <br>
+                    <a href="fonts.google.com">Google Fonts</a> <br>
+                    <a href="fontawesome.com">Font Awesome</a>
+                </p>
+            </div>
+        </div>
+        <div class="modal" id="settings-menu">
+            <div class="menu-content">
+                <span class="menu-x" onclick="toggleMenu('settings-menu')">&times;</span>
+                <h3>Settings</h3>
+                <h4>Gameplay</h4>
+                <p>
+                    <b>Game Resets on Exit</b> <br>
+                    <input type="radio" name="reset" value="on" onclick="updateSettings('reset')" checked/> On
+                    <input type="radio" name="reset" value="off" onclick="updateSettings('reset')"/> Off
+                </p>
+                <h4>Appearance</h4>
+                <p>
+                    <b>Die Faces</b> <br>
+                    <input type="radio" name="face" value="dots" onclick="updateSettings('faces')" checked/> Dots
+                    <input type="radio" name="face" value="nums" onclick="updateSettings('faces')"/> Numbers
+                </p>
+                <p>
+                    <b>Theme</b> <br>
+                    <input type="radio" name="theme" value="light" onclick="updateSettings('theme')" checked/> Light
+                    <input type="radio" name="theme" value="dark" onclick="updateSettings('theme')"/> Dark
+                </p>
+                <h4>Other</h4>
+                <a href="cookies.html"><button>Manage Cookies</button></a>
+                <button onclick="clearHighScore()">Clear High Score</button>
+            </div>
+        </div>
+        <div class="modal" id="help-menu">
+            <div class="menu-content">
+                <span class="menu-x" onclick="toggleMenu('help-menu')">&times;</span>
+                <h3>How to Play</h3>
+                <a href="https://en.wikipedia.org/wiki/Yahtzee#Rules">Detailed Rules on Wikipedia</a>
+                <p>
+                    There are 13 rounds each in which you may attempt 3 rolls. <br>
+                    After each roll, you may select a category to score against. <br>
+                    You may also select dice to lock in and roll the rest. <br>
+                    If your dice match the criteria of the category, you earn points. <br>
+                    <i>Note: Once you choose a category, it's locked for the rest of the game.</i>
+                </p>
+                <table>
+                    <tr><th>Category</th><th>Points Awarded</th></tr>
+                    <tr><td>Aces (1's)</td><td>The sum of your 1s</td></tr>
+                    <tr><td>Twos (2's)</td><td>The sum of your 2s</td></tr>
+                    <tr><td>Threes (3's)</td><td>The sum of your 3s</td></tr>
+                    <tr><td>Fours (4's)</td><td>The sum of your 4s</td></tr>
+                    <tr><td>Fives (5's)</td><td>The sum of your 5s</td></tr>
+                    <tr><td>Sixes (6's)</td><td>The sum of your 6s</td></tr>
+                    <tr><td>Three of a Kind<br>(3 of the same number)</td><td>The sum of all your dice</td></tr>
+                    <tr><td>Four of a Kind<br>(4 of the same number)</td><td>The sum of all your dice</td></tr>
+                    <tr><td>Full House<br>(3 of a kind + 2 of a kind)</td><td>25</td></tr>
+                    <tr><td>Small Straight<br>(4 consecutive numbers)</td><td>30</td></tr>
+                    <tr><td>Large Straight<br>(5 consecutive numbers)</td><td>40</td></tr>
+                    <tr><td>Yahtzee!<br>(5 of the same number)</td><td>50 (or 100 after earning the 50)</td></tr>
+                    <tr><td>Chance</td><td>The sum of all your dice</td></tr>
+                </table>
+            </div>
+        </div>
+        <div class="modal" id="cookie-menu" style="display: block">
+            <div class="menu-content" style="text-align:center">
+                <svg width="10vmin" viewbox="0 0 100 100">
+                    <circle cx=50 cy=50 r=50></circle>
+                    <circle cx=50 cy=50 r=48 style="fill:#d95"></circle>
+                    <circle cx=15 cy=40 r=5 style="fill:#951"></circle>
+                    <circle cx=65 cy=35 r=7 style="fill:#951"></circle>
+                    <circle cx=45 cy=75 r=6 style="fill:#951"></circle>
+                </svg>
+                <p>Cookies are used to save the high score.</p>
+                <button onclick="toggleMenu('cookie-menu'); setCookie()">Accept & Close</button> <br>
+                <a href="cookies.html"><button>Manage Cookies</button></a>
+            </div>
+        </div>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script>
+            // Limits
+            const MAXROLLS = 3;
+            const MAXROUNDS = 13;
+            // SVG Icons from fontawesome.com
+            const ONE = '<i class="fas fa-dice-one"></i>';
+            const TWO = '<i class="fas fa-dice-two"></i>';
+            const THREE = '<i class="fas fa-dice-three"></i>';
+            const FOUR = '<i class="fas fa-dice-four"></i>';
+            const FIVE = '<i class="fas fa-dice-five"></i>';
+            const SIX = '<i class="fas fa-dice-six"></i>';
+            // Game state
+            let rolling; // Holds interval for animateDice()
+            let selected = [[1, 0], [2, 0], [3, 0], [4, 0], [5, 0]];
+            let roll = round = 1;
+            // Scoring
+            let high_score = grand_total = upper_total = lower_total = upper_bonus = 0;
+            let joker = false;
+            // Preference
+            let prefer_dots = exit_reset = true;
+
+            window.onclick = function(event) {
+                let settingsMenu  = document.getElementById("settings-menu");
+                let helpMenu = document.getElementById("help-menu");
+                let versionMenu   = document.getElementById("version-menu");
+                let cookieMenu  = document.getElementById("cookie-menu");
+                let modals = [settingsMenu, helpMenu, versionMenu, cookieMenu];
+
+                if(modals.includes(event.target))
+                    event.target.style.display = "none";
+            }
+
+            function toggleMenu(menu) {
+                let which = document.getElementById(menu);
+
+                if(which.style.display == "block")
+                    which.style.display = "none";
+                else
+                    which.style.display = "block";
+            }
+            function updateSettings(type) {                
+                if(type == 'reset') {
+                    let resetPref = document.querySelector('input[name = "reset"]:checked');
+
+                    if(resetPref.value == "on")
+                        exit_reset = true;
+                    else
+                        exit_reset = false;
+                }
+                else if(type == 'faces') {
+                    let facePref = document.querySelector('input[name = "face"]:checked');
+
+                    if(facePref.value == "dots")
+                        prefer_dots = true;
+                    else
+                        prefer_dots = false;
+                    for(let n = 0; n < 5; n++) {
+                        let die = document.getElementById("die" + n);
+                        if(prefer_dots) {
+                            switch(selected[n][0]) {
+                                case 1: die.innerHTML = ONE;
+                                    break;
+                                case 2: die.innerHTML = TWO;
+                                    break;
+                                case 3: die.innerHTML = THREE;
+                                    break;
+                                case 4: die.innerHTML = FOUR;
+                                    break;
+                                case 5: die.innerHTML = FIVE;
+                                    break;
+                                case 6: die.innerHTML = SIX;
+                                    break;  
+                            }
+                        }
+                        else
+                            die.innerHTML = selected[n][0];
+                    }
+                }
+                else if(type == 'theme') {
+                    let themePref = document.querySelector('input[name = "theme"]:checked').value;
+
+                    if(themePref == "dark") {
+                        document.body.style.color = "#fff";
+                        document.body.style.backgroundColor = "#111";
+                        $('.menu-content').css('background-color', '#333');
+                        $('.container').css('background-color', '#555');
+                        $('.category').addClass('dark-cat');
+                    }
+                    else {
+                        document.body.style.color = "#000";
+                        document.body.style.backgroundColor = "#fff";
+                        $('.menu-content').css('background-color', '#ddd');
+                        $('.container').css('background-color', '#ddd');
+                        $('.category').removeClass('dark-cat');
+                    }
+                }
+            }
+            function updateDisplay() {
+                let roundDisplay = document.getElementById("round");
+                let rollDisplay  = document.getElementById("roll");
+                let upperBonus   = document.getElementById("bonus-score");
+                let upperTotal   = document.getElementById("upper-total");
+                let lowerTotal   = document.getElementById("lower-total");
+                let grandTotal   = document.getElementById("grand-total");
+
+                if(round > MAXROUNDS)
+                    roundDisplay.innerHTML = MAXROUNDS;
+                else
+                    roundDisplay.innerHTML = round;
+                if(roll > MAXROLLS)
+                    rollDisplay.innerHTML = MAXROLLS;
+                else
+                    rollDisplay.innerHTML = roll;
+                upperBonus.innerHTML = upper_bonus;
+                upperTotal.innerHTML = upper_total;
+                lowerTotal.innerHTML = lower_total;
+                grandTotal.innerHTML = grand_total = upper_total + lower_total;
+            }
+            function yahtzeeFlair() {
+                let banner = document.getElementById("yahtzee-banner");
+                let bannerOpacity = 0;
+                let animating;
+                
+                function setAnimation(reverse) {
+                    clearInterval(animating);
+                    animating = setInterval(function() {animateBanner(reverse ? true : false)}, 10);
+                }
+                function animateBanner(reverse) {
+                    if(reverse) {
+                        if(bannerOpacity <= 0) {
+                            clearInterval(animating);
+                            banner.style.display = "none";
+                        }
+                        else {
+                            bannerOpacity -= 0.05;
+                            banner.style.opacity = bannerOpacity;
+                        }
+                    }
+                    else {
+                        if(bannerOpacity >= 1)
+                            clearInterval(animating);
+                        else {
+                            bannerOpacity += 0.05;
+                            banner.style.opacity = bannerOpacity;
+                        }
+                    }
+                }
+                setAnimation(false);
+                banner.style.display = "block";
+                setTimeout(function() { setAnimation(true) }, 1000);
+            }
+            function resetGame() {
+                let scores = document.getElementsByClassName("score");
+
+                selected = [[1, 0], [2, 0], [3, 0], [4, 0], [5, 0]];
+                roll = round = 1;
+                high_score = upper_total = lower_total = upper_bonus = 0;
+                joker = false;
+                $('.disabled').addClass('category');
+                $('.category').removeClass('disabled');
+                for(let s = 0; s < scores.length; s++)
+                    scores[s].innerHTML = "";
+                updateDisplay();
+            }
+            function startGame() {
+                document.getElementById("title").style.display = "none";
+                document.getElementById("game").style.display = "block";
+                document.getElementById("high-score").innerHTML = getHighScore();
+                updateSettings('faces');
+                if(exit_reset)
+                    resetGame();
+                if(round == 1) {
+                    disableActions('categories');
+                    document.getElementById("roll-button").disabled = false;
+                }
+            }
+            function exitGame() {
+                document.getElementById("title").style.display = "block";
+                document.getElementById("game").style.display = "none";
+                $('.die').removeClass('disabled');
+            }
+            function disableActions(type) {
+                if(type == 'categories' || type == 'all')
+                    $('.category').addClass('disabled');
+                if(type == 'dice' || type == 'all') {
+                    $('.die').addClass('disabled');
+                    $('.selected').addClass('disabled');
+                    document.getElementById("roll-button").disabled = true;
+                }
+            }
+            function enableActions(type) {
+                let yahtzeeScore = document.getElementById("yahtzee-score");
+
+                if(yahtzeeScore.innerHTML !== "") {
+                    document.getElementById("yahtzee").disabled = true;
+                    if(checkOfKind() == "yahtzee") {
+                        document.getElementById("roll-button").disabled = true;
+                        yahtzeeFlair();
+                        if(yahtzeeScore.innerHTML > 0)
+                            yahtzeeScore.innerHTML = parseInt(yahtzeeScore.innerHTML) + 100;
+                        joker = true;
+                    }
+                }
+                if(roll > 1) {
+                    if(type == 'categories' || type == 'all')
+                        $('.category').removeClass('disabled');
+                    if(type == 'dice' || type == 'all') {
+                        $('.die').removeClass('disabled');
+                        $('.selected').removeClass('disabled');
+                        document.getElementById("roll-button").disabled = false;
+                    }
+                }
+            }
+            function animateDice() {
+                for(let n = 0; n < 5; n++) {
+                    let die = document.getElementById("die" + n);
+                    if(selected[n][1] == 0) {
+                        selected[n][0] = Math.floor(Math.random() * 6 + 1);
+                        if(prefer_dots) {
+                            switch(selected[n][0]) {
+                                case 1: die.innerHTML = ONE;
+                                    break;
+                                case 2: die.innerHTML = TWO;
+                                    break;
+                                case 3: die.innerHTML = THREE;
+                                    break;
+                                case 4: die.innerHTML = FOUR;
+                                    break;
+                                case 5: die.innerHTML = FIVE;
+                                    break;
+                                case 6: die.innerHTML = SIX;
+                                    break;  
+                            }
+                        }
+                        else
+                            die.innerHTML = selected[n][0];
+                    }
+                }
+            }
+            function clearAnimateDice() {
+                clearInterval(rolling);
+                for(let n = 0; n < 5; n++) {
+                    selected[n][1] = 0;
+                    document.getElementById("die" + n).className = "die";
+                }
+                if(roll < 4)
+                    enableActions('all');
+                else
+                    enableActions('categories');
+                updateDisplay();
+            }
+            function rollDice() {
+                roll++;
+                disableActions('all');
+                rolling = setInterval(animateDice, 50);
+                setTimeout(clearAnimateDice, 1000);
+            }
+            function selectDie(n) {
+                if(roll > 3 || roll == 1)
+                    return;
+                let die = document.getElementById("die" + n);
+                if(die.className == "die") {
+                    selected[n][1] = 1;
+                    die.className = "selected";
+                }
+                else {
+                    selected[n][1] = 0;
+                    die.className = "die";
+                }
+            }
+            // Check for a small or large straight
+            function checkStraight() {
+                let largeStraights = [[1, 2, 3, 4, 5], [2, 3, 4, 5, 6]];
+                let smallStraights = [[1, 2, 3, 4], [2, 3, 4, 5], [3, 4, 5, 6]];
+                let matches = 0;
+                let dieArray = [];
+                let sorted = [];
+
+                for(let n = 0; n < 5; n++)
+                    dieArray[n] = selected[n][0];
+                sorted = dieArray.slice();
+                sorted = sorted.filter(function(item, pos) {
+                    return sorted.indexOf(item) == pos;
+                });
+                if(sorted.length < 4)
+                    return;
+
+                sorted.sort();
+                for(let i = 0; i < largeStraights.length; i++) {
+                    matches = 0;
+                    for(let j = 0; j < sorted.length; j++)
+                        if(largeStraights[i].indexOf(sorted[j]) != -1)
+                            matches++;
+                    if(matches == 5)
+                        return "lgStraight";
+                }
+                for(let i = 0; i < smallStraights.length; i++) {
+                    matches = 0;
+                    for(let j = 0; j < sorted.length; j++)
+                        if(smallStraights[i].indexOf(sorted[j]) != -1)
+                            matches++;
+                    if(matches == 4)
+                        return "smStraight";
+                }
+            }
+            // Check for 3, 4, or 5 of a kind or a Full House
+            function checkOfKind() {
+                let dieArray = [];
+                let sorted = [];
+                let current = null;
+                let count = pair = 0;
+
+                for(let n = 0; n < 5; n++)
+                    dieArray[n] = selected[n][0];
+                sorted = dieArray.slice();
+                sorted.sort();
+                
+                for(let i = 0; i < 5; i++) {
+                    if(sorted[i] !== current) {
+                        if(count == 4)
+                            return "4kind";
+                        else if(count == 3) {
+                            if(pair == 2)
+                                return "fullHouse";
+                            else
+                                pair = 3;
+                        }
+                        else if(count == 2) {
+                            if(pair == 3)
+                                return "fullHouse";
+                            else
+                                pair = 2;
+                        }
+                        current = sorted[i];
+                        count = 1;
+                    }
+                    else
+                        count++;
+                    }
+                if(count == 5)
+                    return "yahtzee";
+                else if(count == 4)
+                    return "4kind";
+                else if(count == 3) {
+                    if(pair == 2)
+                        return "fullHouse";
+                    else
+                        return "3kind";
+                }
+                else if(count == 2) {
+                    if(pair == 3)
+                        return "fullHouse";
+                }
+                else if(pair == 3)
+                    return "3kind";
+            }
+            function playCategory(id) {
+                let total = 0;
+                let straightCheck = checkStraight();
+                let kindCheck = checkOfKind();
+                
+                document.getElementById(id).className = "disabled";
+                for(let n = 0; n < 5; n++) {
+                    selected[n][1] = 0;
+                    document.getElementById("die" + n).className = "die";
+                }
+                switch(id) {
+                    case "aces":
+                        for(let i = 0; i < 5; i++)
+                            if(selected[i][0] == 1)
+                                total += selected[i][0];
+                        upper_total += total;
+                        document.getElementById("ace-score").innerHTML = total;
+                        break;
+                    case "twos":
+                        for(let i = 0; i < 5; i++)
+                            if(selected[i][0] == 2)
+                                total += selected[i][0];
+                        upper_total += total;
+                        document.getElementById("two-score").innerHTML = total;
+                        break;
+                    case "threes":
+                        for(let i = 0; i < 5; i++)
+                            if(selected[i][0] == 3)
+                                total += selected[i][0];
+                        upper_total += total;
+                        document.getElementById("three-score").innerHTML = total;
+                        break;
+                    case "fours":
+                        for(let i = 0; i < 5; i++)
+                            if(selected[i][0] == 4)
+                                total += selected[i][0];
+                        upper_total += total;
+                        document.getElementById("four-score").innerHTML = total;
+                        break;
+                    case "fives":
+                        for(let i = 0; i < 5; i++)
+                            if(selected[i][0] == 5)
+                                total += selected[i][0];
+                        upper_total += total;
+                        document.getElementById("five-score").innerHTML = total;
+                        break;
+                    case "sixes":
+                        for(let i = 0; i < 5; i++)
+                            if(selected[i][0] == 6)
+                                total += selected[i][0];
+                        upper_total += total;
+                        document.getElementById("six-score").innerHTML = total;
+                        break;
+                    case "3kind":
+                        if(kindCheck !== "fullHouse" && kindCheck !== "3kind" && kindCheck !== "4kind")
+                            total = 0;
+                        else
+                            for(let i = 0; i < 5; i++)
+                               total += selected[i][0];
+                        lower_total += total;
+                        document.getElementById("3kind-score").innerHTML = total;
+                        break;
+                    case "4kind":
+                        if(kindCheck !== "4kind")
+                            total = 0;
+                        else
+                            for(let i = 0; i < 5; i++)
+                                total += selected[i][0];
+                        lower_total += total;
+                        document.getElementById("4kind-score").innerHTML = total;
+                        break;
+                    case "fullHouse":
+                        if(kindCheck !== "fullHouse" && !joker)
+                            total = 0;
+                        else
+                            total = 25;
+                        lower_total += total;
+                        document.getElementById("fullhouse-score").innerHTML = total;
+                        break;
+                    case "smStraight":
+                        if(straightCheck !== "smStraight" && straightCheck !== "lgStraight" && !joker)
+                            total = 0;
+                        else
+                            total = 30;
+                        lower_total += total;
+                        document.getElementById("smstraight-score").innerHTML = total;
+                        break;
+                    case "lgStraight":
+                        if(straightCheck !== "lgStraight" && !joker)
+                            total = 0;
+                        else
+                            total = 40;
+                        lower_total += total;
+                        document.getElementById("lgstraight-score").innerHTML = total;
+                        break;
+                    case "yahtzee":
+                        if(kindCheck !== "yahtzee")
+                            total = 0;
+                        else {
+                            total = 50;
+                            yahtzeeFlair();
+                        }
+                        lower_total += total;
+                        document.getElementById("yahtzee-score").innerHTML = total;
+                        break;
+                    case "chance":
+                        for(let i = 0; i < 5; i++)
+                            total += selected[i][0];
+                        lower_total += total;
+                        document.getElementById("chance-score").innerHTML = total;
+                        break;
+                }
+                if(upper_total > 62)
+                    upper_bonus = 35;
+                joker = false;
+                round++;
+                if(round > MAXROUNDS) {
+                    setHighScore();
+                    getHighScore();
+                    alert("Game Finished");
+                    disableActions('all');
+                }
+                else {
+                    roll = 1;
+                    document.getElementById("roll-button").disabled = false;
+                    disableActions('categories');
+                }
+                updateDisplay();
+            }
+            // Get high score from local storage
+            function getHighScore() {
+                if(typeof(Storage) !== "undefined") {
+                    try {
+                        high_score = localStorage.getItem("yahtzeeV2HighScore");
+                        if(high_score > 0)
+                            document.getElementById("high-score").innerHTML = high_score;
+                        return high_score;
+                    }
+                    catch(e) {
+                        document.getElementById("high-score").innerHTML = high_score;
+                    }
+                }
+                else {
+                    document.getElementById("high-score").innerHTML = high_score;
+                }
+            }
+            // Set high score in local storage
+            function setHighScore() {
+                if(grand_total > high_score)
+                    high_score = grand_total;
+                if(typeof(Storage) == "undefined")
+                    return;
+                if(grand_total > getHighScore())
+                    localStorage.setItem("yahtzeeV2HighScore", grand_total);
+            }
+            // Remove the high score from local storage
+            function clearHighScore() {
+                if(typeof(Storage) == "undefined")
+                    return;
+                if(confirm("Delete your high score?")) {
+                    try {
+                        localStorage.removeItem("yahtzeeV2HighScore");
+                        document.getElementById("high-score").innerHTML = 0;
+                    }
+                    catch(e) {
+                        console.log("Failed to remove high score.");
+                    }
+                }
+            }
+            function checkCookie() {
+                if(typeof(Storage) !== "undefined") {
+                    try {
+                        let cookie_consent = localStorage.getItem("yahtzeeV2CookieConsent");
+                        if(cookie_consent == "true")
+                            document.getElementById("cookie-menu").style.display = "none";
+                        return;
+                    }
+                    catch(e) {
+                        return;
+                    }
+                }
+                else {
+                    return;
+                }
+            }
+            function setCookie() {
+                if(typeof(Storage) == "undefined")
+                    return;
+                else
+                    localStorage.setItem("yahtzeeV2CookieConsent", true);
+            }
+        </script>
+    </body>
+</html>

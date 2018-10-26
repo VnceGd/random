@@ -1,3 +1,4 @@
+<!-- Vincent Nguyen 2018 -->
 <!DOCTYPE html>
 <html>
     <head>
@@ -96,7 +97,7 @@
             <button onclick="toggleMenu('help-menu')">How to Play</button>
             <a href="index.html"><button>Exit</button></a>
             <br>
-            <button onclick="toggleMenu('version-menu')" id="version-button">v2.0</button>
+            <button onclick="toggleMenu('version-menu')" id="version-button">v2.1</button>
         </div>
         <div class="modal" id="gameover-menu">
             <div class="menu-content" id="gameover-menu-content">
@@ -109,8 +110,14 @@
             <div class="menu-content">
                 <h3>Patch Notes</h3>
                 <span class="menu-x" onclick="toggleMenu('version-menu')">&times;</span>
+                <h4>v2.1</h4>
+                <b>Updates:</b>
+                <ul>
+                    <li>Pause functionality re-added</li>
+                    <li>Replaced cookie inline svg with fontawesome icon</li>
+                </ul>
                 <h4>v2.0</h4>
-                <p>What's New:</p>
+                <b>What's New:</b>
                 <ul>
                     <li>UI redesign</li>
                     <li>Light/Dark theme selection</li>
@@ -124,6 +131,7 @@
                     References/Sources: <br>
                     <a href="w3schools.com">W3 Schools</a> <br>
                     <a href="fonts.google.com">Google Fonts</a> <br>
+                    <a href="fontawesome.com">Font Awesome</a>
                 </p>
             </div>
         </div>
@@ -171,6 +179,7 @@
             <div class="menu-content">
                 <h3>How to Play</h3>
                 <span class="menu-x" onclick="toggleMenu('help-menu')">&times;</span>
+                <p><i>Note: This website is optimized for Google Chrome</i> </p>
                 <h4>Objective</h4>
                 <p>Grow as long as you can by eating apples, while avoiding moving into walls and your own body.</p>
                 <h4>Controls</h4>
@@ -179,13 +188,7 @@
         </div>
         <div class="modal" id="cookie-menu" style="display: block">
             <div class="menu-content" style="text-align:center">
-                <svg width="10vmin" viewbox="0 0 100 100">
-                    <circle cx=50 cy=50 r=50></circle>
-                    <circle cx=50 cy=50 r=48 style="fill:#d95"></circle>
-                    <circle cx=15 cy=40 r=5 style="fill:#951"></circle>
-                    <circle cx=65 cy=35 r=7 style="fill:#951"></circle>
-                    <circle cx=45 cy=75 r=6 style="fill:#951"></circle>
-                </svg>
+                <h3><i class="fas fa-cookie-bite"></i></h3>
                 <p>Cookies are used to save the high score.</p>
                 <button onclick="toggleMenu('cookie-menu'); setCookie()">Accept & Close</button> <br>
                 <a href="cookies.html"><button>Manage Cookies</button></a>
@@ -222,6 +225,7 @@
                     event.target.style.display = "none";
             }
 
+            // Open or close menu
             function toggleMenu(menu) {
                 let which = document.getElementById(menu);
 
@@ -477,12 +481,14 @@
                 makeBoard();
                 getHighScore();
             }
+            // Stop updating
             function pauseGame() {
                 clearInterval(updating);
                 paused = true;
                 document.getElementById("pause-button").style.display  = 'none';
                 document.getElementById("resume-button").style.display = 'inline';                
             }
+            // Resume updating
             function resumeGame() {
                 let update_speed = parseInt(document.getElementById("update-speed").value);
 
@@ -562,6 +568,7 @@
                     }
                 }
             }
+            // Checks if cookie consent is accepted
             function checkCookie() {
                 if(typeof(Storage) !== "undefined") {
                     try {
@@ -578,6 +585,7 @@
                     return;
                 }
             }
+            // Sets cookie consent in local storage
             function setCookie() {
                 if(typeof(Storage) == "undefined")
                     return;

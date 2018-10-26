@@ -1,3 +1,4 @@
+<!-- Vincent Nguyen 2018 -->
 <!DOCTYPE html>
 <html>
     <head>
@@ -193,18 +194,28 @@
                 <button onclick="toggleMenu('help-menu')">How to Play</button>
                 <a href="index.html"><button>Exit</button></a>
                 <br>
-                <button onclick="toggleMenu('version-menu')" id="version-btn">v2.0</button>
+                <button onclick="toggleMenu('version-menu')" id="version-btn">v2.1</button>
             </div>
         </div>
         <div class="modal" id="version-menu">
             <div class="menu-content">
                 <span class="menu-x" onclick="toggleMenu('version-menu')">&times;</span>
                 <h3>Patch Notes</h3>
+                <h4>v2.1</h4>
+                <b>Updates:</b>
+                <ul>
+                    <li>Added clearer distinction for disabled actions</li>
+                    <li>Added more flair to rolling a Yahtzee</li>
+                </ul>
+                <b>Fixes:</b>
+                <ul>
+                    <li>Fixed game not resetting properly</li>
+                </ul>
                 <h4>v2.0</h4>
                 <b>What's New:</b>
                 <ul>
                     <li>New UI design</li>
-                    <li>New icons</li>
+                    <li>New fontawesome icons</li>
                     <li>JQuery optimization</li>
                 </ul>
                 <h4>v1.0</h4>
@@ -249,14 +260,15 @@
             <div class="menu-content">
                 <span class="menu-x" onclick="toggleMenu('help-menu')">&times;</span>
                 <h3>How to Play</h3>
-                <a href="https://en.wikipedia.org/wiki/Yahtzee#Rules">Detailed Rules on Wikipedia</a>
+                <p><i>Note: This website is optimized for Google Chrome</i> </p>
                 <p>
                     There are 13 rounds each in which you may attempt 3 rolls. <br>
                     After each roll, you may select a category to score against. <br>
                     You may also select dice to lock in and roll the rest. <br>
                     If your dice match the criteria of the category, you earn points. <br>
-                    <i>Note: Once you choose a category, it's locked for the rest of the game.</i>
+                    <i>Note: Once a category is chosen, it's locked for the rest of the game.</i>
                 </p>
+                <a href="https://en.wikipedia.org/wiki/Yahtzee#Rules">Detailed Rules on Wikipedia</a> <br> <br>
                 <table>
                     <tr><th>Category</th><th>Points Awarded</th></tr>
                     <tr><td>Aces (1's)</td><td>The sum of your 1s</td></tr>
@@ -277,13 +289,7 @@
         </div>
         <div class="modal" id="cookie-menu" style="display: block">
             <div class="menu-content" style="text-align:center">
-                <svg width="10vmin" viewbox="0 0 100 100">
-                    <circle cx=50 cy=50 r=50></circle>
-                    <circle cx=50 cy=50 r=48 style="fill:#d95"></circle>
-                    <circle cx=15 cy=40 r=5 style="fill:#951"></circle>
-                    <circle cx=65 cy=35 r=7 style="fill:#951"></circle>
-                    <circle cx=45 cy=75 r=6 style="fill:#951"></circle>
-                </svg>
+                <h3><i class="fas fa-cookie-bite"></i></h3>
                 <p>Cookies are used to save the high score.</p>
                 <button onclick="toggleMenu('cookie-menu'); setCookie()">Accept & Close</button> <br>
                 <a href="cookies.html"><button>Manage Cookies</button></a>
@@ -321,7 +327,7 @@
                 if(modals.includes(event.target))
                     event.target.style.display = "none";
             }
-
+            // Open or close menu
             function toggleMenu(menu) {
                 let which = document.getElementById(menu);
 
@@ -330,6 +336,7 @@
                 else
                     which.style.display = "block";
             }
+            // Update individual settings based on 'type'
             function updateSettings(type) {                
                 if(type == 'reset') {
                     let resetPref = document.querySelector('input[name = "reset"]:checked');
@@ -375,7 +382,7 @@
                         document.body.style.color = "#fff";
                         document.body.style.backgroundColor = "#111";
                         $('.menu-content').css('background-color', '#333');
-                        $('.container').css('background-color', '#555');
+                        $('.container').css('background-color', '#333');
                         $('.category').addClass('dark-cat');
                     }
                     else {
@@ -387,6 +394,7 @@
                     }
                 }
             }
+            // Update scores and round/roll display
             function updateDisplay() {
                 let roundDisplay = document.getElementById("round");
                 let rollDisplay  = document.getElementById("roll");
@@ -408,6 +416,7 @@
                 lowerTotal.innerHTML = lower_total;
                 grandTotal.innerHTML = grand_total;
             }
+            // Animate YAHTZEE banner
             function yahtzeeFlair() {
                 let banner = document.getElementById("yahtzee-banner");
                 let bannerOpacity = 0;
@@ -441,12 +450,13 @@
                 banner.style.display = "block";
                 setTimeout(function() { setAnimation(true) }, 1000);
             }
+            // Set all necessary variables to initial values
             function resetGame() {
                 let scores = document.getElementsByClassName("score");
 
                 selected = [[1, 0], [2, 0], [3, 0], [4, 0], [5, 0]];
                 roll = round = 1;
-                high_score = upper_total = lower_total = upper_bonus = 0;
+                high_score = grand_total = upper_total = lower_total = upper_bonus = 0;
                 joker = false;
                 $('.disabled').addClass('category');
                 $('.category').removeClass('disabled');
@@ -454,6 +464,7 @@
                     scores[s].innerHTML = "";
                 updateDisplay();
             }
+            // Close the title screen and open the game screen
             function startGame() {
                 document.getElementById("title").style.display = "none";
                 document.getElementById("game").style.display = "block";
@@ -466,11 +477,13 @@
                     document.getElementById("roll-button").disabled = false;
                 }
             }
+            // Close the game scren and open the title screen
             function exitGame() {
                 document.getElementById("title").style.display = "block";
                 document.getElementById("game").style.display = "none";
                 $('.die').removeClass('disabled');
             }
+            // Disable categories or dice rolls based on 'type'
             function disableActions(type) {
                 if(type == 'categories' || type == 'all')
                     $('.category').addClass('disabled');
@@ -480,6 +493,7 @@
                     document.getElementById("roll-button").disabled = true;
                 }
             }
+            // First check for Yahtzee then enable actions based on 'type'
             function enableActions(type) {
                 let yahtzeeScore = document.getElementById("yahtzee-score");
 
@@ -503,6 +517,7 @@
                     }
                 }
             }
+            // Generate random numbers for dice over 1 second
             function animateDice() {
                 for(let n = 0; n < 5; n++) {
                     let die = document.getElementById("die" + n);
@@ -529,6 +544,7 @@
                     }
                 }
             }
+            // Stop dice rolling animation
             function clearAnimateDice() {
                 clearInterval(rolling);
                 for(let n = 0; n < 5; n++) {
@@ -541,12 +557,14 @@
                     enableActions('categories');
                 updateDisplay();
             }
+            // Start dice rolling animation
             function rollDice() {
                 roll++;
                 disableActions('all');
                 rolling = setInterval(animateDice, 50);
                 setTimeout(clearAnimateDice, 1000);
             }
+            // Lock in a die so that it is not rolled
             function selectDie(n) {
                 if(roll > 3 || roll == 1)
                     return;
@@ -646,6 +664,7 @@
                 else if(pair == 3)
                     return "3kind";
             }
+            // Scores dice against chosen category
             function playCategory(id) {
                 let total = 0;
                 let straightCheck = checkStraight();
@@ -816,6 +835,7 @@
                     }
                 }
             }
+            // Checks if cookie consent is accepted
             function checkCookie() {
                 if(typeof(Storage) !== "undefined") {
                     try {
@@ -832,6 +852,7 @@
                     return;
                 }
             }
+            // Sets cookie consent in local storage
             function setCookie() {
                 if(typeof(Storage) == "undefined")
                     return;

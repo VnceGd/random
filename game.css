@@ -22,6 +22,7 @@ p {
 a {
     text-decoration: none;
     color: #77f;
+    font-size: 3vmin;
 }
 a:hover { 
     text-decoration: underline;
@@ -43,6 +44,9 @@ button:hover {
 button:focus {
     outline: none;
 }
+button:disabled {
+    color: #888;
+}
 .circle-btn {
     margin: 0 0.5vmin;
     width: 6vmin;
@@ -54,8 +58,9 @@ button:focus {
     position: relative;
     padding: 4vmin; 
     width: 92vmin;
-    min-height: 92vmin;
+    height: 92vmin;
     background-color: #ddd;
+    overflow-y: scroll;
 }
 .modal {
     display: none;
@@ -66,13 +71,15 @@ button:focus {
     height: 100%;
     background-color: #555;
     background-color: #5555;
-    overflow-y: scroll;
     z-index: 2;
 }
 #cookie-menu .menu-content {
     top: 60vmin;
     width: 80vmin;
-    height: 30vmin;
+    height: 28vmin;
+}
+.fa-cookie-bite {
+    color: #975;
 }
 .menu-x {
     position: absolute;
@@ -86,6 +93,7 @@ button:focus {
     background-color: #aaa;
 }
 .disabled {
+    color: #0007;
     pointer-events: none;
     background-color: none;
 }

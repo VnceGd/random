@@ -1,0 +1,65 @@
+/* Vincent Nguyen 2018 */
+input {
+    font-size: 3vmin;
+}
+tr, td {
+    border: none;
+    border-spacing: 0;
+    border-collapse: collapse;
+    padding: 0;
+}
+.snake, .apple, .empty {
+    margin: 0;
+    width: 100%; 
+    height: 100%;
+}
+.snake, .apple, .empty {
+    background-color: #555;
+}
+#board {
+    display: none;
+    margin: auto;
+    width: 100vmin;
+    height: 100vmin;
+    background-color: #ddd;
+}
+#score-display, #ingame-menu {
+    float: left;
+    padding: 2vmin 4vmin;
+    width: 42vmin;
+    height: 4vmin;
+    font-weight: bold;
+}
+#grid {
+    margin: auto;
+    width: 86vmin;
+    height: 86vmin;
+    background-color: #333;
+    border: 2vmin solid #aaa;
+    border-spacing: 0;
+}
+#title {
+    margin: auto;
+    padding: 4vmin;
+    width: 92vmin;
+    height: 92vmin;
+    background-color: #ddd;
+    text-align: center;
+    z-index: 1;
+}
+#version-button {
+    width: 25vmin;
+}
+#gameover-menu {
+    text-align: center;
+}
+#gameover-menu .menu-content {
+    padding-top: 20vmin;
+    color: #fff;
+    background-color: #f555;
+    transition: .2s;
+}
+#gameover-menu .menu-content:hover {
+    background-color: #f559;
+    transition: .1s;
+}

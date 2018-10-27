@@ -8,10 +8,10 @@ Playing around with random number generation in Javascript.
   
 ## Games
 
-`snake.html`
+`snake.html, snake_v2.html`
 - Responsive snake game on an html table. Bigger board = more lag.
 
-`yahtzee.html`
+`yahtzee.html, yahtzee_v2.html`
 - Responsive yahtzee game. Numbers instead of dots for dice.
 
 `blackjack.html`

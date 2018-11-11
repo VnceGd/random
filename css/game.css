@@ -16,13 +16,14 @@ h3 {
 h4 {
     font-size: 4vmin;
 }
-p {
+p, ul, input {
     font-size: 3vmin;
 }
 a {
     text-decoration: none;
     color: #77f;
     font-size: 3vmin;
+    cursor: pointer;
 }
 a:hover { 
     text-decoration: underline;
@@ -46,6 +47,19 @@ button:focus {
 }
 button:disabled {
     color: #888;
+}
+.box {
+    width: 100%;
+}
+#title {
+    text-align: center;
+}
+.container {
+    margin: auto;
+    padding: 4vmin;
+    width: 92vmin;
+    height: 92vmin;
+    background-color: #ddd;
 }
 .circle-btn {
     margin: 0 0.5vmin;
@@ -96,4 +110,7 @@ button:disabled {
     color: #0007;
     pointer-events: none;
     background-color: none;
+}
+#version-btn {
+    width: 25vmin;
 }

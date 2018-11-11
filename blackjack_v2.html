@@ -1,0 +1,120 @@
+<!-- Vincent Nguyen 2018 -->
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Blackjack v2.0</title>
+        <link rel="icon" type="image/png" href="images/cardFavicon.png">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
+        <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+        <link href="css/game.css" rel="stylesheet">
+        <link href="css/blackjack_v2.css" rel="stylesheet">
+    </head>
+    <body>
+        <div class="box" id="game">
+            <div class="container">
+                <div class="game-header">
+                    <button class="circle-btn" onclick="exitGame()">&times;</button>
+                    <button class="circle-btn" onclick="toggleMenu('help-menu')">?</button>
+                    <button class="circle-btn" onclick="toggleMenu('settings-menu')"><i class="fas fa-cog"></i></button>
+                    <p>Balance: $<span id="bank-balance">2500</span></p>
+                </div>
+                <div class="play-area">
+                    <div class="card-box">
+                        <div class="card-box-info">
+                            <p><b>Dealer Hand</b></p>
+                            <p class="win-banner" id="dealer-win">WINNER</p>
+                            <p class="bust-banner" id="dealer-bust">BUST</p>
+                        </div>
+                        <div class="card-box-cards" id="dealer-hand"></div>
+                    </div>
+                    <div class="card-box">
+                        <div class="card-box-info">
+                            <p><b>Player Hand</b></p>
+                            <p>Bet: $<span id="player-bet"></span></p>
+                            <p class="win-banner" id="player-win">WINNER</p>
+                            <p class="bust-banner" id="player-bust">BUST</p>
+                        </div>
+                        <div class="card-box-cards" id="player-hand"></div>
+                    </div>
+                    <div class="card-box">
+                        <div class="card-box-info">
+                            <p><b>Split Hand</b></p>
+                            <p>Bet: $<span id="split-bet"></span></p>
+                            <p class="win-banner" id="split-win">WINNER</p>
+                            <p class="bust-banner" id="split-bust">BUST</p>
+                        </div>
+                        <div class="card-box-cards" id="split-hand"></div>
+                    </div>
+                </div>
+                <div class="action-bar" id="action-bar">
+                    <button class="action-btn" id="hit" onclick="actionHit()">Hit</button>
+                    <button class="action-btn" id="stand" onclick="actionStand()">Stand</button>
+                    <button class="action-btn" id="double-down" onclick="actionDoubleDown()">Double Down</button>
+                    <button class="action-btn" id="split" onclick="actionSplit()">Split</button>
+                    <button class="action-btn" id="surrender" onclick="actionSurrender()">Surrender</button>
+                    <br>
+                    <p id="game-info"></p>
+                    <br>
+                    <button class="action-btn" id="deal" onclick="startGame()">Play Again</button>
+                </div>
+            </div>
+        </div>
+        <div class="box" id="title">
+            <div class="container">
+                <h1>Blackjack</h1>
+                <button onclick="startGame()"><b>Play</b></button>
+                <button onclick="toggleMenu('settings-menu')">Settings</button>
+                <button onclick="toggleMenu('help-menu')">How to Play</button>
+                <a href="index.html"><button>Exit</button></a>
+                <br>
+                <button class="version-btn" onclick="toggleMenu('version-menu')" id="version-btn">v2.0</button>
+            </div>
+        </div>
+        <div class="modal" id="version-menu">
+            <div class="menu-content">
+                <span class="menu-x" onclick="toggleMenu('version-menu')">&times;</span>
+                <h3>Patch Notes</h3>
+                <h4>v2.0</h4>
+                <b>What's New:</b>
+                <ul>
+                    <li>New UI design</li>
+                    <li>General optimization</li>
+                </ul>
+            </div>
+        </div>
+        <div class="modal" id="settings-menu">
+            <div class="menu-content">
+                <span class="menu-x" onclick="toggleMenu('settings-menu')">&times;</span>
+                <h3>Settings</h3>
+                <p>
+                    <b>Decks</b> <br>
+                    <input id="deck-count" type="number" name="decks" value="1" onchange="updateSettings('decks')"/> <i>1 to 8</i>
+                </p>
+                <p>
+                    <b>Theme</b> <br>
+                    <input type="radio" name="theme" value="light" onclick="updateSettings('theme')" checked/> Light 
+                    <input type="radio" name="theme" value="dark" onclick="updateSettings('theme')"/> Dark 
+                </p>
+            </div>
+        </div>
+        <div class="modal" id="help-menu">
+            <div class="menu-content">
+                <span class="menu-x" onclick="toggleMenu('help-menu')">&times;</span>
+                <h3>How to Play</h3>
+                <p><i>Note: This game is optimized for Google Chrome</i></p>
+                <p>
+                    This is a solo player Blackjack game against the 'House'. <br>
+                    After pressing 'Play', place an initial bet to start the game. <br>
+                    <ul><b>House Rules:</b>
+                        <li>Start with a balance of $2500.</li>
+                        <li>House pays 3:2.</li>
+                        <li>Dealer hits on 16 or lower.</li>
+                        <li>Only one split allowed.</li>
+                    </ul>
+                </p>
+                <a href="https://en.wikipedia.org/wiki/Blackjack#Rules_of_play_at_casinos" target="_blank">Detailed Rules on Wikipedia</a>
+            </div>
+        </div>
+        <script src="scripts/blackjack_v2.js"></script>
+    </body>
+</html>

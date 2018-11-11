@@ -1,0 +1,79 @@
+/* Vincent Nguyen 2018 */
+#game {
+    display: none;
+}
+.game-header {
+    margin-bottom: 2vmin;
+}
+.play-area {
+    width: 65vmin;
+    height: 84vmin;
+    padding-top: 1vmin;
+    float: left;
+    background-color: #fff9;
+}
+.card-box {
+    margin-bottom: 2vmin;
+    height: 26vmin;
+    background-color: #dfe;
+}
+.card-box-info {
+    margin: 0;
+    padding: 1%;
+    width: 22%;
+    height: 100%;
+    float: left;
+    background-color: #ccf;
+}
+.card-box-cards {
+    margin: 0;
+    padding: 1%;
+    width: 74%;
+    height: 100%;
+    float: left;
+    background-color: #cfd;
+}
+.card {
+    margin: 0.5vmin;
+    padding: 3.2vmin 0.5vmin;
+    width: 6vmin;
+    float: left;
+    font-size: 3vmin;
+    color: #000;
+    background-color: #fff;
+    text-align: center;
+}
+.win-banner {
+    padding: 0.5vmin 1vmin;
+    background-color: #afa;
+}
+
+.bust-banner {
+    padding: 0.5vmin 1vmin;
+    background-color: #faa;
+}
+.action-bar {
+    padding-top: 5vmin;
+    width: 25vmin;
+    height: 80vmin;
+    float: right;
+    background-color: #ccf;
+}
+.action-btn {
+    padding: 2vmin 0;
+    width: 100%;
+    border-radius: 0;
+}
+#deal {
+    background-color: #eee;
+    font-weight: bold;
+}
+#deal:hover {
+    background-color: #fff;
+}
+#deal:disabled {
+    display: none;
+}
+#game-info {
+    padding: 1vmin;
+}

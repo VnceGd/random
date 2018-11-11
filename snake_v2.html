@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Snake v2</title>
+        <title>Snake v2.1</title>
         <link rel="icon" type="image/png" href="images/snakeFavicon.png">
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
         <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
@@ -10,29 +10,33 @@
         <link href="css/snake_v2.css" rel="stylesheet">
     </head>
     <body onload="checkCookie()">
-        <div id="board">
-            <div id="score-display">
-                <p>
-                    Score: <span id="score"></span>
-                    <b style="float:right">High Score: <span id="high-score"></span></b>
-                </p>
+        <div class="box" id="board">
+            <div class="container">
+                <div id="score-display">
+                    <p>
+                        Score: <span id="score"></span>
+                        <b style="float:right">High Score: <span id="high-score"></span></b>
+                    </p>
+                </div>
+                <div id="ingame-menu">
+                    <button class="circle-btn" onclick="exitGame()">&times;</button>
+                    <button class="circle-btn" onclick="toggleMenu('help-menu')">?</button>
+                    <button class="circle-btn" id="pause-button" onclick="pauseGame()"><i class="fas fa-pause"></i></button>
+                    <button class="circle-btn" id="resume-button" onclick="resumeGame()" style="display:none"><i class="fas fa-play"></i></button>
+                </div>
+                <table id="grid"></table>
             </div>
-            <div id="ingame-menu">
-                <button class="circle-btn" onclick="exitGame()">&times;</button>
-                <button class="circle-btn" onclick="toggleMenu('help-menu')">?</button>
-                <button class="circle-btn" id="pause-button" onclick="pauseGame()"><i class="fas fa-pause"></i></button>
-                <button class="circle-btn" id="resume-button" onclick="resumeGame()" style="display:none"><i class="fas fa-play"></i></button>
-            </div>
-            <table id="grid"></table>
         </div>
-        <div id="title">
-            <h1>Snake</h1>
-            <button onclick="startGame()"><b>Play</b></button>
-            <button onclick="toggleMenu('settings-menu')">Settings</button>
-            <button onclick="toggleMenu('help-menu')">How to Play</button>
-            <a href="index.html"><button>Exit</button></a>
-            <br>
-            <button onclick="toggleMenu('version-menu')" id="version-button">v2.1</button>
+        <div class="box" id="title">
+            <div class="container">
+                <h1>Snake</h1>
+                <button onclick="startGame()"><b>Play</b></button>
+                <button onclick="toggleMenu('settings-menu')">Settings</button>
+                <button onclick="toggleMenu('help-menu')">How to Play</button>
+                <a href="index.html"><button>Exit</button></a>
+                <br>
+                <button onclick="toggleMenu('version-menu')" id="version-button">v2.1</button>
+            </div>
         </div>
         <div class="modal" id="gameover-menu">
             <div class="menu-content" id="gameover-menu-content">

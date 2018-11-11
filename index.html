@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <!-- Vincent Nguyen 2018 -->
-<!-- Experimentation with random number generation -->
+<!-- JavaScript practice using RNG -->
 <html>
   <head>
     <meta charset="UTF-8">
-    <title> RNG </title>
+    <title> Random </title>
     <link rel="icon" type="image/png" href="images/dieFavicon.png">
     <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
     <style>
@@ -16,33 +16,41 @@
         text-decoration: none;
       }
       h1, h2, h3, p {
-        margin-top: 0;
+        margin: 1vmin;
+      }
+      input {
+        padding: 1vmin;
+        font-size: 1rem;
       }
       button {
+        margin: 0;
+        padding: 1vmin 2vmin;
         box-sizing: border-box;
-        border: 0.5vmin solid #222;
-        border-radius: 1vmin;
         color: #FFF;
         background-color: #000;
         font-size: 1rem;
         font-family: 'Lato', sans-serif;
         outline: none;
-        transition: .2s;
+        transition: .1s;
       }
       button:hover {
-        background-color: #555;
+        background-color: #222;
+        box-shadow: 0vmin 0.5vmin #aaa;
         transition: .2s;
       }
       button:active {
-        border-color: #aaa;
+        background-color: #555;
+        box-shadow: 0vmin 0.5vmin #eee;
         transition: .2s;
       }
       .container {
         padding: 2vmin;
       }
-      .header {
+      .header, .gameMenu, .inputArea, .resultArea {
         width: 100%;
         float: left;
+      }
+      .header {
         background-color: #eee;
       }
       .title {
@@ -58,16 +66,71 @@
         float: right;
       }
       .gameMenu {
-        width: 100%;
         background-color: #ddd;
       }
       #author {
         float: right;
       }
       #output {
-        font-size: 2em;
+        font-size: 2rem;
       }
     </style>
+  </head>
+  <body>
+    <div class="header">
+      <div class="container">
+        <div class="title">
+          <h1>Test Your Luck </h1>
+          <p>Fun with random number generation</p>
+        </div>
+        <div class="author">
+          <p>Vincent Nguyen 2018</p>
+        </div>
+      </div>
+    </div>
+    <div class="gameMenu">
+      <div class="container">
+        <!-- LINKS -->
+        <h2>Games <span style="font-size: .85rem">(<a href="cookies.html">Manage Cookies</a>) (<a href="https://goo.gl/forms/6cPtaJFhn3hFaYCF2">Feedback</a>)</span></h2>
+        <a href="snake_v2.html"><button>Snake</button></a>
+        <a href="yahtzee_v2.html"><button>Yahtzee</button></a>
+        <a href="blackjack.html"><button>Blackjack</button></a>
+        <a href="dungeon.html"><button>Dungeon</button></a>
+      </div>
+    </div>
+    <!-- INPUT AREA -->
+    <div class="inputArea">
+      <div class="container">
+        <h2>Dice Roll</h2>
+        <p>
+          # of Dice: 
+          <input type="text" id="diceCount" value="1" onchange="checkDice()">
+          # of Sides: 
+          <input type="text" id="diceSides" value="6" onchange="checkDice()">
+          <button onclick="rollDice()">Roll</button>
+        </p>
+        <h2>Card Picker (Standard 52-card deck)</h2>
+        <p>
+          # of Cards:
+          <input type="text" id="cardCount" value="1" onchange="checkCards()">
+          # of Decks:
+          <input type="text" id="deckCount" value="1">
+          <button onclick="drawCards()">Draw</button>
+        </p>
+      </div>
+    </div>
+    <!-- RESULTS AREA -->
+    <div class="resultArea">
+      <div class="container">
+        <h3>Results</h3>
+        <p>
+          Preference: 
+          <input type="radio" name="pref" value="icon" checked> Symbols
+          <input type="radio" name="pref" value="text"> Text
+        </p>
+        <p id="output"></p>
+      </div>
+    </div>
     <script>
       // Check if input for dice roll is valid
       function checkDice() {
@@ -272,63 +335,5 @@
           return false;
       }
     </script>
-  </head>
-  <body>
-    <div class="header">
-      <div class="container">
-        <div class="title">
-          <h1>Test Your Luck </h1>
-          <h3 style="font-size: 1rem">Fun with random number generation</h3>
-        </div>
-        <div class="author">
-          <p>Vincent Nguyen 2018</p>
-        </div>
-      </div>
-    </div>
-    <!-- <hr> -->
-    <div class="gameMenu">
-      <div class="container">
-        <!-- LINKS -->
-        <h2>Games <span style="font-size: .85rem">(<a href="cookies.html">Manage Cookies</a>) (<a href="https://goo.gl/forms/6cPtaJFhn3hFaYCF2">Feedback</a>)</span></h2>
-        <a href="snake_v2.html"><button>Snake</button></a>
-        <a href="yahtzee_v2.html"><button>Yahtzee</button></a>
-        <a href="blackjack.html"><button>Blackjack</button></a>
-        <a href="dungeon.html"><button>Dungeon</button></a>
-      </div>
-    </div>
-    <!-- <hr> -->
-    <!-- INPUT AREA -->
-    <div class="inputArea">
-      <div class="container">
-        <h2>Dice Roll</h2>
-        <p>
-          # of Dice: 
-          <input type="text" id="diceCount" value="1" onchange="checkDice()">
-          # of Sides: 
-          <input type="text" id="diceSides" value="6" onchange="checkDice()">
-          <button onclick="rollDice()">Roll</button>
-        </p>
-        <h2>Card Picker (Standard 52-card deck)</h2>
-        <p>
-          # of Cards:
-          <input type="text" id="cardCount" value="1" onchange="checkCards()">
-          # of Decks:
-          <input type="text" id="deckCount" value="1">
-          <button onclick="drawCards()">Draw</button>
-        </p>
-      </div>
-    </div>
-    <!-- RESULTS AREA -->
-    <div class="resultArea">
-      <div class="container">
-        <h3>Results</h3>
-        <p>
-          Preference: 
-          <input type="radio" name="pref" value="icon" checked> Symbols
-          <input type="radio" name="pref" value="text"> Text
-        </p>
-        <p id="output"></p>
-      </div>
-    </div>
   </body>
 </html>

@@ -74,28 +74,27 @@ function updateSettings(type) {
     }
     else if(type == "theme" || type == "all") {
         let theme = document.querySelector('input[name = "theme"]:checked').value;
+        let menus = document.getElementsByClassName("menu-content");
+        let containers = document.getElementsByClassName("container");
         if(theme == "light") {
-            let menus = document.getElementsByClassName("menu-content");
             document.body.style.color = "#000";
             document.body.style.backgroundColor = "#fff";
-            document.getElementById("board").style.backgroundColor = 
-            document.getElementById("title").style.backgroundColor = "#ddd";
-            document.getElementById("grid").style.backgroundColor = document.querySelector('input[name = "bgColor"]:checked').value;
-            for(let i = 0; i < menus.length; i++) {
-                if(menus[i].id != "gameover-menu-content")
-                    menus[i].style.backgroundColor = "#ddd";
-            }
-        }
-        else {
-            let menus = document.getElementsByClassName("menu-content");
-            document.body.style.color = "#fff";
-            document.body.style.backgroundColor = "#000";
-            document.getElementById("board").style.backgroundColor = 
-            document.getElementById("title").style.backgroundColor = "#333";
             document.getElementById("grid").style.backgroundColor = document.querySelector('input[name = "bgColor"]:checked').value;
             for(let i = 0; i < menus.length; i++)
                 if(menus[i].id != "gameover-menu-content")
-                    menus[i].style.backgroundColor = "#333";
+                    menus[i].style.backgroundColor = "#ddd";
+            for(let c = 0; c < containers.length; c++)
+                containers[c].style.backgroundColor = "#ddd";
+        }
+        else {
+            document.body.style.color = "#fff";
+            document.body.style.backgroundColor = "#212121";
+            document.getElementById("grid").style.backgroundColor = document.querySelector('input[name = "bgColor"]:checked').value;
+            for(let i = 0; i < menus.length; i++)
+                if(menus[i].id != "gameover-menu-content")
+                    menus[i].style.backgroundColor = "#444";
+            for(let c = 0; c < containers.length; c++)
+                containers[c].style.backgroundColor = "#444";
         }
     }
 }

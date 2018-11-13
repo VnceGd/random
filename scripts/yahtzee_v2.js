@@ -70,9 +70,9 @@ function updateSettings(type) {
         let themePref = document.querySelector('input[name = "theme"]:checked').value
         if(themePref == "dark") {
             document.body.style.color = "#fff"
-            document.body.style.backgroundColor = "#111"
-            $('.menu-content').css('background-color', '#333')
-            $('.container').css('background-color', '#333')
+            document.body.style.backgroundColor = "#212121"
+            $('.menu-content').css('background-color', '#444')
+            $('.container').css('background-color', '#444')
             $('.category').addClass('dark-cat')
         }
         else {

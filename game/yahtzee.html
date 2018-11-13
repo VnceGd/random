@@ -5,7 +5,7 @@
   <head>
     <meta charset="UTF-8">
     <title>Yahtzee</title>
-    <link rel="icon" type="image/png" href="images/dieFavicon.png">
+    <link rel="icon" type="image/png" href="../images/dieFavicon.png">
     <style>
       html, body {
         margin: 0;
@@ -676,7 +676,6 @@
       // Get high score from local storage
       function getHighScore() {
         if(typeof(Storage) == "undefined") {
-          // document.getElementById("highScore").innerHTML = "(Not Supported)";
           return;
         }
         try {
@@ -684,13 +683,10 @@
 
           if(highScore > 0)
             document.getElementById("highScore").innerHTML = highScore;
-          // else
-          //   document.getElementById("highScore").innerHTML = 0;
           return highScore;
         }
         catch(e) {
           document.getElementById("highScore").innerHTML = highScore;
-          // document.getElementById("highScore").innerHTML = "(<a href='cookies.html' target='_blank'>Access denied</a>)";
         }
       }
       // Set high score in local storage
@@ -723,14 +719,14 @@
   <body onload="setDice(); getHighScore();">
     <!-- NAVIGATION MENU ------------------------------------------->
     <div class="nav">
-      <h3><a href="index.html">&#9668;</a> Yahtzee <a style="font-size: 1rem; float: right" href="yahtzee_v2.html">Play Version 2</a></h3>
+      <h3><a href="../index.html">&#9668;</a> Yahtzee <a style="font-size: 1rem; float: right" href="./yahtzee_v2.html">Play Version 2</a></h3>
       <button id="playButton" onclick="startGame()">&#9658; <b>New Game</b></button>
       <button id="settingsButton" onclick="toggleSettings()">Settings</button>
       <button id="helpButton" onclick="toggleHelp()">How to play</button>
       <div class="cookieDropDown">
         <button id="cookieButton">?</button>
         <div class="dropdownContent">
-          <p>This game uses cookies to store the high score. <a id="cookie" href="cookies.html" target="_blank">Learn More</a></p>
+          <p>This game uses cookies to store the high score. <a id="cookie" href="../misc/cookies.html" target="_blank">Learn More</a></p>
         </div>
       </div>
       <button id="clearHSButton" onclick="clearHighScore()">&#10005; <span id="chsTxt">Clear High Score</span></button>

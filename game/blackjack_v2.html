@@ -3,13 +3,13 @@
 <html>
     <head>
         <title>Blackjack v2.0</title>
-        <link rel="icon" type="image/png" href="images/cardFavicon.png">
+        <link rel="icon" type="image/png" href="../images/cardFavicon.png">
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
         <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
-        <link href="css/game.css" rel="stylesheet">
-        <link href="css/blackjack_v2.css" rel="stylesheet">
+        <link href="../css/game.css" rel="stylesheet">
+        <link href="../css/blackjack_v2.css" rel="stylesheet">
     </head>
-    <body>
+    <body onload="checkCookie()">
         <div class="box" id="game">
             <div class="container">
                 <div class="game-header">
@@ -65,7 +65,7 @@
                 <button onclick="startGame()"><b>Play</b></button>
                 <button onclick="toggleMenu('settings-menu')">Settings</button>
                 <button onclick="toggleMenu('help-menu')">How to Play</button>
-                <a href="index.html"><button>Exit</button></a>
+                <a href="../index.html"><button>Exit</button></a>
                 <br>
                 <button class="version-btn" onclick="toggleMenu('version-menu')" id="version-btn">v2.0</button>
             </div>
@@ -81,14 +81,14 @@
                     <li>General optimization</li>
                 </ul>
                 <h4>v1.0</h4>
-                <p>Version 1 of this game can be found <a href="blackjack.html">here</a>.</p>
+                <p>Version 1 of this game can be found <a href="./blackjack.html">here</a>.</p>
                 <h4>Credits</h4>
                 <p>
                     <u>Made by Vincent Nguyen</u><br>
                     References/Sources: <br>
-                    <a href="w3schools.com">W3 Schools</a> <br>
-                    <a href="fonts.google.com">Google Fonts</a> <br>
-                    <a href="fontawesome.com">Font Awesome</a>
+                    <a href="https://w3schools.com">W3 Schools</a> <br>
+                    <a href="https://fonts.google.com">Google Fonts</a> <br>
+                    <a href="https://fontawesome.com">Font Awesome</a>
                 </p>
             </div>
         </div>
@@ -105,6 +105,9 @@
                     <input type="radio" name="theme" value="light" onclick="updateSettings('theme')" checked/> Light 
                     <input type="radio" name="theme" value="dark" onclick="updateSettings('theme')"/> Dark 
                 </p>
+                <h4>Other</h4>
+                <a href="../misc/cookies.html"><button>Manage Cookies</button></a>
+                <button onclick="resetBalance()">Reset Balance</button>
             </div>
         </div>
         <div class="modal" id="help-menu">
@@ -125,6 +128,14 @@
                 <a href="https://en.wikipedia.org/wiki/Blackjack#Rules_of_play_at_casinos" target="_blank">Detailed Rules on Wikipedia</a>
             </div>
         </div>
-        <script src="scripts/blackjack_v2.js"></script>
+        <div class="modal" id="cookie-menu" style="display: block">
+            <div class="menu-content" style="text-align:center">
+                <h3><i class="fas fa-cookie-bite"></i></h3>
+                <p>Cookies are used to store the balance.</p>
+                <button onclick="toggleMenu('cookie-menu'); setCookie()">Accept & Close</button> <br>
+                <a href="../misc/cookies.html"><button>Manage Cookies</button></a>
+            </div>
+        </div>
+        <script src="../scripts/blackjack_v2.js"></script>
     </body>
 </html>

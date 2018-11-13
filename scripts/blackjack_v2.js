@@ -63,9 +63,9 @@ function updateSettings(which) {
             document.body.style.color = "#FFF";
             actionBar.style.backgroundColor = "#449";
             for(let menu = 0; menu < menus.length; menu++)
-                menus[menu].style.backgroundColor = "#555";
+                menus[menu].style.backgroundColor = "#444";
             for(let box = 0; box < boxes.length; box++)
-                boxes[box].style.backgroundColor = "#555";
+                boxes[box].style.backgroundColor = "#444";
             for(let cardArea = 0; cardArea < cardAreas.length; cardArea++)
                 cardAreas[cardArea].style.backgroundColor = "#495";
             for(let infoArea = 0; infoArea < infoAreas.length; infoArea++)
@@ -366,7 +366,6 @@ function handTotal(player) {
         return -1;
     return sum;
 }
-// Converts a card array to a string
 function convertCard(card) {
     let num = card[0];
     let suit = card[1];
@@ -406,13 +405,11 @@ function convertCard(card) {
     str += "</div>";
     return str;
 }
-// Updates text only
 function updateText() {
     document.getElementById("bank-balance").innerHTML = balance.toFixed(2);
     document.getElementById("player-bet").innerHTML = player_bet.toFixed(2);
     document.getElementById("split-bet").innerHTML = split_bet.toFixed(2);
 }
-// Update card and cash displays
 function updateDisplay() {
     let dealerCards = document.getElementById("dealer-hand");
     let playerCards = document.getElementById("player-hand");
@@ -426,19 +423,16 @@ function updateDisplay() {
         splitCards.innerHTML += convertCard(split_hand[k]);
     updateText();
 }
-// Disable all actions
 function disableActions() {
     let actions = document.getElementsByClassName("action-btn");
     for(a in actions)
         actions[a].disabled = true;
 }
-// Reset hands
 function resetHands() {
     player_hand = [];
     split_hand = [];
     dealer_hand = [];
 }
-// Reset and start a new game
 function startGame() {
     let input = initalBet = 0;
     let rx = /^( *)(0*)(\d+)?(?:\.\d{1,2})?(0*)( *)?$/ // Accept only number values up to two decimal places
@@ -475,7 +469,6 @@ function exitGame() {
     document.getElementById("title").style.display = "block";
     document.getElementById("game").style.display = "none";
 }
-// Get player balance from local storage
 function getBalance() {
     if(typeof(Storage) == "undefined") {
         updateText();
@@ -498,7 +491,6 @@ function getBalance() {
         document.getElementById("bank-balance").innerHTML = balance;
     }
 }
-// Set player balance in local storage
 function setBalance() {
     if(typeof(Storage) == "undefined")
         return;
@@ -509,7 +501,6 @@ function setBalance() {
         return;
     }
 }
-// Reset balance to 2500 in local storage
 function resetBalance() {
     if(typeof(Storage) == "undefined")
         return;
@@ -518,4 +509,24 @@ function resetBalance() {
         setBalance();
         updateDisplay();  
     }
+}
+function checkCookie() {
+    if(typeof(Storage) !== "undefined")
+        try {
+            let cookie_consent = localStorage.getItem("yahtzeeV2CookieConsent")
+            if(cookie_consent == "true")
+                document.getElementById("cookie-menu").style.display = "none"
+            return
+        }
+        catch(e) {
+            return
+        }
+    else
+        return
+}
+function setCookie() {
+    if(typeof(Storage) == "undefined")
+        return
+    else
+        localStorage.setItem("yahtzeeV2CookieConsent", true)
 }

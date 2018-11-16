@@ -14,7 +14,7 @@ Playing around with random number generation in Javascript.
 `yahtzee.html, yahtzee_v2.html`
 - Responsive yahtzee game. Numbers instead of dots for dice.
 
-`blackjack.html`
+`blackjack.html, blackjack_v2.html`
 - Responsive blackjack game for a single player.
 
 `dungeon.html`

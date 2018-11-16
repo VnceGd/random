@@ -1,0 +1,317 @@
+/* Dungeon Dilemma v0.3.0 */
+/* Vincent Nguyen 2018 */
+/* GENERAL *********************/
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Lato', Arial, Helvetica, sans-serif;
+    transition: 0.5s;
+}
+h1 {
+    margin: 2% 0;
+    font-size: 5vmin;
+}
+h3 {
+    margin: 1% 0;
+    font-size: 3.5vmin;
+}
+p, b {
+    margin: 0.5% 0;
+    font-size: 2.5vmin;
+}
+ul {
+    margin: 0;
+}
+button {
+    margin: 0.5% 0;
+    padding: 1%;
+    width: 25%;
+    background-color: #E0E0E0;
+    border: 0.25vmin solid #9E9E9E;
+    border-radius: 0.1vmin;
+    font-family: 'Lato', Arial, Helvetica, sans-serif;
+    font-size: 2.5vmin;
+    font-weight: bold;
+    outline: none;
+    cursor: pointer;
+    transition: .1s;
+}
+button:focus, button:hover {
+    background-color: #EEE;
+    box-shadow: 0 0 0 0.2vmin #FFC107;
+    transition: .1s;
+}
+button:active {
+    box-shadow: 0 0 0 0.2vmin #FF6F00 inset;
+}
+button:disabled {
+    color: #9E9E9E;
+    background-color: #FAFAFA;
+}
+/* MODALS **********************/
+.menu {
+    display: none;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    color: #000;
+    background-color: #000;
+    background-color: #00000080;
+    position: fixed;
+    overflow: auto;
+    z-index: 2;
+}
+.menu-content {
+    margin: 5% auto;
+    padding: 2vmin;
+    width: 80%;
+    background-color: #FAFAFA;
+}
+li {
+    margin-left: 10px;
+}
+.backBtn {
+    float: right;
+}
+.radioLabel {
+    display: block;
+    margin: 0.25vmin;
+    padding: 0.5vmin 0 0.5vmin 4.5vmin;
+    position: relative;
+    width: 30%;
+    font-size: 2vmin;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+.radioLabel input {
+    position: absolute;
+    opacity: 0;
+}
+.radioLabel:hover {
+    background-color: #FFECB3; 
+}
+.checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 2vmin;
+    width: 2vmin;
+    background-color: #FFF8E1;
+    border: 0.5vmin solid #FFC107;
+    border-radius: 50%;
+}
+.radioLabel input:checked ~ .checkmark  {
+    background-color: #FFC107;
+    border-color: #FF6F00;
+}
+.slider {
+    -webkit-appearance: none;  /* Override default CSS styles */
+    -moz-appearance: none;
+    width: 50%;
+    height: 1vmin;
+    background-color: #9E9E9E;
+    opacity: 0.8;
+    border-radius: 2vmin;
+}
+.slider:hover {
+    opacity: 1;
+    cursor: pointer;
+}
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 1.75vmin;
+    height: 1.75vmin;
+    background-color: #FF8F00;
+    border: 0.25vmin solid #FF6F00;
+    border-radius: 2vmin;
+}
+/* TITLE SCREEN ****************/
+.titleScreen {
+    margin: auto;
+    padding-top: 5%;
+    text-align: center;
+}
+.footer {
+    position: fixed;
+    left: 10%;
+    bottom: 10%;
+    width: 80%;
+}
+#exitBtn {
+    background-color: #fcc;
+}
+#versionBtn {
+    width: auto;
+    padding: 0.5vmin 2vmin;
+}
+@media only screen and (max-width: 600px) {
+    h1 {
+        font-size: 2em;
+    }
+    h3 {
+        font-size: 1.5em;
+    }
+    p, b {
+        font-size: 1em;
+    }
+    .radioLabel {
+        font-size: 1em;
+    }
+    button {
+        font-size: 1em;
+        width: 80%;
+        border: 1px solid #9E9E9E;
+    }
+    .backBtn {
+        width: 50%;
+    }
+}
+/* HELP SCREEN */
+#helpMenu #wasdSVG {
+    width: 20%;
+    max-width: 128px;
+}
+.tokenContainer {
+    display: inline;
+}
+.tokenBox {
+    margin: 0 2%;
+    width: 15%;
+    max-width: 128px;
+    float: left;
+}
+.token {
+    width: 100%;
+    height: 15%;
+    max-height: 128px;
+    border-radius: 50%;
+}
+/* GAME BOARD ******************/
+.gameBoard {
+    width: 100%;
+}
+.gameMenu {
+    margin: auto;
+    padding: 1%;
+    width: 80vmin;
+}
+.gameBoard button {
+    padding: 1vmin 2vmin;
+    width: auto;
+}
+table, tr, td {
+    border: 1px solid #F5F5F5;
+    border-collapse: collapse;
+}
+table {
+    margin: auto;
+    position: relative;
+    width: 80vmin;
+    height: 80vmin;
+}
+td {
+    position: relative;
+    background-image: radial-gradient(#37474F, #263238);
+}
+.fog {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #212121;
+    background-image: radial-gradient(#212121, #000);
+    opacity: 1;
+    transition: 0.5s;
+    z-index: 1;
+}
+#player, #exit, .monster, .elite, .item {
+    position: absolute;
+    bottom: 5%;
+    right: 5%;
+    margin: 0 2%;
+    width: 45%;
+    height: 45%;
+    border-radius: 50%;
+    transition: 1s;
+}
+#player {
+    background-image: radial-gradient(#B2EBF2, #00BCD4);
+    top: 5%;
+    left: 5%;
+}
+#player #popup {
+    position: absolute;
+    top: -10%;
+    left: -10vmin;
+    width: 30vmin;
+    color: #00E676;
+    background-color: #000;
+    background-color: #000000cc;
+    opacity: 0;
+    font-size: 2vmin;
+    text-align: center;
+    z-index: 3;
+}
+#exit {
+    background-image: radial-gradient(#CFD8DC, #607D8B);
+}
+.exitSVG {
+    stroke: black;
+    stroke-width: 1.5vmin;
+}
+.monster {
+    background-image: radial-gradient(#F44336, #B71C1C);
+}
+.elite {
+    background-image: radial-gradient(#BA68C8, #7B1FA2);
+}
+.item { 
+    background-image: radial-gradient(#FFF176, #FBC02D);
+}
+/* CHARACTER MENU **************/
+.characterItem {
+    margin: 0.5%;
+    width: 32%;
+    border-radius: 0.25vmin;
+}
+.itemDesc {
+    font-size: 1.5vmin;
+}
+/* COMBAT SCREEN ***************/
+#combatScreen .menu-content {
+    color: #fff;
+    background-color: #b71c1ccc;
+}
+#playerActions, #monsterActions {
+    margin: 0;
+    width: 45%;
+    text-align: center;
+    float: left;
+}
+#monsterActions {
+    float: right;
+}
+#playerActions button {
+    width: 100%;
+    padding: 5%;
+}
+#playerDice, #monsterDice {
+    width: 100%;
+    border-radius: 2vmin;
+}
+#playerDice button, #monsterDice button {
+    display: inline-block;
+    margin: 0;
+    padding: 1vmin 2vmin;
+    width: auto;
+    font-size: 3vmin;
+    border-radius: 1vmin;
+    border-spacing: 0;
+}

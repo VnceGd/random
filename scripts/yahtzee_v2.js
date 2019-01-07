@@ -1,13 +1,13 @@
 // Vincent Nguyen 2018
 const MAXROLLS = 3
 const MAXROUNDS = 13
-const ONE = '<i class="fas fa-dice-one"></i>'
-const TWO = '<i class="fas fa-dice-two"></i>'
-const THREE = '<i class="fas fa-dice-three"></i>'
-const FOUR = '<i class="fas fa-dice-four"></i>'
-const FIVE = '<i class="fas fa-dice-five"></i>'
-const SIX = '<i class="fas fa-dice-six"></i>'
-let rolling
+const ONE   = '<img src="../images/dice-one.svg"/>'
+const TWO   = '<img src="../images/dice-two.svg"/>'
+const THREE = '<img src="../images/dice-three.svg"/>'
+const FOUR  = '<img src="../images/dice-four.svg"/>'
+const FIVE  = '<img src="../images/dice-five.svg"/>'
+const SIX   = '<img src="../images/dice-six.svg"/>'
+let rolling  // Controls dice roll animation
 let selected = [[1, 0], [2, 0], [3, 0], [4, 0], [5, 0]]
 let roll = round = 1
 let high_score = grand_total = upper_total = lower_total = upper_bonus = 0
@@ -285,6 +285,7 @@ function checkStraight() {
         if(matches == 4)
             return "smStraight"
     }
+    return null
 }
 function checkOfKind() {
     let dieArray = []
@@ -317,23 +318,24 @@ function checkOfKind() {
     }
     if(count == 5)
         return "yahtzee"
-    else if(count == 4)
+    if(count == 4)
         return "4kind"
-    else if(count == 3)
+    if(count == 3)
         if(pair == 2)
             return "fullHouse"
         else
             return "3kind"
-    else if(count == 2)
+    if(count == 2)
         if(pair == 3)
             return "fullHouse"
-    else if(pair == 3)
+    if(pair == 3)
         return "3kind"
+    return null
 }
 function playCategory(id) {
     let total = 0
-    let straightCheck = checkStraight()
-    let kindCheck = checkOfKind()
+    let straightCheck = ""
+    let kindCheck = ""
     
     document.getElementById(id).className = "disabled"
     for(let n = 0; n < 5; n++) {
@@ -384,6 +386,7 @@ function playCategory(id) {
             document.getElementById("six-score").innerHTML = total
             break
         case "3kind":
+            kindCheck = checkOfKind()
             if(kindCheck !== "fullHouse" && kindCheck !== "3kind" && kindCheck !== "4kind")
                 total = 0
             else
@@ -393,6 +396,7 @@ function playCategory(id) {
             document.getElementById("3kind-score").innerHTML = total
             break
         case "4kind":
+            kindCheck = checkOfKind()
             if(kindCheck !== "4kind")
                 total = 0
             else
@@ -402,6 +406,7 @@ function playCategory(id) {
             document.getElementById("4kind-score").innerHTML = total
             break
         case "fullHouse":
+            kindCheck = checkOfKind()
             if(kindCheck !== "fullHouse" && !joker)
                 total = 0
             else
@@ -410,6 +415,7 @@ function playCategory(id) {
             document.getElementById("fullhouse-score").innerHTML = total
             break
         case "smStraight":
+            straightCheck = checkStraight()
             if(straightCheck !== "smStraight" && straightCheck !== "lgStraight" && !joker)
                 total = 0
             else
@@ -418,6 +424,7 @@ function playCategory(id) {
             document.getElementById("smstraight-score").innerHTML = total
             break
         case "lgStraight":
+            straightCheck = checkStraight()
             if(straightCheck !== "lgStraight" && !joker)
                 total = 0
             else
@@ -426,6 +433,7 @@ function playCategory(id) {
             document.getElementById("lgstraight-score").innerHTML = total
             break
         case "yahtzee":
+            kindCheck = checkOfKind()
             if(kindCheck !== "yahtzee")
                 total = 0
             else {
@@ -476,15 +484,15 @@ function getHighScore() {
 }
 function setHighScore() {
     if(grand_total > high_score)
-        high_score = grand_total;
+        high_score = grand_total
     if(typeof(Storage) == "undefined")
-        return;
+        return
     if(grand_total > getHighScore())
         localStorage.setItem("yahtzeeV2HighScore", grand_total)
 }
 function clearHighScore() {
     if(typeof(Storage) == "undefined")
-        return;
+        return
     if(confirm("Delete your high score?"))
         try {
             localStorage.removeItem("yahtzeeV2HighScore")

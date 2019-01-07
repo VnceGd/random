@@ -4,7 +4,6 @@
     <head>
         <title>Yahtzee v2.1</title>
         <link rel="icon" type="image/png" href="../images/dieFavicon.png">
-        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
         <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
         <link href="../css/game.css" rel="stylesheet">
         <link href="../css/yahtzee_v2.css" rel="stylesheet">
@@ -15,7 +14,7 @@
                 <div class="score-display">
                     <button class="circle-btn" onclick="exitGame()">&times;</button>
                     <button class="circle-btn" onclick="toggleMenu('help-menu')">?</button>
-                    <button class="circle-btn" onclick="toggleMenu('settings-menu')"><i class="fas fa-cog"></i></button>
+                    <button class="circle-btn" onclick="toggleMenu('settings-menu')"><img src="../images/cog.svg"/></button>
                     <p>Round <span id="round">1</span>, Roll <span id="roll">1</span> | High score: <span id="high-score"></span></p>
                 </div>
                 <div class="categories">
@@ -105,6 +104,11 @@
             <div class="menu-content">
                 <span class="menu-x" onclick="toggleMenu('version-menu')">&times;</span>
                 <h3>Patch Notes</h3>
+                <h4>v2.2</h4>
+                <b>Fixes:</b>
+                <ul>
+                    <li>Fixed logic for checking # of a kind and straights</li>
+                </ul>
                 <h4>v2.1</h4>
                 <b>Updates:</b>
                 <ul>

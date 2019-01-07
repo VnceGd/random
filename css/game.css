@@ -92,8 +92,8 @@ button:disabled {
     width: 80vmin;
     height: 28vmin;
 }
-.fa-cookie-bite {
-    color: #975;
+#cookie-menu img {
+    width: 8%;
 }
 .menu-x {
     position: absolute;

@@ -1,4 +1,4 @@
-// Vincent Nguyen 2018
+// Vincent Nguyen 2018-2019
 const MAXROLLS = 3
 const MAXROUNDS = 13
 const ONE   = '<img src="../images/dice-one.svg"/>'

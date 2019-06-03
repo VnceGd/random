@@ -4,7 +4,7 @@ Playing around with random number generation in Javascript.
 ## Homepage
 
 `index.html`
-- Basic dice roll and card drawing. Also links to games.
+- First section contains links to games. Second section contains a 'casino' of content.
   
 ## Games
 

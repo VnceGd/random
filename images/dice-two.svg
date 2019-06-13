@@ -1,5 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M384 32H64C28.65 32 0 60.65 0 96v320c0 35.35 28.65 64 64 64h320c35.35 0 64-28.65 64-64V96c0-35.35-28.65-64-64-64zM128 192c-17.67 0-32-14.33-32-32s14.33-32 32-32 32 14.33 32 32-14.33 32-32 32zm192 192c-17.67 0-32-14.33-32-32s14.33-32 32-32 32 14.33 32 32-14.33 32-32 32z"/></svg>
-<!--
-Font Awesome Free 5.5.0 by @fontawesome - https://fontawesome.com
-License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License)
--->
+<!-- Vincent Nguyen 2019 -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
+<defs>
+  <mask id="mask">
+    <rect width="100%" height="100%" fill="#fff"/>
+    <circle fill="#000" cx="5" cy="5" r="1"/>
+    <circle fill="#000" cx="11" cy="11" r="1"/>
+  </mask>
+</defs>
+<path mask="url(#mask)" stroke="#000" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"
+ d="M2 2 L14 2 L14 14 L2 14 Z"/>
+</svg>

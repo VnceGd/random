@@ -14,15 +14,18 @@ let high_score = grand_total = upper_total = lower_total = upper_bonus = 0
 let joker = false
 let prefer_dots = exit_reset = true
 
-window.onclick = function(event) {
-    let settingsMenu  = document.getElementById("settings-menu")
-    let helpMenu      = document.getElementById("help-menu")
-    let versionMenu   = document.getElementById("version-menu")
-    let cookieMenu    = document.getElementById("cookie-menu")
-    let modals = [settingsMenu, helpMenu, versionMenu, cookieMenu]
-    if(modals.includes(event.target))
-        event.target.style.display = "none"
-}
+$(document).click(function(event) {
+    switch(event.target) {
+        case document.getElementById("settings-menu"):
+        case document.getElementById("help-menu"):
+        case document.getElementById("version-menu"):
+        case document.getElementById("cookie-menu"):
+            event.target.style.display = "none"
+            break
+        default:
+            break
+    }
+})
 function toggleMenu(menu) {
     let which = document.getElementById(menu)
     if(which.style.display == "block")
@@ -30,17 +33,41 @@ function toggleMenu(menu) {
     else
         which.style.display = "block"
 }
-function updateSettings(type) {                
+function loadTheme() {
+    if(theme = getThemeCookie())
+        updateTheme(theme)
+    else
+        updateTheme('light')
+}
+function updateTheme(theme) {
+    if(theme == "light") {
+        $('input[value = "light"]').prop('checked', true)
+        $('body').css('color', '#000')
+        $('body').css('background-color', '#fff')
+        $('.menu-content').css('background-color', '#ddd')
+        $('.container').css('background-color', '#ddd')
+        $('.category').removeClass('dark-cat')
+    }
+    else {
+        $('input[value = "dark"]').prop('checked', true)
+        $('body').css('color', '#fff')
+        $('body').css('background-color', '#212121')
+        $('.menu-content').css('background-color', '#444')
+        $('.container').css('background-color', '#444')
+        $('.category').addClass('dark-cat')
+    }
+}
+function updateSettings(type) {
     if(type == 'reset') {
-        let resetPref = document.querySelector('input[name = "reset"]:checked')
-        if(resetPref.value == "on")
+        let resetPref = $('input[name = "reset"]:checked')
+        if(resetPref.val() == "on")
             exit_reset = true
         else
             exit_reset = false
     }
     else if(type == 'faces') {
-        let facePref = document.querySelector('input[name = "face"]:checked')
-        if(facePref.value == "dots")
+        let facePref = $('input[name = "face"]:checked')
+        if(facePref.val() == "dots")
             prefer_dots = true
         else
             prefer_dots = false
@@ -67,21 +94,9 @@ function updateSettings(type) {
         }
     }
     else if(type == 'theme') {
-        let themePref = document.querySelector('input[name = "theme"]:checked').value
-        if(themePref == "dark") {
-            document.body.style.color = "#fff"
-            document.body.style.backgroundColor = "#212121"
-            $('.menu-content').css('background-color', '#444')
-            $('.container').css('background-color', '#444')
-            $('.category').addClass('dark-cat')
-        }
-        else {
-            document.body.style.color = "#000"
-            document.body.style.backgroundColor = "#fff"
-            $('.menu-content').css('background-color', '#ddd')
-            $('.container').css('background-color', '#ddd')
-            $('.category').removeClass('dark-cat')
-        }
+        let theme = $('input[name = "theme"]:checked').val()
+        updateTheme(theme);
+        setThemeCookie(theme);
     }
 }
 function updateDisplay() {
@@ -137,15 +152,13 @@ function yahtzeeFlair() {
     setTimeout(function() { setAnimation(true) }, 1000)
 }
 function resetGame() {
-    let scores = document.getElementsByClassName("score")
     selected = [[1, 0], [2, 0], [3, 0], [4, 0], [5, 0]]
     roll = round = 1
     high_score = grand_total = upper_total = lower_total = upper_bonus = 0
     joker = false
     $('.disabled').addClass('category')
     $('.category').removeClass('disabled')
-    for(let s = 0; s < scores.length; s++)
-        scores[s].innerHTML = ""
+    $('.score').html('')
     updateDisplay()
 }
 function startGame() {
@@ -166,8 +179,11 @@ function exitGame() {
     $('.die').removeClass('disabled')
 }
 function disableActions(type) {
-    if(type == 'categories' || type == 'all')
+    if(type == 'categories' || type == 'all') {
         $('.category').addClass('disabled')
+        if($('input[name = "theme"]:checked').val() == 'dark')
+            $('.category').addClass('dark-cat')
+    }
     if(type == 'dice' || type == 'all') {
         $('.die').addClass('disabled')
         $('.selected').addClass('disabled')
@@ -502,22 +518,41 @@ function clearHighScore() {
             console.log("Failed to remove high score.")
         }
 }
-function checkCookie() {
-    if(typeof(Storage) !== "undefined")
+function getThemeCookie() {
+    if(typeof(Storage)) {
         try {
-            let cookie_consent = localStorage.getItem("yahtzeeV2CookieConsent")
-            if(cookie_consent == "true")
-                document.getElementById("cookie-menu").style.display = "none"
-            return
+            theme = localStorage.getItem("yahtzeeV2Theme")
+            return theme
         }
         catch(e) {
             return
         }
-    else
-        return
+    }
 }
-function setCookie() {
-    if(typeof(Storage) == "undefined")
+function setThemeCookie() {
+    if(!typeof(Storage))
+        return
+    if(checkCookieConsent()) {        
+        let theme = $('input[name = "theme"]:checked').val()
+        localStorage.setItem("yahtzeeV2Theme", theme)
+    }
+}
+function checkCookieConsent() {
+    if(typeof(Storage))
+        try {
+            let cookie_consent = localStorage.getItem("yahtzeeV2CookieConsent")
+            if(cookie_consent == "true")
+                document.getElementById("cookie-menu").style.display = "none"
+            return true
+        }
+        catch(e) {
+            return false
+        }
+    else
+        return false
+}
+function setCookieConsent() {
+    if(!typeof(Storage))
         return
     else
         localStorage.setItem("yahtzeeV2CookieConsent", true)

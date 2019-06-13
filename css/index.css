@@ -1,12 +1,19 @@
+/* Vincent Nguyen 2018-2019 */
 html, body {
     margin: 0;
     font-family: 'Lato', Arial, Helvetica, sans-serif;
+    color: #fff;
+    background-color: #666;
 }
 a {
+    color: #acf;
     text-decoration: none;
 }
+a:visited {
+    color: #f9f;
+}
 h1, h2, h3, p {
-    margin: 1vmin;
+    margin: 0.5rem;
 }
 input[type=number] {
     margin: 0.2rem;
@@ -23,50 +30,40 @@ input[type=number] {
 button {
     margin: 0;
     padding: 0.5rem 2rem;
-    color: #FFF;
+    color: #fff;
     background-color: #444;
     font-size: 1rem;
     font-family: 'Lato', sans-serif;
     border: none;
     border-radius: 2rem;
-    outline: none;
-    transition: .1s;
 }
 button:hover,
 button:focus {
     background-color: #555;
-    box-shadow: 0vmin 0.2rem #aaa;
-    transition: .1s;
+    box-shadow: 0 0.2rem #aaa;
 }
 button:active {
     padding-top: 0.6rem;
     padding-bottom: 0.4rem;
     background-color: #444;
-    box-shadow: 0vmin 0.1rem #777;
-    transition: .1s;
+    box-shadow: 0 0.1rem #777;
 }
 .container {
     padding: 2vmin;
 }
-.header, .gameMenu, .casinoArea, .inputArea, .resultArea {
+.header, .gameMenu, .casinoArea, .inputArea, .resultArea, .footer {
     width: 100%;
     text-align: center;
 }
 .header {
-    background-color: #eee;
+    background-color: #444;
 }
 .title {
     position: relative;
     margin: 0;
 }
-.author {
-    position: absolute;
-    top: 1rem;
-    right: 0;
-    font-size: 1rem;
-}
 .gameMenu {
-    background-color: #ddd;
+    background-color: #555;
 }
 .grid-container {
     padding: 0 10% 0 10%;
@@ -78,8 +75,7 @@ button:active {
 .grid-item, .casino-item {
     position: relative;
     overflow: hidden;
-    color: #fff;
-    background-color: #000;
+    background-color: #111;
 }
 .casino-item {
     padding: 1rem;
@@ -150,6 +146,9 @@ table, tr, td {
     border: none;
     border-collapse: collapse;
 }
+#slots-result :first-child {
+    margin-top: 0.5rem;
+}
 #slot-table {
     width: 100%;
     font-size: 1.5rem;
@@ -159,15 +158,15 @@ table, tr, td {
 }
 #slot-table td {
     padding: 0.5vmin;
-    border-left: 1px solid #000;
-    border-right: 1px solid #000;
+    border-left: 2px solid #000;
+    border-right: 2px solid #000;
 }
-@media only screen and (min-width: 1000px) {
+@media only screen and (min-width: 1200px) {
     .grid-container {
         grid-template-columns: repeat(4, 1fr);
     }
 }
-@media only screen and (max-width: 999px) {
+@media only screen and (max-width: 1199px) {
     .grid-container {
         grid-template-columns: repeat(2, 1fr);
     }

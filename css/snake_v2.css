@@ -1,4 +1,15 @@
-/* Vincent Nguyen 2018 */
+/* Vincent Nguyen 2018-2019 */
+input[type='color'] {
+    width: 10vmin;
+    height: 3vmin;
+    padding: 0.5vmin 1vmin;
+    border: none;
+    border-radius: 5vmin;
+}
+input[type='color']:hover {
+    box-shadow: 0 0 0.5vmin #13f;
+    cursor: pointer;
+}
 tr, td {
     border: none;
     border-spacing: 0;

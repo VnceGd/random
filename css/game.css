@@ -1,10 +1,10 @@
+/* Vincent Nguyen 2018-2019 */
 html, body {
     margin: 0;
     font-family: 'Lato', Arial, Helvetica, sans-serif;
-    transition: .5s;
 }
 h1, h3, h4, p {
-    margin: 1vmin 0 1vmin 0;
+    margin: 1vmin 0;
 }
 h1 {
     font-size: 8vmin;
@@ -31,6 +31,7 @@ a:hover {
 button {
     margin: 1vmin auto;
     width: 50vmin;
+    min-height: 4vmin;
     font-size: 3vmin;
     font-family: 'Lato', Arial, Helvetica, sans-serif;
     background-color: #eee;
@@ -47,6 +48,59 @@ button:focus {
 }
 button:disabled {
     color: #888;
+}
+.input-container {
+    display: block;
+    position: relative;
+    padding: 0.5vmin 1vmin 0.5vmin 6vmin;
+    margin: 1vmin 0;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+.input-container:hover {
+    background-color: #fff5;
+}
+.input-container input:not([type=color]) {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+.checkmark {
+    position: absolute;
+    top: 1vmin;
+    left: 1.5vmin;
+    height: 3vmin;
+    width: 3vmin;
+    border-radius: 2vmin;
+    background-color: #fff;
+}
+.input-container input:checked ~ .checkmark {
+    background-color: #2196F3;
+}
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+.input-container input:checked ~ .checkmark:after {
+    display: block;
+}
+.input-container .checkmark:after,
+.input-container .dark-dot:after {
+    left: 1vmin;
+    top: 1vmin;
+    width: 1vmin;
+    height: 1vmin;
+    background-color: #fff;
+    border-radius: 2vmin;
+}
+.input-container .dark-dot:after {
+    background-color: #000;
 }
 .box {
     width: 100%;
@@ -67,6 +121,10 @@ button:disabled {
     float: right;
     border-radius: 5vmin;
 }
+.circle-btn img {
+    margin-top: 0.5vmin;
+    width: 3vmin;
+}
 .menu-content {
     margin: auto;
     position: relative;
@@ -74,7 +132,8 @@ button:disabled {
     width: 92vmin;
     height: 92vmin;
     background-color: #ddd;
-    overflow-y: scroll;
+    box-shadow: 0 0 1vmin #000;
+    overflow-y: auto;
 }
 .modal {
     display: none;

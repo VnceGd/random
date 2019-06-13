@@ -249,11 +249,6 @@ addEventListener("keydown", function(e) {
     movePlayer();
     delete keys[e.keyCode];
 }, false)
-/* Remove key from queue after letting go
-addEventListener("keyup", function(e) {
-    delete keys[e.keyCode];
-}, false)
-*/
 // Move the player token on keypress
 function movePlayer() {
     let up     = (38 in keys || 87 in keys);
@@ -728,7 +723,7 @@ function nextRoom() {
     room_number++;
     if(room_number > room_count) {
         inGame = false;
-        alert("Dungeon escaped!");
+        alert("You escaped!");
     }
     else
         generateBoard();

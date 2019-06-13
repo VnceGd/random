@@ -2,14 +2,15 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Blackjack v2.0</title>
+        <meta charset="UTF-8">
+        <title>Blackjack v2.1</title>
         <link rel="icon" type="image/png" href="../images/cardFavicon.png">
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
         <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
         <link href="../css/game.css" rel="stylesheet">
         <link href="../css/blackjack_v2.css" rel="stylesheet">
     </head>
-    <body onload="checkCookie()">
+    <body onload="checkCookieConsent(); loadTheme()">
         <div class="box" id="game">
             <div class="container">
                 <div class="game-header">
@@ -67,13 +68,19 @@
                 <button onclick="toggleMenu('help-menu')">How to Play</button>
                 <a href="../index.html"><button>Exit</button></a>
                 <br>
-                <button class="version-btn" onclick="toggleMenu('version-menu')" id="version-btn">v2.0</button>
+                <button class="version-btn" onclick="toggleMenu('version-menu')" id="version-btn">v2.1</button>
             </div>
         </div>
         <div class="modal" id="version-menu">
             <div class="menu-content">
                 <span class="menu-x" onclick="toggleMenu('version-menu')">&times;</span>
                 <h3>Patch Notes</h3>
+                <h4>v2.0</h4>
+                <b>Updates:</b>
+                <ul>
+                    <li>Stylized settings menu radio buttons</li>
+                    <li>Added ability to save theme preference</li>
+                </ul>
                 <h4>v2.0</h4>
                 <b>What's New:</b>
                 <ul>
@@ -102,8 +109,16 @@
                 </p>
                 <p>
                     <b>Theme</b> <br>
-                    <input type="radio" name="theme" value="light" onclick="updateSettings('theme')" checked/> Light 
-                    <input type="radio" name="theme" value="dark" onclick="updateSettings('theme')"/> Dark 
+                    <label class="input-container">
+                        <input type="radio" name="theme" value="light" onclick="updateSettings('theme')" checked/> 
+                        <span class="checkmark"></span>
+                        Light 
+                    </label>
+                    <label class="input-container">
+                        <input type="radio" name="theme" value="dark" onclick="updateSettings('theme')"/> 
+                        <span class="checkmark"></span>
+                        Dark 
+                    </label>                    
                 </p>
                 <h4>Other</h4>
                 <a href="../misc/cookies.html"><button>Manage Cookies</button></a>
@@ -132,10 +147,11 @@
             <div class="menu-content" style="text-align:center">
                 <h3><img src="../images/cookie-bite.svg"/></h3>
                 <p>Cookies are used to store the balance.</p>
-                <button onclick="toggleMenu('cookie-menu'); setCookie()">Accept & Close</button> <br>
+                <button onclick="toggleMenu('cookie-menu'); setCookieConsent()">Accept & Close</button> <br>
                 <a href="../misc/cookies.html"><button>Manage Cookies</button></a>
             </div>
         </div>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
         <script src="../scripts/blackjack_v2.js"></script>
     </body>
 </html>

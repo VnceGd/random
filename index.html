@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!-- Vincent Nguyen 2018-2019 -->
 <!-- JavaScript practice using RNG -->
-<html>
+<html onmouseup="clearAnimation()">
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,9 +16,6 @@
         <div class="title">
           <h1>Test Your Luck </h1>
           <p>Fun with random number generation</p>
-          <div class="author">
-            <p>Vincent Nguyen 2018-2019</p>
-          </div>
         </div>
       </div>
     </div>
@@ -27,7 +24,7 @@
         <!-- LINKS -->
         <h2>Games </h2>
         <p>
-          <span style="font-size: 1rem; text-align: '|' center">
+          <span style="font-size: 1rem">
             (<a href="./misc/cookies.html">Manage Cookies</a>)
             (<a href="https://goo.gl/forms/6cPtaJFhn3hFaYCF2">Feedback</a>)
           </span>
@@ -72,7 +69,7 @@
                 <br>
                 <input type="number" id="sides-count" value="6" onchange="checkDice()">
                 <br> <br>
-                <button onclick="rollDice()">Roll</button>
+                <button onmousedown="animateDice()" onclick="rollDice()">Roll</button>
               </p>
               <div class="casino-result" id="dice-result"></div>
             </div>
@@ -89,7 +86,7 @@
                 <br>
                 <input type="number" id="deck-count" value="1" onchange="checkCards()">
                 <br> <br>
-                <button onclick="drawCards()">Draw</button>
+                <button onmousedown="animateCards()" onclick="drawCards()">Draw</button>
               </p>
               <div class="casino-result" id="card-result"></div>
             </div>
@@ -106,7 +103,7 @@
                 <br>
                 <input type="number" id="zero-count" value="1" onchange="checkWheel()">
                 <br> <br>
-                <button onclick="spinWheel()">Spin</button>
+                <button onmousedown="animateWheel()" onclick="spinWheel()">Spin</button>
               </p>
               <div class="casino-result" id="wheel-result"></div>
             </div>
@@ -119,17 +116,20 @@
                 <br>
                 <input type="number" id="row-count" value="1" onchange="checkSlots()">
                 <br>
-                # of Columns:
+                # of Reels:
                 <br>
-                <input type="number" id="col-count" value="3" onchange="checkSlots()">
+                <input type="number" id="reel-count" value="3" onchange="checkSlots()">
                 <br> <br>
-                <button onclick="spinSlots()">Spin</button>
+                <button onmousedown="animateSlots()" onclick="spinSlots()">Spin</button>
               </p>
               <div class="casino-result" id="slots-result"></div>
             </div>
           </div>
         </div>
       </div>
+    </div>
+    <div class="footer">
+      <p>Vincent Nguyen 2018-2019</p>
     </div>
     <script src="./scripts/index.js"></script>
   </body>

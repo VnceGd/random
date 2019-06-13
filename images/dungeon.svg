@@ -1,3 +1,4 @@
+<!-- Vincent Nguyen 2019 -->
 <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
  width="500pt" height="500pt" viewBox="0 0 80 80">
     <defs>
@@ -6,10 +7,9 @@
             <circle cx="40" cy="40" r="30"/>
         </clipPath>
     </defs>
-    <!-- Icon size background -->
-    <rect width="100%" height="100%" fill="#111"/>
-    <!-- Icon -->
+    <!-- Hole -->
     <circle fill="#000" cx="40" cy="40" r="30"/>
+    <!-- Ladder -->
     <g stroke="#950" stroke-width="5" fill="#950" clip-path="url(#hole)">
         <line  x1="20" y1="10" x2="20" y2="65"/>
         <line  x1="20" y1="30" x2="60" y2="30"/>

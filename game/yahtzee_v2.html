@@ -2,13 +2,14 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Yahtzee v2.1</title>
+        <meta charset="UTF-8">
+        <title>Yahtzee v2.3</title>
         <link rel="icon" type="image/png" href="../images/dieFavicon.png">
         <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
         <link href="../css/game.css" rel="stylesheet">
         <link href="../css/yahtzee_v2.css" rel="stylesheet">
     </head>
-    <body onload="checkCookie()">
+    <body onload="checkCookieConsent(); loadTheme()">
         <div class="box" id="game">
             <div class="container">
                 <div class="score-display">
@@ -97,13 +98,19 @@
                 <button onclick="toggleMenu('help-menu')">How to Play</button>
                 <a href="../index.html"><button>Exit</button></a>
                 <br>
-                <button onclick="toggleMenu('version-menu')" id="version-btn">v2.1</button>
+                <button onclick="toggleMenu('version-menu')" id="version-btn">v2.3</button>
             </div>
         </div>
         <div class="modal" id="version-menu">
             <div class="menu-content">
                 <span class="menu-x" onclick="toggleMenu('version-menu')">&times;</span>
                 <h3>Patch Notes</h3>
+                <h4>v2.3</h4>
+                <b>Updates:</b>
+                <ul>
+                    <li>Stylized settings menu radio buttons</li>
+                    <li>Added ability to save theme preference</li>
+                </ul>
                 <h4>v2.2</h4>
                 <b>Fixes:</b>
                 <ul>
@@ -145,19 +152,43 @@
                 <h4>Gameplay</h4>
                 <p>
                     <b>Game Resets on Exit</b> <br>
-                    <input type="radio" name="reset" value="on" onclick="updateSettings('reset')" checked/> On
-                    <input type="radio" name="reset" value="off" onclick="updateSettings('reset')"/> Off
+                    <label class="input-container">
+                        <input type="radio" name="reset" value="on" onclick="updateSettings('reset')" checked/>
+                        <span class="checkmark"></span>
+                        On
+                    </label>
+                    <label class="input-container">                        
+                        <input type="radio" name="reset" value="off" onclick="updateSettings('reset')"/>
+                        <span class="checkmark"></span>
+                        Off
+                    </label>
                 </p>
                 <h4>Appearance</h4>
                 <p>
                     <b>Die Faces</b> <br>
-                    <input type="radio" name="face" value="dots" onclick="updateSettings('faces')" checked/> Dots
-                    <input type="radio" name="face" value="nums" onclick="updateSettings('faces')"/> Numbers
+                    <label class="input-container">                        
+                        <input type="radio" name="face" value="dots" onclick="updateSettings('faces')" checked/>
+                        <span class="checkmark"></span>
+                        Dots
+                    </label>
+                    <label class="input-container">                        
+                        <input type="radio" name="face" value="nums" onclick="updateSettings('faces')"/>
+                        <span class="checkmark"></span>
+                        Numbers
+                    </label>
                 </p>
                 <p>
                     <b>Theme</b> <br>
-                    <input type="radio" name="theme" value="light" onclick="updateSettings('theme')" checked/> Light
-                    <input type="radio" name="theme" value="dark" onclick="updateSettings('theme')"/> Dark
+                    <label class="input-container">                        
+                        <input type="radio" name="theme" value="light" onclick="updateSettings('theme')" checked/>
+                        <span class="checkmark"></span>
+                        Light
+                    </label>
+                    <label class="input-container">                        
+                        <input type="radio" name="theme" value="dark" onclick="updateSettings('theme')"/>
+                        <span class="checkmark"></span>
+                        Dark
+                    </label>
                 </p>
                 <h4>Other</h4>
                 <a href="../misc/cookies.html"><button>Manage Cookies</button></a>
@@ -199,7 +230,7 @@
             <div class="menu-content" style="text-align:center">
                 <h3><img src="../images/cookie-bite.svg"/></h3>
                 <p>Cookies are used to save the high score.</p>
-                <button onclick="toggleMenu('cookie-menu'); setCookie()">Accept & Close</button> <br>
+                <button onclick="toggleMenu('cookie-menu'); setCookieConsent()">Accept & Close</button> <br>
                 <a href="../misc/cookies.html"><button>Manage Cookies</button></a>
             </div>
         </div>

@@ -50,6 +50,7 @@ th, td {
 .die, .selected {
     width: 14vmin;
     height: 14vmin;
+    padding: 1vmin;
     font-size: 10vmin;
 }
 .selected {

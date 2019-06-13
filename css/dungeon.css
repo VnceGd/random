@@ -1,5 +1,5 @@
 /* Dungeon Dilemma v0.3.0 */
-/* Vincent Nguyen 2018 */
+/* Vincent Nguyen 2018-2019 */
 /* GENERAL *********************/
 html, body {
     margin: 0;
@@ -138,10 +138,9 @@ li {
     text-align: center;
 }
 .footer {
-    position: fixed;
-    left: 10%;
-    bottom: 10%;
-    width: 80%;
+    position: absolute;
+    bottom: 1%;
+    width: 100%;
 }
 #exitBtn {
     background-color: #fcc;

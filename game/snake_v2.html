@@ -3,14 +3,14 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>Snake v2.2</title>
+        <title>Snake v2.3</title>
         <link rel="icon" type="image/png" href="../images/snakeFavicon.png">
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
         <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
         <link href="../css/game.css" rel="stylesheet">
         <link href="../css/snake_v2.css" rel="stylesheet">
     </head>
-    <body onload="checkCookieConsent(); loadTheme()">
+    <body onload="checkCookieConsent(); loadAll()">
         <div class="box" id="board">
             <div class="container">
                 <div id="score-display">
@@ -30,13 +30,13 @@
         </div>
         <div class="box" id="title">
             <div class="container">
-                <h1>Snake</h1>
+                <h1 id="game-title">Snake</h1>
                 <button onclick="startGame()"><b>Play</b></button>
                 <button onclick="toggleMenu('settings-menu')">Settings</button>
                 <button onclick="toggleMenu('help-menu')">How to Play</button>
-                <a href="../index.html"><button>Exit</button></a>
+                <a href="../index.html"><button class="exit-btn">Exit</button></a>
                 <br>
-                <button onclick="toggleMenu('version-menu')" id="version-btn">v2.2</button>
+                <button onclick="toggleMenu('version-menu')" id="version-btn">v2.3</button>
             </div>
         </div>
         <div class="modal" id="gameover-menu">
@@ -50,6 +50,14 @@
             <div class="menu-content">
                 <h3>Patch Notes</h3>
                 <span class="menu-x" onclick="toggleMenu('version-menu')">&times;</span>
+                <h4>v2.3</h4>
+                <p><b>Updates: </b></p>
+                <ul> 
+                    <li>Title screen buttons are larger</li>
+                    <li>Added setting to toggle between round and rectangular buttons</li>
+                    <li>Button style preference may be stored as a cookie</li>
+                    <li>Lowered max values for board size and update speed</li>
+                </ul>
                 <h4>v2.2</h4>
                 <p><b>Updates: </b></p>
                 <ul> 
@@ -88,27 +96,39 @@
                 <span class="menu-x" onclick="toggleMenu('settings-menu')">&times;</span>
                 <h4>Gameplay</h4>
                 <p>Board Size (side length)</p>
-                <input id="board-size" type="number" value="20" min="4" max="100" onchange="updateSettings('board')"/>
+                <input id="board-size" type="number" value="20" min="4" max="50" onchange="updateSettings('board')"/>
                 <p>Update Speed (per second)</p>
-                <input id="update-speed" type="number" value="10" min="1" max="999" onkeyup="updateSettings('speed')"/>
+                <input id="update-speed" type="number" value="10" min="1" max="100" onkeyup="updateSettings('speed')"/>
                 <h4>Appearance</h4>
                 <p><b>Theme</b> <br>
-                    <label class="input-container">
-                        Light
+                    <label class="input-container">                        
                         <input type="radio" name="theme" value="light" onchange="updateSettings('theme')" checked/> 
                         <span class="checkmark"></span>
+                        Light
                     </label>
-                   <label class="input-container">
-                       Dark
+                   <label class="input-container">                       
                        <input type="radio" name="theme" value="dark" onchange="updateSettings('theme')"/>
                        <span class="checkmark"></span>
+                       Dark
                    </label>                
                 </p>
-                <p><b>Round Apple</b> <br>
+                <p><b>Buttons</b> <br>
                     <label class="input-container">
-                        On/Off
+                        <input type="radio" name="buttons" value="round" onchange="updateSettings('buttons')" checked/>
+                        <span class="checkmark"></span>
+                        Round
+                    </label>
+                    <label class="input-container">
+                        <input type="radio" name="buttons" value="rectangular" onchange="updateSettings('buttons')"/>
+                        <span class="checkmark"></span>
+                        Rectangular
+                    </label>
+                </p>
+                <p><b>Round Apple</b> <br>
+                    <label class="input-container">                        
                         <input id="round-apple" type="checkbox"/>
                         <span class="checkmark"></span>
+                        On/Off
                     </label>                 
                 </p>
                 <table>
@@ -215,7 +235,6 @@
             <div class="menu-content">
                 <h3>How to Play</h3>
                 <span class="menu-x" onclick="toggleMenu('help-menu')">&times;</span>
-                <p><i>Note: This website is optimized for Google Chrome</i> </p>
                 <h4>Objective</h4>
                 <p>Grow as long as you can by eating apples, while avoiding moving into walls and your own body.</p>
                 <h4>Controls</h4>
@@ -231,6 +250,7 @@
             </div>
         </div>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="../scripts/game.js"></script>
         <script src="../scripts/snake_v2.js"></script>
     </body>
 </html>

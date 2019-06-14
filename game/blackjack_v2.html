@@ -1,16 +1,16 @@
-<!-- Vincent Nguyen 2018 -->
+<!-- Vincent Nguyen 2018-2019 -->
 <!DOCTYPE html>
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>Blackjack v2.1</title>
+        <title>Blackjack v2.2</title>
         <link rel="icon" type="image/png" href="../images/cardFavicon.png">
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
         <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
         <link href="../css/game.css" rel="stylesheet">
         <link href="../css/blackjack_v2.css" rel="stylesheet">
     </head>
-    <body onload="checkCookieConsent(); loadTheme()">
+    <body onload="checkCookieConsent(); loadAll()">
         <div class="box" id="game">
             <div class="container">
                 <div class="game-header">
@@ -62,27 +62,35 @@
         </div>
         <div class="box" id="title">
             <div class="container">
-                <h1>Blackjack</h1>
+                <h1 id="game-title">Blackjack</h1>
                 <button onclick="startGame()"><b>Play</b></button>
                 <button onclick="toggleMenu('settings-menu')">Settings</button>
                 <button onclick="toggleMenu('help-menu')">How to Play</button>
-                <a href="../index.html"><button>Exit</button></a>
+                <a href="../index.html"><button class="exit-btn">Exit</button></a>
                 <br>
-                <button class="version-btn" onclick="toggleMenu('version-menu')" id="version-btn">v2.1</button>
+                <button class="version-btn" onclick="toggleMenu('version-menu')" id="version-btn">v2.2</button>
             </div>
         </div>
         <div class="modal" id="version-menu">
             <div class="menu-content">
                 <span class="menu-x" onclick="toggleMenu('version-menu')">&times;</span>
                 <h3>Patch Notes</h3>
-                <h4>v2.0</h4>
-                <b>Updates:</b>
+                <h4>v2.2</h4>
+                <p><b>Updates: </b></p>
+                <ul> 
+                    <li>Title screen buttons are larger</li>
+                    <li>Added setting to toggle between round and rectangular buttons</li>
+                    <li>Button style preference may be stored as a cookie</li>
+                    <li>Fixed win and bust banner colors for dark theme</li>
+                </ul>
+                <h4>v2.1</h4>
+                <p><b>Updates:</b></p>
                 <ul>
                     <li>Stylized settings menu radio buttons</li>
                     <li>Added ability to save theme preference</li>
                 </ul>
                 <h4>v2.0</h4>
-                <b>What's New:</b>
+                <p><b>What's New:</b></p>
                 <ul>
                     <li>New UI design</li>
                     <li>General optimization</li>
@@ -120,6 +128,18 @@
                         Dark 
                     </label>                    
                 </p>
+                <p><b>Buttons</b> <br>
+                    <label class="input-container">
+                        <input type="radio" name="buttons" value="round" onchange="updateSettings('buttons')" checked/>
+                        <span class="checkmark"></span>
+                        Round
+                    </label>
+                    <label class="input-container">
+                        <input type="radio" name="buttons" value="rectangular" onchange="updateSettings('buttons')"/>
+                        <span class="checkmark"></span>
+                        Rectangular
+                    </label>
+                </p>
                 <h4>Other</h4>
                 <a href="../misc/cookies.html"><button>Manage Cookies</button></a>
                 <button onclick="resetBalance()">Reset Balance</button>
@@ -129,7 +149,6 @@
             <div class="menu-content">
                 <span class="menu-x" onclick="toggleMenu('help-menu')">&times;</span>
                 <h3>How to Play</h3>
-                <p><i>Note: This game is optimized for Google Chrome</i></p>
                 <p>
                     This is a solo player Blackjack game against the 'House'. <br>
                     After pressing 'Play', place an initial bet to start the game. <br>
@@ -152,6 +171,7 @@
             </div>
         </div>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="../scripts/game.js"></script>
         <script src="../scripts/blackjack_v2.js"></script>
     </body>
 </html>

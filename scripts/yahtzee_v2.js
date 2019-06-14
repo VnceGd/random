@@ -14,31 +14,6 @@ let high_score = grand_total = upper_total = lower_total = upper_bonus = 0
 let joker = false
 let prefer_dots = exit_reset = true
 
-$(document).click(function(event) {
-    switch(event.target) {
-        case document.getElementById("settings-menu"):
-        case document.getElementById("help-menu"):
-        case document.getElementById("version-menu"):
-        case document.getElementById("cookie-menu"):
-            event.target.style.display = "none"
-            break
-        default:
-            break
-    }
-})
-function toggleMenu(menu) {
-    let which = document.getElementById(menu)
-    if(which.style.display == "block")
-        which.style.display = "none"
-    else
-        which.style.display = "block"
-}
-function loadTheme() {
-    if(theme = getThemeCookie())
-        updateTheme(theme)
-    else
-        updateTheme('light')
-}
 function updateTheme(theme) {
     if(theme == "light") {
         $('input[value = "light"]').prop('checked', true)
@@ -97,6 +72,11 @@ function updateSettings(type) {
         let theme = $('input[name = "theme"]:checked').val()
         updateTheme(theme);
         setThemeCookie(theme);
+    }
+    else if(type == "buttons") {
+        let btnPref = $('input[name = "buttons"]:checked').val()
+        updateButtons(btnPref)
+        setButtonsCookie(btnPref)
     }
 }
 function updateDisplay() {
@@ -517,43 +497,4 @@ function clearHighScore() {
         catch(e) {
             console.log("Failed to remove high score.")
         }
-}
-function getThemeCookie() {
-    if(typeof(Storage)) {
-        try {
-            theme = localStorage.getItem("yahtzeeV2Theme")
-            return theme
-        }
-        catch(e) {
-            return
-        }
-    }
-}
-function setThemeCookie() {
-    if(!typeof(Storage))
-        return
-    if(checkCookieConsent()) {        
-        let theme = $('input[name = "theme"]:checked').val()
-        localStorage.setItem("yahtzeeV2Theme", theme)
-    }
-}
-function checkCookieConsent() {
-    if(typeof(Storage))
-        try {
-            let cookie_consent = localStorage.getItem("yahtzeeV2CookieConsent")
-            if(cookie_consent == "true")
-                document.getElementById("cookie-menu").style.display = "none"
-            return true
-        }
-        catch(e) {
-            return false
-        }
-    else
-        return false
-}
-function setCookieConsent() {
-    if(!typeof(Storage))
-        return
-    else
-        localStorage.setItem("yahtzeeV2CookieConsent", true)
 }

@@ -3,13 +3,13 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>Yahtzee v2.3</title>
+        <title>Yahtzee v2.4</title>
         <link rel="icon" type="image/png" href="../images/dieFavicon.png">
         <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
         <link href="../css/game.css" rel="stylesheet">
         <link href="../css/yahtzee_v2.css" rel="stylesheet">
     </head>
-    <body onload="checkCookieConsent(); loadTheme()">
+    <body onload="checkCookieConsent(); loadAll()">
         <div class="box" id="game">
             <div class="container">
                 <div class="score-display">
@@ -92,42 +92,49 @@
         </div>
         <div class="box" id="title">
             <div class="container">
-                <h1>Yahtzee</h1>
+                <h1 id="game-title">Yahtzee</h1>
                 <button onclick="startGame()"><b>Play</b></button>
                 <button onclick="toggleMenu('settings-menu')">Settings</button>
                 <button onclick="toggleMenu('help-menu')">How to Play</button>
-                <a href="../index.html"><button>Exit</button></a>
+                <a href="../index.html"><button class="exit-btn">Exit</button></a>
                 <br>
-                <button onclick="toggleMenu('version-menu')" id="version-btn">v2.3</button>
+                <button onclick="toggleMenu('version-menu')" id="version-btn">v2.4</button>
             </div>
         </div>
         <div class="modal" id="version-menu">
             <div class="menu-content">
                 <span class="menu-x" onclick="toggleMenu('version-menu')">&times;</span>
                 <h3>Patch Notes</h3>
+                <h4>v2.4</h4>
+                <p><b>Updates: </b></p>
+                <ul>
+                    <li>Title screen buttons are larger</li>
+                    <li>Added setting to toggle between round and rectangular buttons</li>
+                    <li>Button style preference may be stored as a cookie</li>
+                </ul>
                 <h4>v2.3</h4>
-                <b>Updates:</b>
+                <p><b>Updates:</b></p>
                 <ul>
                     <li>Stylized settings menu radio buttons</li>
                     <li>Added ability to save theme preference</li>
                 </ul>
                 <h4>v2.2</h4>
-                <b>Fixes:</b>
+                <p><b>Fixes:</b></p>
                 <ul>
                     <li>Fixed logic for checking # of a kind and straights</li>
                 </ul>
                 <h4>v2.1</h4>
-                <b>Updates:</b>
+                <p><b>Updates:</b></p>
                 <ul>
                     <li>Added clearer distinction for disabled actions</li>
                     <li>Added more flair to rolling a Yahtzee</li>
                 </ul>
-                <b>Fixes:</b>
+                <p><b>Fixes:</b></p>
                 <ul>
                     <li>Fixed game not resetting properly</li>
                 </ul>
                 <h4>v2.0</h4>
-                <b>What's New:</b>
+                <p><b>What's New:</b></p>
                 <ul>
                     <li>New UI design</li>
                     <li>New fontawesome icons</li>
@@ -190,6 +197,18 @@
                         Dark
                     </label>
                 </p>
+                <p><b>Buttons</b> <br>
+                    <label class="input-container">
+                        <input type="radio" name="buttons" value="round" onchange="updateSettings('buttons')" checked/>
+                        <span class="checkmark"></span>
+                        Round
+                    </label>
+                    <label class="input-container">
+                        <input type="radio" name="buttons" value="rectangular" onchange="updateSettings('buttons')"/>
+                        <span class="checkmark"></span>
+                        Rectangular
+                    </label>
+                </p>
                 <h4>Other</h4>
                 <a href="../misc/cookies.html"><button>Manage Cookies</button></a>
                 <button onclick="clearHighScore()">Clear High Score</button>
@@ -199,7 +218,6 @@
             <div class="menu-content">
                 <span class="menu-x" onclick="toggleMenu('help-menu')">&times;</span>
                 <h3>How to Play</h3>
-                <p><i>Note: This website is optimized for Google Chrome</i> </p>
                 <p>
                     There are 13 rounds each in which you may attempt 3 rolls. <br>
                     After each roll, you may select a category to score against. <br>
@@ -235,6 +253,7 @@
             </div>
         </div>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <script src="../scripts/game.js"></script>
         <script src="../scripts/yahtzee_v2.js"></script>
     </body>
 </html>

@@ -10,31 +10,6 @@ let player_bet = split_bet = 0
 let player_turn = true
 let player_stand = split_stand = false
 
-$(document).click(function(event) {
-    switch(event.target) {
-        case document.getElementById("settings-menu"):
-        case document.getElementById("help-menu"):
-        case document.getElementById("version-menu"):
-        case document.getElementById("cookie-menu"):
-            event.target.style.display = "none";
-            break
-        default:
-            break
-    }
-})
-function toggleMenu(menu) {
-    let which = document.getElementById(menu)
-    if(which.style.display == "block")
-        which.style.display = "none"
-    else
-        which.style.display = "block"
-}
-function loadTheme() {
-    if(theme = getThemeCookie())
-        updateTheme(theme)
-    else
-        updateTheme('light')
-}
 function updateTheme(theme) {
     if(theme == "light") {
         $('input[value = "light"]').prop('checked', true)
@@ -45,6 +20,8 @@ function updateTheme(theme) {
         $('.container').css('background-color', '#ddd')
         $('.card-box-cards').css('background-color', '#cfd')
         $('.card-box-info').css('background-color', '#ccf')
+        $('.win-banner').css('background-color', '#afa')
+        $('.bust-banner').css('background-color', '#faa')
     }
     else {
         $('input[value = "dark"]').prop('checked', true)
@@ -55,11 +32,13 @@ function updateTheme(theme) {
         $('.container').css('background-color', '#444')
         $('.card-box-cards').css('background-color', '#495')
         $('.card-box-info').css('background-color', '#449')
+        $('.win-banner').css('background-color', '#0a0')
+        $('.bust-banner').css('background-color', '#a00')
     }
 }
 // Updates game rules
-function updateSettings(which) {
-    if(which == "decks") {
+function updateSettings(type) {
+    if(type == "decks") {
         let count = document.querySelector('input[name = "decks"]')
         let deckCount = parseInt(count.value)
 
@@ -69,10 +48,15 @@ function updateSettings(which) {
             count.value = 8
     }
     // Change theme
-    if(which == "theme") {
+    else if(type == "theme") {
         let theme  = $('input[name = "theme"]:checked').val()
         updateTheme(theme)
         setThemeCookie(theme)
+    }
+    else if(type == "buttons") {
+        let btnPref = $('input[name = "buttons"]:checked').val()
+        updateButtons(btnPref)
+        setButtonsCookie(btnPref)
     }
 }
 function whichTurn() {
@@ -511,43 +495,4 @@ function resetBalance() {
         setBalance()
         updateDisplay()
     }
-}
-function getThemeCookie() {
-    if(typeof(Storage)) {
-        try {
-            theme = localStorage.getItem("blackjackV2Theme")
-            return theme
-        }
-        catch(e) {
-            return
-        }
-    }
-}
-function setThemeCookie() {
-    if(!typeof(Storage))
-        return
-    if(checkCookieConsent()) {        
-        let theme = $('input[name = "theme"]:checked').val()
-        localStorage.setItem("blackjackV2Theme", theme)
-    }
-}
-function checkCookieConsent() {
-    if(typeof(Storage))
-        try {
-            let cookie_consent = localStorage.getItem("blackjackV2CookieConsent")
-            if(cookie_consent == "true")
-                document.getElementById("cookie-menu").style.display = "none"
-            return true
-        }
-        catch(e) {
-            return false
-        }
-    else
-        return false
-}
-function setCookieConsent() {
-    if(!typeof(Storage))
-        return
-    else
-        localStorage.setItem("blackjackV2CookieConsent", true)
 }

@@ -21,41 +21,6 @@ $(document).keydown(function(e) {
 $(document).keyup(function(e) {
     delete keys[e.keyCode]
 })
-$(document).click(function(event) {
-    switch(event.target) {    
-        case document.getElementById("settings-menu"):
-        case document.getElementById("help-menu"):
-        case document.getElementById("version-menu"):
-        case document.getElementById("cookie-menu"):
-            event.target.style.display = "none"
-            break
-        default:
-            break
-    }
-})
-function toggleMenu(menu) {
-    let which = document.getElementById(menu)
-    if(which.style.display == "block")
-        which.style.display = "none"
-    else
-        which.style.display = "block"
-    if(menu == 'settings-menu')
-        if(in_settings)
-            in_settings = false
-        else
-            in_settings = true
-    else if(menu == 'help-menu')
-        if(in_help)
-            in_help = false
-        else
-            in_help = true
-}
-function loadTheme() {
-    if(theme = getThemeCookie())
-        updateTheme(theme)
-    else
-        updateTheme('light')
-}
 function updateTheme(theme) {
     if(theme == "light") {
         $('input[value = "light"]').prop('checked', true)
@@ -75,7 +40,7 @@ function updateTheme(theme) {
     }
 }
 function updateSettings(type) {
-    if(type == "board" || type == "all") {
+    if(type == "board") {
         let size = document.getElementById("board-size")
         let max = parseInt(size.max)
         let min = parseInt(size.min)
@@ -85,7 +50,7 @@ function updateSettings(type) {
         else if(size.value < min)
             size.value = min
     }
-    if(type == "speed" || type == "all") {
+    else if(type == "speed") {
         let speed = document.getElementById("update-speed")
         let max = parseInt(speed.max)
         let min = parseInt(speed.min)
@@ -95,10 +60,15 @@ function updateSettings(type) {
         else if(speed.value < min)
             speed.value = min
     }
-    if(type == "theme" || type == "all") {
+    else if(type == "theme") {
         let theme = $('input[name = "theme"]:checked').val()
         updateTheme(theme)
         setThemeCookie()       
+    }
+    else if(type == "buttons") {
+        let btnPref = $('input[name = "buttons"]:checked').val()
+        updateButtons(btnPref)
+        setButtonsCookie(btnPref)
     }
 }
 function updateBoard() {
@@ -332,43 +302,4 @@ function clearHighScore() {
         catch(e) {
             console.log("Failed to remove high score.")
         }
-}
-function getThemeCookie() {
-    if(typeof(Storage)) {
-        try {
-            theme = localStorage.getItem("snakeV2Theme")
-            return theme
-        }
-        catch(e) {
-            return
-        }
-    }
-}
-function setThemeCookie() {
-    if(!typeof(Storage))
-        return
-    if(checkCookieConsent()) {
-        let theme = $('input[name = "theme"]:checked').val()
-        localStorage.setItem("snakeV2Theme", theme)
-    }
-}
-function checkCookieConsent() {
-    if(typeof(Storage))
-        try {
-            let cookie_consent = localStorage.getItem("snakeV2CookieConsent")
-            if(cookie_consent == "true")
-                document.getElementById("cookie-menu").style.display = "none"
-            return true
-        }
-        catch(e) {
-            return false
-        }
-    else
-        return false
-}
-function setCookieConsent() {
-    if(!typeof(Storage))
-        return
-    else
-        localStorage.setItem("snakeV2CookieConsent", true)
 }

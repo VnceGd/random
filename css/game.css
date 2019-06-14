@@ -37,17 +37,27 @@ button {
     background-color: #eee;
     border: 0;
     border-radius: 2vmin;
-    transition: .1s;
 }
 button:hover {
     background-color: #fff;
-    transition: .1s;
+    transition: .2s;
 }
 button:focus {
     outline: none;
 }
 button:disabled {
     color: #888;
+}
+#title button {
+    margin: 2vmin;
+    height: 8vmin;
+    border-radius: 10vmin;
+}
+.exit-btn {
+    background-color: #f88;
+}
+.exit-btn:hover {
+    background-color: #faa;
 }
 .input-container {
     display: block;
@@ -116,10 +126,10 @@ button:disabled {
     background-color: #ddd;
 }
 .circle-btn {
-    margin: 0 0.5vmin;
+    margin: 0 1vmin;
     width: 6vmin;
     float: right;
-    border-radius: 5vmin;
+    border-radius: 6vmin;
 }
 .circle-btn img {
     margin-top: 0.5vmin;

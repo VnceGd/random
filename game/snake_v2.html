@@ -34,7 +34,7 @@
                 <button onclick="startGame()"><b>Play</b></button>
                 <button onclick="toggleMenu('settings-menu')">Settings</button>
                 <button onclick="toggleMenu('help-menu')">How to Play</button>
-                <a href="../index.html"><button class="exit-btn">Exit</button></a>
+                <button onclick="quitGame()" class="exit-btn">Quit</button>
                 <br>
                 <button onclick="toggleMenu('version-menu')" id="version-btn">v2.3</button>
             </div>
@@ -119,7 +119,7 @@
                         Round
                     </label>
                     <label class="input-container">
-                        <input type="radio" name="buttons" value="rectangular" onchange="updateSettings('buttons')"/>
+                        <input type="radio" name="buttons" value="rect" onchange="updateSettings('buttons')"/>
                         <span class="checkmark"></span>
                         Rectangular
                     </label>

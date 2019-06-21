@@ -138,8 +138,7 @@ li {
     text-align: center;
 }
 .footer {
-    position: absolute;
-    bottom: 1%;
+    padding: 2vmin 0;
     width: 100%;
 }
 #exitBtn {

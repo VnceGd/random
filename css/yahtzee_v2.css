@@ -53,6 +53,9 @@ th, td {
     padding: 1vmin;
     font-size: 10vmin;
 }
+.die:hover {
+    background-color: #ffa;
+}
 .selected {
     background-color: #f88;
 }
@@ -63,6 +66,7 @@ th, td {
     padding: 1vmin;
     width: 72vmin;
     font-size: 5vmin;
+    font-weight: bold;
 }
 #yahtzee-banner {
     position: absolute;

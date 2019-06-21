@@ -139,17 +139,22 @@ function resetGame() {
     $('.disabled').addClass('category')
     $('.category').removeClass('disabled')
     $('.score').html('')
+    $('.die').css('background-color', '')
+    $('.die:hover').css('background-color', '')
     updateDisplay()
 }
 function startGame() {
     document.getElementById("title").style.display = "none"
     document.getElementById("game").style.display = "block"
     document.getElementById("high-score").innerHTML = getHighScore()
+    updateSettings('reset')
     updateSettings('faces')
-    if(exit_reset)
+    if(exit_reset) {
         resetGame()
-    if(round == 1) {
+    }
+    if(roll == 1) {
         disableActions('categories')
+        disableActions('dice')     
         document.getElementById("roll-button").disabled = false
     }
 }
@@ -165,6 +170,8 @@ function disableActions(type) {
             $('.category').addClass('dark-cat')
     }
     if(type == 'dice' || type == 'all') {
+        if(prefer_dots)
+            $('.die > img').css('opacity', '0.5')
         $('.die').addClass('disabled')
         $('.selected').addClass('disabled')
         document.getElementById("roll-button").disabled = true
@@ -226,8 +233,11 @@ function clearAnimateDice() {
     }
     if(roll < 4)
         enableActions('all')
-    else
+    else {
         enableActions('categories')
+        $('.die').css('background-color', '#ffa')
+        $('.die:hover').css('background-color', '#ffa')
+    }
     updateDisplay()
 }
 function rollDice() {
@@ -458,9 +468,12 @@ function playCategory(id) {
         disableActions('all')
     }
     else {
-        roll = 1
-        document.getElementById("roll-button").disabled = false
+        roll = 1        
         disableActions('categories')
+        disableActions('dice')
+        document.getElementById("roll-button").disabled = false
+        $('.die').css('background-color', '')
+        $('.die:hover').css('background-color', '')
     }
     updateDisplay()
 }

@@ -25,7 +25,7 @@ function updateButtons(btnPref) {
         $('circle-btn').css('border-radius', '6vmin')
     }
     else {
-		$('input[value = "rectangular"]').prop('checked', true)
+		$('input[value = "rect"]').prop('checked', true)
         $('button').css('border-radius', '0')
     }
 }
@@ -183,4 +183,10 @@ function setButtonsCookie() {
 				break
 		}
 	}
+}
+function quitGame() {
+	if(window.history.length > 1 && document.referrer == '../index.html')
+		window.history.back()
+	else
+		window.location.href = '../index.html'
 }

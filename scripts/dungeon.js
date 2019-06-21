@@ -745,7 +745,7 @@ function startGame() {
     document.body.style.color = "#FFF";
 }
 // Return to the title screen
-function quitGame() {
+function quitToTitle() {
     if(confirm("Progress is not saved. Quit?")) {
         inGame = false;
         document.getElementsByClassName("gameBoard")[0].style.display   = "none";
@@ -753,4 +753,10 @@ function quitGame() {
         document.body.style.backgroundColor = "#FFF";
         document.body.style.color = "#000";
     }
+}
+function quitGame() {
+	if(window.history.length > 1 && document.referrer == '../index.html')
+		window.history.back()
+	else
+		window.location.href = '../index.html'
 }

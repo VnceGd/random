@@ -160,7 +160,7 @@
         <button onclick="toggleMenu('settings')">Settings</button> <br>
         <button onclick="toggleMenu('help')">How to Play</button> <br>
         <button onclick="toggleMenu('credits')">Credits</button> <br>
-        <a href="../index.html"><button id="exitBtn">Exit</button></a> <br>
+        <button onclick="quitGame()" id="exitBtn">Quit</button> <br>
         <button id="versionBtn" onclick="toggleMenu('patchNotes')"><span id="versionNo">v0.3.0</span></button>
       </div>
       <div class="footer">
@@ -368,7 +368,7 @@
     <!-- GAME BOARD -->
     <div class="gameBoard" style="display:none">
       <div class="gameMenu">
-        <button class="backBtn" onclick="quitGame()">Quit</button>
+        <button class="backBtn" onclick="quitToTitle()">Quit</button>
         <button onclick="toggleMenu('room')">Room <span id="roomNo">1</span></button>
         <button onclick="toggleMenu('character')">Character</button>
         <button onclick="toggleMenu('help')">?</button>

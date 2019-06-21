@@ -21,7 +21,7 @@ Playing around with random number generation in Javascript.
 - Remake of Dungeon Dilemma ([dungeon-proto](https://github.com/VnceGd/dungeon-proto)) with no server side.
 - Features more detailed combat and use of items.
 
-*Note: Games may store data in local browser storage/cache.*
+*Note: Games may store data in the browser's local storage.*
   
 ## Other
 

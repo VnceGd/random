@@ -69,7 +69,6 @@ button:active {
     padding: 0 10% 0 10%;
     width: 80%;
     display: inline-grid;
-    /* grid-template-columns: repeat(4, 1fr); -- See media queries */
     grid-gap: 1%;
 }
 .grid-item, .casino-item {

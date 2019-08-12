@@ -235,8 +235,8 @@ function clearAnimateDice() {
         enableActions('all')
     else {
         enableActions('categories')
-        $('.die').css('background-color', '#ffa')
-        $('.die:hover').css('background-color', '#ffa')
+        $('.die').css('background-color', '#faa')
+        $('.die:hover').css('background-color', '#faa')
     }
     updateDisplay()
 }

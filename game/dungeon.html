@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Vincent Nguyen 2018 -->
+<!-- Vincent Nguyen 2018-2019 -->
 <!-- A remake of Dungeon Dilemma (github.com/vncegd/dungeon-proto) with no server side handling -->
 <html>
   <head>
@@ -85,6 +85,13 @@
       <div class="menu-content">
         <button class="backBtn" onclick="toggleMenu('patchNotes')">&#9668; Back</button>
         <h1>Patch Notes</h1>
+        <h3>v0.3.1 (08/13/2019)</h3>
+        <b>Updates:</b>
+          <ul>
+            <li>Updated Main Menu</li>
+            <li>New SVG Icons</li>
+            <li>Confirm quit dialog box replaced with modal/menu</li>
+          </ul>
         <h3>v0.3.0 (11/16/2018)</h3>
         <b>Updates:</b>
           <ul>
@@ -154,17 +161,15 @@
     </div>
     <!-- TITLE -->
     <div class="titleScreen">
-      <h1>DUNGEON DILEMMA</h1>
+      <!-- <h1>DUNGEON DILEMMA</h1> -->
+      <img class="titleImage" src="../images/dungeon/title.png"/>
       <div class="buttonBox">
-        <button onclick="startGame()">Play</button> <br>
-        <button onclick="toggleMenu('settings')">Settings</button> <br>
-        <button onclick="toggleMenu('help')">How to Play</button> <br>
-        <button onclick="toggleMenu('credits')">Credits</button> <br>
-        <button onclick="quitGame()" id="exitBtn">Quit</button> <br>
-        <button id="versionBtn" onclick="toggleMenu('patchNotes')"><span id="versionNo">v0.3.0</span></button>
-      </div>
-      <div class="footer">
-        <span id="author"><img style="width: 2vmin" src="../images/GitHub-Mark-120px-plus.png"/> VnceGd</span>
+        <button onclick="toggleMenu('settings')"><img src="../images/dungeon/btn-settings.svg"/><br>Settings</button> 
+        <button onclick="toggleMenu('help')"><img src="../images/dungeon/btn-help.svg"/><br>How to Play</button> 
+        <button id="playBtn" onclick="startGame()"><img src="../images/dungeon/btn-play.svg"/><br>Play</button> 
+        <button onclick="toggleMenu('credits')"><img src="../images/dungeon/btn-credits.svg"/><br>Credits</button> 
+        <button id="exitBtn" onclick="quitGame()"><img src="../images/dungeon/btn-exit.svg"/><br>Quit</button> <br>
+        <button id="versionBtn" onclick="toggleMenu('patchNotes')"><span id="versionNo">v0.3.1</span></button>
       </div>
     </div>
     <!-- COMBAT -->
@@ -248,6 +253,16 @@
         <button onclick="toggleMenu('exit')">Stay</button>
       </div>
     </div>
+    <!-- CONFIRM QUIT -->
+    <div class="menu" id="quitGameMenu">
+      <div class="menu-content">
+        <h1>Confirm Quit</h1>
+        <h3>Progress is not saved.</h3>
+        <h3>Quit anyways?</h3>
+        <button onclick="quitToTitle()">Quit</button>
+        <button onclick="toggleMenu('quit')">Cancel</button>
+      </div>
+    </div>
     <!-- COMBAT HELP -->
     <div class="menu" id="combatHelpMenu">
       <div class="menu-content">
@@ -291,74 +306,40 @@
         <p>
           Battle & loot your way through a series of rooms populated by monsters. <br>
           Reach the end to win. <br> <br>
-          When encountering a monster, press the 'Combat Help' button to view a combat tutorial.
-          <hr>
-          <h3>Controls:</h3> 
-          <svg id="wasdSVG" width="20vmin" viewbox="0 0 100 100">
-            <text x="0" y="20" fill="black">Movement</text>
-            <g>
-              <polygon points="35,35 65,35 65,65 35,65" style="fill: #BDBDBD"/>
-              <text x="50" y="50" fill="black" text-anchor="middle" alignment-baseline="central">W</text>
-            </g>
-            <g>
-              <polygon points="0,70 30,70 30,100 0,100" style="fill: #BDBDBD"/>
-              <text x="15" y="85" fill="black" text-anchor="middle" alignment-baseline="central">A</text>
-            </g>
-            <g>
-              <polygon points="35,70 65,70 65,100 35,100" style="fill: #BDBDBD"/>
-              <text x="50" y="85" fill="black" text-anchor="middle" alignment-baseline="central">S</text>
-            </g>
-            <g>
-              <polygon points="70,70 100,70 100,100 70,100" style="fill: #BDBDBD"/>
-              <text x="85" y="85" fill="black" text-anchor="middle" alignment-baseline="central">D</text>
-            </g>
-          </svg>
+          When encountering a monster, press the 'Combat Help' button to view a combat tutorial.          
         </p>
+        <h3>Controls:</h3> 
+        <p>Press the WASD or arrow keys to move. Monster encounters and item pick ups happen automatically when moving into a tile.</p>
         <h3>Icons:</h3>
         <div class="tokenContainer">
           <div class="tokenBox">
             <b>Player</b>
-            <div class="token" style="background-color: #B2EBF2;">
-              <svg width='100%' viewbox='0 0 100 100'>
-                <polygon points='50,25 75,75 25,75'/>
-              </svg>
+            <div class="token">
+              <img src="../images/dungeon/player-warrior.svg"/>
             </div>
           </div>
           <div class="tokenBox">
             <b>Exit</b> <br>
-            <div class="token" style="background-color: #CFD8DC;">
-              <svg class='exitSVG' width='100%' viewbox='0 0 100 100'>
-                <line x1='25' y1='5' x2='25' y2='75'/>
-                <line x1='75' y1='5' x2='75' y2='75'/>
-                <line x1='25' y1='20' x2='75' y2='20'/>
-                <line x1='25' y1='40' x2='75' y2='40'/>
-                <line x1='25' y1='60' x2='75' y2='60'/>
-              </svg>
+            <div class="token">
+              <img src="../images/dungeon/exit-down.svg"/>
             </div>
           </div>
           <div class="tokenBox">
             <b>Monster</b> <br>
-            <div class="token" style="background-color: #F44336;">
-              <svg width='100%' viewbox='0 0 100 100'>
-                <polygon points='50,25 75,50 50,75 25,50'/>
-              </svg>
+            <div class="token">
+              <img src="../images/dungeon/monster-minotaur.svg"/>
             </div>
           </div>
           <div class="tokenBox">
             <b>Elite</b> <br>
-            <div class="token" style="background-color: #BA68C8;">
-              <svg width='100%' viewbox='0 0 100 100'>
-                <polygon points='50,20 75,75 20,40 80,40 25,75'/>
-              </svg>
+            <div class="token">
+              <img src="../images/dungeon/monster-dragon.svg"/>
             </div>
           </div>
           <div class="tokenBox">
             <b>Item</b> <br>
-            <div class="token" style="background-color: #FFF176;">
-              <svg width='100%' viewbox='0 0 100 100'>
-                <polygon points='25,35 35,25 65,25 75,35 75,45 25,45'/>
-                <polygon points='25,50 75,50 75,75 25,75'/>
-              </svg>
+            <div class="token">
+              <img src="../images/dungeon/item-chest.svg"/>
             </div>
           </div>
         </div>
@@ -368,7 +349,7 @@
     <!-- GAME BOARD -->
     <div class="gameBoard" style="display:none">
       <div class="gameMenu">
-        <button class="backBtn" onclick="quitToTitle()">Quit</button>
+        <button class="backBtn" onclick="toggleMenu('quit')">Quit</button>
         <button onclick="toggleMenu('room')">Room <span id="roomNo">1</span></button>
         <button onclick="toggleMenu('character')">Character</button>
         <button onclick="toggleMenu('help')">?</button>

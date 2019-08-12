@@ -3,10 +3,13 @@
 /* GENERAL *********************/
 html, body {
     margin: 0;
-    padding: 0;
+    padding: 0;      
+}
+body{
+    background-image: url("../images/dungeon/brick-wall.svg");    
     height: 100%;
     font-family: 'Lato', Arial, Helvetica, sans-serif;
-    transition: 0.5s;
+    transition: 0.5s;  
 }
 h1 {
     margin: 2% 0;
@@ -24,14 +27,12 @@ ul {
     margin: 0;
 }
 button {
-    margin: 0.5% 0;
-    padding: 1%;
-    width: 25%;
-    background-color: #E0E0E0;
-    border: 0.25vmin solid #9E9E9E;
-    border-radius: 0.1vmin;
+    margin: 1vmin 0;
+    padding: 1vmin;
+    background-color: #bbb;
+    border: 0.5vmin solid #999;
     font-family: 'Lato', Arial, Helvetica, sans-serif;
-    font-size: 2.5vmin;
+    font-size: 2vmin;
     font-weight: bold;
     outline: none;
     cursor: pointer;
@@ -39,11 +40,7 @@ button {
 }
 button:focus, button:hover {
     background-color: #EEE;
-    box-shadow: 0 0 0 0.2vmin #FFC107;
     transition: .1s;
-}
-button:active {
-    box-shadow: 0 0 0 0.2vmin #FF6F00 inset;
 }
 button:disabled {
     color: #9E9E9E;
@@ -58,7 +55,7 @@ button:disabled {
     height: 100%;
     color: #000;
     background-color: #000;
-    background-color: #00000080;
+    background-color: #0008;
     position: fixed;
     overflow: auto;
     z-index: 2;
@@ -67,7 +64,7 @@ button:disabled {
     margin: 5% auto;
     padding: 2vmin;
     width: 80%;
-    background-color: #FAFAFA;
+    background-color: #ccc;
 }
 li {
     margin-left: 10px;
@@ -110,7 +107,7 @@ li {
     border-color: #FF6F00;
 }
 .slider {
-    -webkit-appearance: none;  /* Override default CSS styles */
+    -webkit-appearance: none;
     -moz-appearance: none;
     width: 50%;
     height: 1vmin;
@@ -131,21 +128,51 @@ li {
     border: 0.25vmin solid #FF6F00;
     border-radius: 2vmin;
 }
+#exitRoomMenu .menu-content, #quitGameMenu .menu-content {
+    margin-top: 30vmin;
+    width: 75vmin;
+    text-align: center;
+}
+#exitRoomMenu button, #quitGameMenu button {
+    width: 35vmin;
+}
 /* TITLE SCREEN ****************/
 .titleScreen {
     margin: auto;
     padding-top: 5%;
-    text-align: center;
+    text-align: center;    
 }
-.footer {
-    padding: 2vmin 0;
-    width: 100%;
+.titleImage {
+    width: 90vmin;
+    image-rendering: pixelated;
+    image-rendering: -moz-crisp-edges;
+}
+.titleScreen button {
+    margin-left: 0.5vmin;
+    margin-right: 0.5vmin;  
+    width: 15vmin;
+    height: 15vmin;
+}
+#playBtn {
+    width: 18vmin;
+    height: 18vmin;
+}
+.titleScreen button:hover {
+    
+    transform: scale(1.1);
+}
+.titleScreen button img {
+    height: 5vmin;
 }
 #exitBtn {
-    background-color: #fcc;
+    background-color: #e99;
+}
+#exitBtn:hover {
+    background-color: #e77;
 }
 #versionBtn {
     width: auto;
+    height: auto;
     padding: 0.5vmin 2vmin;
 }
 @media only screen and (max-width: 600px) {
@@ -188,7 +215,13 @@ li {
     width: 100%;
     height: 15%;
     max-height: 128px;
+    background-color: #222;
     border-radius: 50%;
+    border-color: #555;
+    border-width: 2vmin;
+}
+.token img {
+    width: 100%;
 }
 /* GAME BOARD ******************/
 .gameBoard {
@@ -238,6 +271,9 @@ td {
     height: 45%;
     border-radius: 50%;
     transition: 1s;
+}
+#player img, #exit img, .monster img, .elite img, .item img {
+    width: 100%;
 }
 #player {
     background-image: radial-gradient(#B2EBF2, #00BCD4);
@@ -310,6 +346,7 @@ td {
     padding: 1vmin 2vmin;
     width: auto;
     font-size: 3vmin;
+    border: 0;
     border-radius: 1vmin;
     border-spacing: 0;
 }

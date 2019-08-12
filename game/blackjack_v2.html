@@ -3,7 +3,7 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>Blackjack v2.2</title>
+        <title>Blackjack v2.3</title>
         <link rel="icon" type="image/png" href="../images/cardFavicon.png">
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
         <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
@@ -68,13 +68,19 @@
                 <button onclick="toggleMenu('help-menu')">How to Play</button>
                 <button onclick="quitGame()" class="exit-btn">Quit</button>
                 <br>
-                <button class="version-btn" onclick="toggleMenu('version-menu')" id="version-btn">v2.2</button>
+                <button class="version-btn" onclick="toggleMenu('version-menu')" id="version-btn">v2.3</button>
             </div>
         </div>
         <div class="modal" id="version-menu">
             <div class="menu-content">
                 <span class="menu-x" onclick="toggleMenu('version-menu')">&times;</span>
                 <h3>Patch Notes</h3>
+                <h4>v2.3</h4>
+                <p><b>Updates: </b></p>
+                <ul> 
+                    <li>Replaced dialog box pop ups with modals</li>
+                    <li>Adjusted light theme colors</li>
+                </ul>
                 <h4>v2.2</h4>
                 <p><b>Updates: </b></p>
                 <ul> 
@@ -160,6 +166,25 @@
                     </ul>
                 </p>
                 <a href="https://en.wikipedia.org/wiki/Blackjack#Rules_of_play_at_casinos" target="_blank">Detailed Rules on Wikipedia</a>
+            </div>
+        </div>
+        <div class="modal" id="bet-menu">
+            <div class="menu-content">
+                <span class="menu-x" onclick="toggleMenu('bet-menu')">&times;</span>
+                <h3>Place a Bet</h3>
+                <p>Current Balance: $<span id="bet-balance"></span></p>
+                <input type="text" name="bet" value="0"/> <br>
+                <button onclick="placeBet(false)">Place Bet</button>
+                <button id="all-in-btn" onclick="placeBet(true)">ALL IN</button>
+                <p id="bet-error"></p>
+            </div>
+        </div>
+        <div class="modal" id="zero-balance-menu">
+            <div class="menu-content">
+                <span class="menu-x" onclick="toggleMenu('zero-balance-menu')">&times;</span>
+                <h3>Bankrupt</h3>
+                <p>Your balance is empty. Refill to $2500?</p>
+                <button onclick="refillBalance()">Yes</button>
             </div>
         </div>
         <div class="modal" id="cookie-menu" style="display: block">

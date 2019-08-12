@@ -15,13 +15,13 @@ function updateTheme(theme) {
         $('input[value = "light"]').prop('checked', true)
         $('body').css('background-color', '#fff')
         $('body').css('color', '#000')
-        $('#action-bar').css('background-color', '#ccf')
+        $('#action-bar').css('background-color', '#bcf')
         $('.menu-content').css('background-color', '#ddd')
         $('.container').css('background-color', '#ddd')
-        $('.card-box-cards').css('background-color', '#cfd')
-        $('.card-box-info').css('background-color', '#ccf')
+        $('.card-box-cards').css('background-color', '#afb')
+        $('.card-box-info').css('background-color', '#abf')
         $('.win-banner').css('background-color', '#afa')
-        $('.bust-banner').css('background-color', '#faa')
+        $('.bust-banner').css('background-color', '#f88')
     }
     else {
         $('input[value = "dark"]').prop('checked', true)
@@ -167,7 +167,7 @@ function actionHit() {
         split_hand.push(deck_collection[r].pop())
     else
         dealer_hand.push(deck_collection[r].pop())
-    if(handTotal(player) == -1) {
+    if(handTotal(player) < 0) {
         if(player == player_hand) {
             document.getElementById("player-bust").style.display = "inline"
             player_stand = true
@@ -420,21 +420,34 @@ function resetHands() {
     dealer_hand = []
 }
 function startGame() {
+    getBalance()
+    if (balance > 0) {
+        toggleMenu('bet-menu')
+        document.getElementById('bet-balance').innerHTML = balance
+        document.getElementById('bet-error').innerHTML = ""
+    }
+}
+function placeBet(allIn) {
     let input = initalBet = 0
     let rx = /^( *)(0*)(\d+)?(?:\.\d{1,2})?(0*)( *)?$/ // Accept only number values up to two decimal places
-
-    getBalance()
-    input = prompt("Place a starting bet", balance)
-    initialBet = parseFloat(input)
-    if(input == null)
-        return
-    if(!rx.test(input)) {
-        alert("Invalid bet. Try again.")
-        return
+    
+    if(allIn) {
+        initialBet = parseFloat(balance)
+        balance -= initialBet
     }
-    balance -= initialBet
+    else {
+        input = document.querySelector('input[name = "bet"]').value    
+        if(input == null)
+            return
+        if(!rx.test(input) || parseInt(input) > parseInt(balance)) {
+            document.getElementById('bet-error').innerHTML = "Invalid bet."
+            return
+        }
+        initialBet = parseFloat(input)
+        balance -= initialBet        
+    }   
     setBalance()
-    player_bet = initialBet
+    player_bet = initialBet   
     split_bet = 0
     player_turn = true
     player_stand = split_stand = false
@@ -450,10 +463,18 @@ function startGame() {
     generateDecks()
     dealCards()
     updateDisplay()
+    toggleMenu('bet-menu')
 }
 function exitGame() {
     document.getElementById("title").style.display = "block"
     document.getElementById("game").style.display = "none"
+}
+function refillBalance() {
+    balance = 2500
+    setBalance()
+    updateText()
+    toggleMenu('zero-balance-menu')
+    startGame()
 }
 function getBalance() {
     if(typeof(Storage) == "undefined") {
@@ -467,11 +488,12 @@ function getBalance() {
         if(balance > 0)
             updateText()
         else
-            if(confirm("You're out of money. Reset balance to $2500?")) {
-                balance = 2500
-                setBalance()
-                updateText()
-            }
+            toggleMenu('zero-balance-menu')
+            // if(confirm("You're out of money. Reset balance to $2500?")) {
+            //     balance = 2500
+            //     setBalance()
+            //     updateText()
+            // }
     }
     catch(e) {
         document.getElementById("bank-balance").innerHTML = balance

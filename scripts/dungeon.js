@@ -11,26 +11,11 @@ const INSANE    = 3;
 const NIGHTMARE = 4;
 const CUSTOM    = 5;
 // SVG Icons
-const PLAYER   =  "<svg width='100%' viewbox='0 0 100 100'>"
-                + "<polygon points='50,25 75,75 25,75'/>"
-                + "</svg>";
-const EXIT     =  "<svg class='exitSVG' width='100%' viewbox='0 0 100 100'>"
-                + "<line x1='25' y1='5' x2='25' y2='75'/>"
-                + "<line x1='75' y1='5' x2='75' y2='75'/>"
-                + "<line x1='25' y1='20' x2='75' y2='20'/>"
-                + "<line x1='25' y1='40' x2='75' y2='40'/>"
-                + "<line x1='25' y1='60' x2='75' y2='60'/>"
-                + "</svg>";
-const MONSTER  =  "<svg width='100%' viewbox='0 0 100 100'>"
-                + "<polygon points='50,25 75,50 50,75 25,50'/>"
-                + "</svg>";
-const ELITE    =  "<svg width='100%' viewbox='0 0 100 100'>"
-                + "<polygon points='50,20 75,75 20,40 80,40 25,75'/>"
-                + "</svg>";
-const ITEM     =  "<svg width='100%' viewbox='0 0 100 100'>"
-                + "<polygon points='25,35 35,25 65,25 75,35 75,45 25,45'/>"
-                + "<polygon points='25,50 75,50 75,75 25,75'/>"
-                + "</svg>";
+const PLAYER  = "<img src='../images/dungeon/player-warrior.svg'/>"
+const EXIT    = "<img src='../images/dungeon/exit-down.svg'/>"
+const MONSTER = "<img src='../images/dungeon/monster-minotaur.svg'/>"
+const ELITE   = "<img src='../images/dungeon/monster-dragon.svg'/>"
+const ITEM    = "<img src='../images/dungeon/item-chest.svg'/>"
 // Starting values for game
 const MAXPLAYERHP  = 100;
 const MAXMONSTERHP = 10;
@@ -44,7 +29,7 @@ const LGHEALTHPOT = 1;
 const DOUBLEDMG   = 2;
 const MADMASK     = 3;
 // Settings
-let difficulty   = 0;
+let difficulty   = 1;
 let room_count   = 
     room_width   = 5;
 let monster_rate = 
@@ -200,6 +185,8 @@ function toggleMenu(option) {
         menu = document.getElementById("combatHelpMenu");
     else if(option == 'exit')
         menu = document.getElementById("exitRoomMenu");
+    else if(option == 'quit')
+        menu = document.getElementById("quitGameMenu");
     if(menu.style.display == "block") {
         menu.style.display = "none";
         inMenu = false;
@@ -284,6 +271,7 @@ function placePlayer(row, col) {
 // Place object in a random empty cell
 function placeRandom(object) {
     let cell;
+    let tempRow = tempCol = 0;
     do {
         tempRow = Math.floor(Math.random() * room_width);
         tempCol = Math.floor(Math.random() * room_width);
@@ -307,15 +295,25 @@ function placeRandom(object) {
 }
 // Place fog over the whole room
 function placeFog() {
-    let cell;
-
     for(let row = 0; row < room_width; row++)
         for(let col = 0; col < room_width; col++) {
-            cell = document.getElementById(row + "," + col);
+            let cell = document.getElementById(row + "," + col);
             cell.innerHTML += "<div class='fog'></div>";
         }
 }
-// Select die and all dice to the left while unselected those to the right
+$("#playerDice > .die").mouseenter(function() {
+    if(!$(this).is(":disabled")) {
+        $(this).css('box-shadow', '0 0 0 0.25vmin #FFD54F');
+        $(this).prevUntil($("#playerDice")).css('box-shadow', '0 0 0 0.2vmin #FFD54F');
+    }
+});
+$("#playerDice > .die").mouseleave(function() {
+    if(!$(this).is(":disabled")) {
+        $(this).css('box-shadow', 'none');
+        $(this).prevUntil($("#playerDice")).css('box-shadow', 'none');
+    }
+});
+// Select die and all dice to the left, unselect those to the right
 function selectDie(n) {
     for(let i = n; i >= 0; i--) {
         selected[i][1] = 1;
@@ -692,7 +690,6 @@ function updateBoard() {
 // Create a room according to settings
 function generateBoard() {
     let str     = "";
-    let tempRow = tempCol = 0;
 
     // Reset progress
     mons_defeated = elites_defeated = items_found = tiles_explored = 0;
@@ -746,13 +743,12 @@ function startGame() {
 }
 // Return to the title screen
 function quitToTitle() {
-    if(confirm("Progress is not saved. Quit?")) {
-        inGame = false;
-        document.getElementsByClassName("gameBoard")[0].style.display   = "none";
-        document.getElementsByClassName("titleScreen")[0].style.display = "block";
-        document.body.style.backgroundColor = "#FFF";
-        document.body.style.color = "#000";
-    }
+    inGame = false;
+    document.getElementsByClassName("gameBoard")[0].style.display   = "none";
+    document.getElementsByClassName("titleScreen")[0].style.display = "block";
+    document.body.style.backgroundColor = "#FFF";
+    document.body.style.color = "#000";
+    toggleMenu('quit');
 }
 function quitGame() {
 	if(window.history.length > 1 && document.referrer == '../index.html')

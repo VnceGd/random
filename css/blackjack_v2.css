@@ -1,4 +1,28 @@
-/* Vincent Nguyen 2018 */
+/* Vincent Nguyen 2018-2019 */
+#bet-menu .menu-content {
+    top: 27.5vmin;
+    height: 35vmin;
+    text-align: center;
+}
+#zero-balance-menu .menu-content {
+    top: 35vmin;
+    height: 20vmin;
+    text-align: center;
+}
+#bet-menu input {
+    margin: 1vmin;
+    width: 50vmin;
+    text-align: center;
+}
+#all-in-btn {
+    background-color: #faa;
+}
+#all-in-btn:hover {
+    background-color: #f77;
+}
+#bet-error {
+    color: #f00;
+}
 #game {
     display: none;
 }
@@ -15,7 +39,6 @@
 .card-box {
     margin-bottom: 2vmin;
     height: 26vmin;
-    background-color: #dfe;
 }
 .card-box-info {
     margin: 0;
@@ -23,7 +46,6 @@
     width: 22%;
     height: 100%;
     float: left;
-    background-color: #ccf;
 }
 .card-box-cards {
     margin: 0;
@@ -50,7 +72,7 @@
 }
 .bust-banner {
     padding: 0.5vmin 1vmin;
-    background-color: #faa;
+    background-color: #f88;
 }
 .action-bar {
     padding-top: 5vmin;

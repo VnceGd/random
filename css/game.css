@@ -44,6 +44,7 @@ button:hover {
 }
 button:focus {
     outline: none;
+    box-shadow: 0 0 1vmin 0 #000;
 }
 button:disabled {
     color: #888;

@@ -1,17 +1,1 @@
-<!-- Vincent Nguyen 2019 -->
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16">
-<defs>
-  <mask id="mask">
-    <rect width="100%" height="100%" fill="#fff"/>
-    <circle cx="8" cy="8" r="3" fill="#000"/>
-  </mask>
-</defs>
-<g mask="url(#mask)">
-  <circle cx="8" cy="8" r="6.5"/>
-  <g stroke="#000" stroke-width="4">
-    <path d="M8 0 L8 16"/>
-    <path d="M8 0 L8 16" transform="rotate(60 8 8)"/>
-    <path d="M8 0 L8 16" transform="rotate(-60 8 8)"/>
-  </g>
-</g>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><defs><mask id="mask"><rect width="100%" height="100%" fill="#fff"/><circle cx="8" cy="8" r="3" fill="#000"/></mask></defs><g mask="url(#mask)"><circle cx="8" cy="8" r="6.5"/><g stroke="#000" stroke-width="4"><path d="M8 0 L8 16"/><path d="M8 0 L8 16" transform="rotate(60 8 8)"/><path d="M8 0 L8 16" transform="rotate(-60 8 8)"/></g></g></svg>

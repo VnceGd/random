@@ -1,15 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg"
- width="512px" height="512px" viewBox="0 0 32 32">
-  <defs>
-    <clipPath id="hole">
-      <circle cx="16" cy="16" r="14"/>
-    </clipPath>
-  </defs>
-  <circle cx="16" cy="16" r="15" stroke="#bb0" stroke-width="2" fill="#777"/>
-  <g stroke="#a50" stroke-width="2" fill="#c70">
-    <path d="M4 16 L28 16 L28 28 L4 28 Z"/>
-    <path d="M4 14 C4 12 4 4 16 4 C20 4 28 4 28 14 Z"/>
-  </g>
-  <path fill="#aaa" d="M14 16 L18 16 L18 20 L14 20 Z"/>
-  <path fill="#bbb" d="M14 16 L18 16 L18 13 L14 13 Z"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 32 32"><defs><clipPath id="hole"><circle cx="16" cy="16" r="14"/></clipPath></defs><circle cx="16" cy="16" r="15" fill="#777" stroke="#bb0" stroke-width="2"/><g fill="#c70" stroke="#a50" stroke-width="2"><path d="M4 16 L28 16 L28 28 L4 28 Z"/><path d="M4 14 C4 12 4 4 16 4 C20 4 28 4 28 14 Z"/></g><path fill="#aaa" d="M14 16 L18 16 L18 20 L14 20 Z"/><path fill="#bbb" d="M14 16 L18 16 L18 13 L14 13 Z"/></svg>
